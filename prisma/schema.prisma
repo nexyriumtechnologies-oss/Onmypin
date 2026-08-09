@@ -1,0 +1,214 @@
+// OwnMyPin — Prisma schema (Phase 1: Core Backend)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------- enums
+
+enum AccountStatus {
+  ACTIVE
+  DEACTIVATED
+  DELETED
+}
+
+enum PropertyType {
+  HOUSE
+  FLAT
+  OTHER
+}
+
+enum OwnershipType {
+  OWN
+  RENT
+  OTHER
+}
+
+enum VerificationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  VERIFIED
+  REJECTED
+  ACTIVE
+  INACTIVE
+}
+
+enum DigiPinStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum QrStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum DevicePlatform {
+  ANDROID
+  IOS
+  WEB
+}
+
+enum MediaPurpose {
+  PROFILE_IMAGE
+  PROPERTY_IMAGE
+  SELFIE
+}
+
+// ---------------------------------------------------------------- models
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  mobile        String        @unique
+  email         String?       @unique
+  profileImage  String?
+  language      String        @default("en")
+  accountStatus AccountStatus @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  sessions      Session[]
+  refreshTokens RefreshToken[]
+  deviceTokens  DeviceToken[]
+  properties    Property[]
+  mediaFiles    MediaFile[]
+
+  @@map("users")
+}
+
+model OtpRecord {
+  id        String    @id @default(cuid())
+  mobile    String
+  otpHash   String
+  purpose   String // e.g. AUTH — extensible for future purposes
+  expiresAt DateTime
+  attempts  Int       @default(0)
+  verified  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([mobile, purpose])
+  @@map("otp_records")
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  deviceInfo String?
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  sessionId String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revoked   Boolean   @default(false)
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@map("refresh_tokens")
+}
+
+model DeviceToken {
+  id        String         @id @default(cuid())
+  userId    String
+  fcmToken  String
+  platform  DevicePlatform
+  createdAt DateTime       @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, fcmToken])
+  @@map("device_tokens")
+}
+
+model MediaFile {
+  id         String       @id @default(cuid())
+  userId     String
+  purpose    MediaPurpose
+  storageKey String       @unique
+  url        String
+  mimeType   String
+  sizeBytes  Int
+  createdAt  DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("media_files")
+}
+
+model Property {
+  id                 String             @id @default(cuid())
+  userId             String
+  ownerName          String
+  propertyType       PropertyType
+  ownershipType      OwnershipType
+  address            String?
+  city               String?
+  state              String?
+  pincode            String?
+  latitude           Decimal?
+  longitude          Decimal?
+  verificationStatus VerificationStatus @default(DRAFT)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  digiPin DigiPin?
+
+  @@index([userId])
+  @@map("properties")
+}
+
+model DigiPin {
+  id                 String             @id @default(cuid())
+  propertyId         String             @unique
+  digipinNumber      String
+  status             DigiPinStatus      @default(ACTIVE)
+  verificationStatus VerificationStatus @default(SUBMITTED)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  qr       QR?
+
+  @@unique([digipinNumber])
+  @@map("digipins")
+}
+
+model QR {
+  id            String    @id @default(cuid())
+  digipinId     String    @unique
+  qrData        String
+  qrStatus      QrStatus  @default(ACTIVE)
+  customization Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  digiPin DigiPin @relation(fields: [digipinId], references: [id], onDelete: Cascade)
+
+  @@index([qrData])
+  @@map("qrs")
+}
