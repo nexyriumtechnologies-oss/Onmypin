@@ -301,7 +301,8 @@ Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE
   "success": true,
   "data": {
     "property": { "id": "cmsl...", "verificationStatus": "SUBMITTED" },
-    "digipinNumber": "WB629801"     // SAVE THIS — there is no list-DigiPin endpoint yet
+    "digipinNumber": "WB629801",     // SAVE THIS — there is no list-DigiPin endpoint yet
+    "digipinId": "cmtq..."           // DigiPin row id — use it in GET /api/digipins/:id/qr
   }
 }
 ```
@@ -334,16 +335,35 @@ Public. Call this when the user finishes typing the address, to show a map pin o
 {
   "success": true,
   "data": {
-    "latitude": 18.9345609,                 // geocoded from the address
-    "longitude": 72.8239395,
+    "latitude": 18.934561,                  // geocoded from the address (rounded to 6 dp)
+    "longitude": 72.82394,
     "formattedAddress": "Marine Drive, Churchgate, Fort, A Ward, Mumbai Zone 1, Mumbai City District, Maharashtra, 400020, India",
-    "verified": true,                        // true only if GPS within 500 m of the address
+    "verified": true,                        // true if GPS within 500 m — OR same city+state (locality match)
     "source": "osm",
     "gps": { "latitude": 18.9345, "longitude": 72.8239 },   // null if no GPS sent
-    "distanceMeters": 4                      // GPS vs geocoded distance; null if no GPS
+    "distanceMeters": 4,                     // GPS vs geocoded distance; null if no GPS
+    "matchBasis": "gps"                      // "gps" (≤500 m) | "locality" (same city+state) | null
   }
 }
 ```
+
+**`verified` semantics:** strict GPS check (`matchBasis: "gps"`) when within **500 m**. If farther, the server reverse-geocodes the GPS point and returns `verified: true` with `matchBasis: "locality"` when it shares the **same city + state** as the typed address (this absorbs coarse OSM pins that can land kilometres from the true spot — e.g. the address resolves to the right locality but Nominatim's pin is 6 km away).
+
+### POST /api/location/reverse — GPS point → place name
+Public. Use to auto-fill the address field from the device GPS chip (no user typing).
+
+```jsonc
+// Request
+{ "latitude": 18.9345, "longitude": 72.8239 }
+
+// Response 200
+{ "success": true, "data": { "formattedAddress": "Marine Drive, Churchgate, Fort, A Ward, Mumbai City District, Maharashtra, 400020, India", "source": "osm" } }
+```
+
+| Error | Status | Code |
+|---|---|---|
+| Unknown field / out of range | 400 | `VALIDATION_ERROR` |
+| Coordinates unresolvable | 502 | `GEOCODE_FAILED` |
 
 | Error | Status | Code |
 |---|---|---|
@@ -357,7 +377,7 @@ Public. Call this when the user finishes typing the address, to show a map pin o
 ## 7. DigiPin & QR
 
 ### GET /api/digipins/:id/qr — get the QR for a DigiPin
-Requires Bearer. `:id` is the **DigiPin row id**, not the 8-char number (in Phase 1 the client persists the digipin id from the submit response).
+Requires Bearer. `:id` is the **DigiPin row id** (the `digipinId` returned by submit — persist it), not the 8-char number.
 
 ```jsonc
 // Response 200

@@ -180,7 +180,7 @@ export async function submitProperty(
       data: { digipinId: digiPin.id, qrData: `https://digipin.app/q/${qrToken}` },
     });
 
-    return { updated, digipinNumber };
+    return { updated, digipinNumber, digipinId: digiPin.id };
   });
 
   return {
@@ -189,5 +189,6 @@ export async function submitProperty(
       verificationStatus: result.updated.verificationStatus,
     },
     digipinNumber: result.digipinNumber,
+    digipinId: result.digipinId,
   };
 }

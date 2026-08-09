@@ -81,6 +81,7 @@ type Params = { params: Promise<{ id: string }> };
  *                             id: { type: string }
  *                             verificationStatus: { type: string, enum: [SUBMITTED] }
  *                         digipinNumber: { type: string, example: WB472801 }
+ *                         digipinId: { type: string, description: DigiPin row id — use it in GET /api/digipins/:id/qr }
  *       '400':
  *         description: Incomplete property, invalid media, or bad transition
  *       '401':
