@@ -341,9 +341,31 @@ account (8090780908) remains.
 - `tsc`/`lint` clean, `npm test` 23/23 (incl. new `location.test.ts`).
 
 **Open / Phase 2 candidates (not defects, by design):**
-1. Real OTP/SMS provider (console logs the code in dev) — **user asked to discuss OTP implementation next**.
+1. Real OTP/SMS go-live — provider implemented (YourBulkSMS), **awaiting the client to enable API access** (Code 012) — Phase 1 gate per TODO.md §11.
 2. Persist property↔media mapping on the Property row (submit validates ownership only).
-3. `GET /api/digipins` list / digipin id in submit response for the client.
+3. `GET /api/digipins` list endpoint (digipin id now returned in the submit response — `digipinId`).
 4. Google Maps geocoder behind the same `Geocoder` interface (`LOCATION_PROVIDER=google`, `GOOGLE_MAPS_API_KEY`) — Nominatim already live.
 5. Redis rate limiter, S3/GCS storage, structured logging (pino), OTP/session cleanup jobs.
 6. Postgres vs MySQL: SOW PDF says PostgreSQL, prompt says MySQL — **still flagged for client decision**. Current code is Prisma-agnostic except `provider = "mysql"` in schema.prisma.
+
+## 20. Phase 1.1 — OTP provider + location robustness + API test lab (2026-08-09)
+
+Follow-up pass after Phase 1 sign-off. **No code regressions** — `tsc`/`lint` clean, `npm test` 23/23 (kept at 23; location tests cover the new logic paths).
+
+### 20.1 YourBulkSMS OTP provider
+- `src/lib/otp/yourbulksms.otp.provider.ts` (see §4) — real SMS delivery via `sendhttp.php`, DLT-compliant (`sender` + `DLT_TE_ID` + approved template).
+- Wired via the existing `OtpProvider` registry — zero auth-flow changes.
+- **Live test result**: the provider works end-to-end (request reaches the API and the JSON error is parsed correctly) but the account rejects auth: `{"Status":"Failed","Code":"012","Description":"You have not authorised to access API."}` — the client must enable API access / verify the authkey in the YourBulkSMS panel. Retest then; see TODO.md §11.
+
+### 20.2 Dev OTP bypass
+- `OTP_BYPASS_ENABLED/MOBILE/CODE` — bypass mobile receives no SMS; its fixed code always verifies. Verified live: send-otp 200 → verify-otp 200 → tokens issued (user `8090780908`).
+- Purpose: unblock client/frontend work while the SMS API access is pending; `OTP_BYPASS_ENABLED=false` for production.
+
+### 20.3 Location robustness (user-reported 502s)
+- Root cause: Nominatim rate limiting (429) under rapid verify+submit, plus zero-match queries for house-level addresses.
+- Fixes: ≥1.2 s serialized request spacing, 429/5xx retry with backoff, fallback query ladder, locality-level GPS verification (`matchBasis: "locality"`), 6-dp coordinate rounding, `POST /api/location/reverse`.
+- Verified live with the user's exact scenario (GPS at Naini, Prayagraj; address pin 6.7 km away): `verified: true, matchBasis: "locality"`.
+- **New/changed API surface**: `POST /api/location/reverse`; `location/verify` response gains `matchBasis`; submit response gains `digipinId` (needed by `GET /api/digipins/:id/qr`). All documented in API_REFERENCE.md.
+
+### 20.4 API test lab
+- `public/api-test.html` — same-origin dev harness exercising every endpoint (bypass login, profile, media uploads, location verify with Leaflet map + GPS auto-fill via reverse-geocode, property draft→submit→DigiPin+QR, QR verify). Not part of the app; harmless dev tool.

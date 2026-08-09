@@ -56,7 +56,9 @@ Public. Sends a 6-digit OTP to the mobile. Rate limited: 3 sends/mobile/10 min +
 | Bad mobile / unknown field | 400 | `VALIDATION_ERROR` |
 | Too many requests | 429 | `RATE_LIMITED` |
 
-> Dev note: with the console provider the OTP is printed in the server log (`[ConsoleOtpProvider] OTP for <mobile>: 123456`).
+> Dev note: with the console provider the OTP is printed in the server log (`[ConsoleOtpProvider] OTP for <mobile>: 123456`). With the **bypass** enabled (`OTP_BYPASS_ENABLED=true`, see below), the bypass mobile gets no SMS and the fixed `OTP_BYPASS_CODE` verifies.
+
+**Dev OTP bypass** (`.env`): when `OTP_BYPASS_ENABLED=true`, the mobile in `OTP_BYPASS_MOBILE` (dev: `8090780908`) skips SMS delivery entirely and always verifies with `OTP_BYPASS_CODE` (dev: `123456`). Rate limits, hashing, and the OTP record flow still apply. Set `OTP_BYPASS_ENABLED=false` in production.
 
 ### POST /api/auth/verify-otp — verify OTP, get tokens
 Public. Creates the user on first login. Max 3 attempts per OTP.
@@ -455,7 +457,8 @@ Account: `ACCOUNT_DISABLED` 403 (deactivated/deleted), `ACCOUNT_DELETED` 403.
 
 ## 10. Dev/test reference values
 
+- **API test lab (dev harness):** `http://localhost:3000/api-test.html` — same-origin page exercising every endpoint (bypass login, profile, media uploads, location verify with map + GPS auto-fill, property → DigiPin + QR). Serve of convenience, not part of the app.
 - Login mobile for existing account: `8090780908` (name "Anuraj", ACTIVE).
-- OTP in dev: printed to the server console log, e.g. `[ConsoleOtpProvider] OTP for 8090780908: 719101`.
-- Live DigiPins in dev DB: `UP499807` (SUBMITTED), `UP725207` (SUBMITTED).
+- **OTP in dev:** bypass active for `8090780908` → fixed code `123456` (no SMS sent; real code also in the server log).
+- Live DigiPins in dev DB: `UP499807` (SUBMITTED), `UP725207` (SUBMITTED), `WB105516` (SUBMITTED).
 - Swagger spec: `GET /api/openapi.json` · Postman collection: `postman/ownmypin.postman_collection.json`.
