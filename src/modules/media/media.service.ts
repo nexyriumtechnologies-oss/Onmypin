@@ -107,6 +107,18 @@ export async function deleteMediaFile(userId: string, fileId: string): Promise<v
 }
 
 /**
+ * Deletes a file (row + storage) ONLY when it belongs to the requesting user.
+ * Missing or foreign files are silently ignored — used for replacing owned
+ * slots (e.g. a business logo) where a stale reference must not abort the flow.
+ */
+export async function deleteMediaFileIfOwned(userId: string, fileId: string): Promise<void> {
+  const file = await prisma.mediaFile.findUnique({ where: { id: fileId } });
+  if (!file || file.userId !== userId) return;
+  await getStorageProvider().deleteFile(file.storageKey);
+  await prisma.mediaFile.delete({ where: { id: file.id } });
+}
+
+/**
  * Ownership + purpose check used when attaching a previously-uploaded file
  * (profile image, property images, selfie). Returns the file's resolved URL.
  */

@@ -1,4 +1,4 @@
-// OwnMyPin — Prisma schema (Phase 1: Core Backend)
+// OwnMyPin — Prisma schema (Phase 1: Core Backend + Phase 2: Core Features & Admin Panel)
 
 generator client {
   provider = "prisma-client-js"
@@ -59,26 +59,88 @@ enum MediaPurpose {
   PROFILE_IMAGE
   PROPERTY_IMAGE
   SELFIE
+  BUSINESS_IMAGE
+  BUSINESS_LOGO
+}
+
+enum BusinessVerificationStatus {
+  PENDING
+  UNDER_REVIEW
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum BusinessStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum NotificationType {
+  BUSINESS_VERIFICATION
+  PROPERTY_VERIFICATION
+  SUBSCRIPTION
+  SYSTEM
+  ADMIN
+}
+
+enum SubscriptionTier {
+  FREE
+  BASIC
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum TransactionType {
+  SUBSCRIPTION
+  OTHER
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  VERIFICATION_ADMIN
+  CONTENT_ADMIN
+  FINANCE_ADMIN
 }
 
 // ---------------------------------------------------------------- models
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  mobile        String        @unique
-  email         String?       @unique
-  profileImage  String?
-  language      String        @default("en")
-  accountStatus AccountStatus @default(ACTIVE)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id                  String        @id @default(cuid())
+  name                String?
+  mobile              String        @unique
+  email               String?       @unique
+  profileImage        String?
+  language            String        @default("en")
+  accountStatus       AccountStatus @default(ACTIVE)
+  trustScore          Int           @default(0)
+  trustScoreUpdatedAt DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
   sessions      Session[]
   refreshTokens RefreshToken[]
   deviceTokens  DeviceToken[]
   properties    Property[]
   mediaFiles    MediaFile[]
+  businesses    Business[]
+  searchHistory SearchHistory[]
+  notifications Notification[]
+  subscriptions Subscription[]
+  transactions  Transaction[]
 
   @@map("users")
 }
@@ -211,4 +273,162 @@ model QR {
 
   @@index([qrData])
   @@map("qrs")
+}
+
+// ---------------------------------------------------------------- Phase 2 models
+
+model SearchHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  query     String
+  type      String // digipin | address | business | all
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("search_history")
+}
+
+model Business {
+  id                 String                   @id @default(cuid())
+  ownerUserId        String
+  name               String
+  categoryId         String?
+  subcategoryId      String?
+  address            String?
+  city               String?
+  state              String?
+  pincode            String?
+  latitude           Decimal?
+  longitude          Decimal?
+  contactPhone       String?
+  contactEmail       String?
+  logoFileId         String?
+  verificationStatus BusinessVerificationStatus @default(PENDING)
+  status             BusinessStatus             @default(ACTIVE)
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  owner       User              @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  category    BusinessCategory? @relation("BusinessCategory", fields: [categoryId], references: [id], onDelete: SetNull)
+  subcategory BusinessCategory? @relation("BusinessSubcategory", fields: [subcategoryId], references: [id], onDelete: SetNull)
+  images      BusinessImage[]
+
+  @@index([ownerUserId])
+  @@index([verificationStatus])
+  @@map("businesses")
+}
+
+model BusinessImage {
+  id         String   @id @default(cuid())
+  businessId String
+  fileId     String
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@map("business_images")
+}
+
+model BusinessCategory {
+  id        String   @id @default(cuid())
+  name      String
+  parentId  String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent       BusinessCategory?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children     BusinessCategory[] @relation("CategoryTree")
+  businesses   Business[]         @relation("BusinessCategory")
+  subBusinesses Business[]        @relation("BusinessSubcategory")
+
+  @@index([parentId])
+  @@map("business_categories")
+}
+
+model SubscriptionPlan {
+  id           String   @id @default(cuid())
+  name         String
+  tier         SubscriptionTier
+  price        Decimal
+  durationDays Int
+  features     Json?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  planId    String
+  startDate DateTime
+  endDate   DateTime
+  status    SubscriptionStatus @default(ACTIVE)
+  autoRenew Boolean            @default(true)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan         SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+  transactions Transaction[]
+
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+model Transaction {
+  id               String            @id @default(cuid())
+  userId           String
+  subscriptionId   String?
+  amount           Decimal
+  type             TransactionType   @default(SUBSCRIPTION)
+  paymentReference String            @unique
+  status           TransactionStatus @default(PENDING)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@map("transactions")
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  title      String
+  message    String
+  type       NotificationType
+  readStatus Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readStatus, createdAt])
+  @@map("notifications")
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  role         AdminRole @default(ADMIN)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("admin_users")
 }

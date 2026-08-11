@@ -56,9 +56,11 @@ Public. Sends a 6-digit OTP to the mobile. Rate limited: 3 sends/mobile/10 min +
 | Bad mobile / unknown field | 400 | `VALIDATION_ERROR` |
 | Too many requests | 429 | `RATE_LIMITED` |
 
-> Dev note: with the console provider the OTP is printed in the server log (`[ConsoleOtpProvider] OTP for <mobile>: 123456`). With the **bypass** enabled (`OTP_BYPASS_ENABLED=true`, see below), the bypass mobile gets no SMS and the fixed `OTP_BYPASS_CODE` verifies.
+> Dev note: OTP is delivered by **YourBulkSMS** (`OTP_PROVIDER=yourbulksms`) as the only path — the old console/dev bypass was removed on 2026-08-11. The SMS text is the approved DLT template from `YOURBULKSMS_OTP_TEMPLATE` with `{code}` substituted for the 6 digits. With the `console` provider the OTP is printed in the server log instead (`[ConsoleOtpProvider] OTP for <mobile>: 123456`).
 
-**Dev OTP bypass** (`.env`): when `OTP_BYPASS_ENABLED=true`, the mobile in `OTP_BYPASS_MOBILE` (dev: `8090780908`) skips SMS delivery entirely and always verifies with `OTP_BYPASS_CODE` (dev: `123456`). Rate limits, hashing, and the OTP record flow still apply. Set `OTP_BYPASS_ENABLED=false` in production.
+**YourBulkSMS config** (`.env` / `render.yaml`): `YOURBULKSMS_AUTHKEY` (secret, sync:false), `YOURBULKSMS_SENDER_ID=URBLKM`, `YOURBULKSMS_DLT_TE_ID` (registered template ID, currently `1707163456288183577`), `YOURBULKSMS_ROUTE=2`, `YOURBULKSMS_COUNTRY=0`, `YOURBULKSMS_OTP_TEMPLATE` (must match the registered DLT template byte-for-byte after `{code}` substitution; template `1707163456288183577` = `Your OwnMyPin OTP is {#var#}`).
+
+> ⚠️ **DLT placeholder gotcha (open):** the registered template currently ends at `{#var#}` (variable = last char) which fails operator matching with "Template not Matched" (633/5307). Fix = register a template with fixed text after the variable, e.g. `Your OwnMyPin OTP is {#var#}. Valid for 5 minutes. Do not share it.`, update `YOURBULKSMS_DLT_TE_ID` + `YOURBULKSMS_OTP_TEMPLATE` accordingly, then the code reaches the phone.
 
 ### POST /api/auth/verify-otp — verify OTP, get tokens
 Public. Creates the user on first login. Max 3 attempts per OTP.
@@ -173,6 +175,32 @@ Requires Bearer. Unknown fields → 400. Empty body → 400.
 
 ### DELETE /api/users/me — delete account (soft)
 Requires Bearer. Response **204** (empty). Revokes all sessions.
+
+### GET /api/users/me/trust-score — own trust score + breakdown (Bearer) [Phase 2]
+
+**Read-only** — the score is derived server-side and **never client-settable**; it is persisted only by the platform on admin approve/reject events (Module 7). POST/PATCH return 405.
+
+```jsonc
+// Response 200
+{ "success": true, "data": {
+  "score": 40, "maxScore": 100, "updatedAt": null,   // updatedAt = last admin recalc (null if never recalced)
+  "factors": [
+    { "code": "VERIFIED_PROPERTY", "label": "Verified property", "points": 0, "units": 0, "details": "0 / 3", "applied": false },
+    { "code": "VERIFIED_BUSINESS", "label": "Verified business", "points": 20, "units": 1, "details": "1 / 2", "applied": true },
+    { "code": "BUSINESS_IMAGES",   "label": "Business photos",   "points": 5,  "units": 1, "details": "1 / 2", "applied": true },
+    { "code": "SELFIE_UPLOADED",   "label": "Identity selfie",   "points": 10, "units": 1, "details": "",      "applied": true },
+    { "code": "PROFILE_IMAGE",     "label": "Profile photo",     "points": 5,  "units": 1, "details": "",      "applied": true },
+    { "code": "ACCOUNT_AGE",       "label": "Account age",       "points": 0,  "units": 0, "details": "",      "applied": false }
+  ],
+  "penalties": [
+    { "code": "REJECTED_PROPERTY", "label": "Property verification rejected", "points": 0, "units": 0, "details": "0 / 2", "applied": false },
+    { "code": "REJECTED_BUSINESS", "label": "Business verification rejected", "points": 0, "units": 0, "details": "0 / 2", "applied": false }
+  ] } }
+```
+
+Rule table (single source: `trust-score.constants.ts`): `VERIFIED_PROPERTY` +15 (max 3), `VERIFIED_BUSINESS` +20 (max 2), `BUSINESS_IMAGES` +5 per verified business with ≥1 photo (max 2), `SELFIE_UPLOADED` +10, `PROFILE_IMAGE` +5, `ACCOUNT_AGE` alt 5/10/15/20 (30/90/180/365 days); penalties `REJECTED_PROPERTY`/`REJECTED_BUSINESS` −10 each (max 2 each; applies while the rejection is unresolved). **Total clamped to [0, 100].**
+
+`401 UNAUTHORIZED` without a valid access token.
 
 ---
 
@@ -423,7 +451,208 @@ Anyone can call this — it returns **no address, no personal data** (privacy-sa
 
 ---
 
-## 8. Common error codes (any endpoint)
+## 8. Search & Location (Phase 2)
+
+All search endpoints are **public** (no auth) except history, which requires Bearer.
+
+**Privacy rule (hard):** search results are *public projections* — for properties only the **DigiPin number + city/state** (never the full address, owner name, selfie, or media); businesses show **name/category/city/state** and only **VERIFIED + ACTIVE** businesses appear.
+
+**Pagination (all search/list endpoints):** `page` (1-based) + `pageSize` (1–100, default 20) → `{ items, total, page, pageSize }`.
+
+### GET /api/search — unified search (q + optional type)
+
+Query params: `q` (required, 1–200 chars), `type` (`digipin` | `address` | `business` | `all`, default `all`), `page`, `pageSize`.
+
+```jsonc
+// GET /api/search?q=WB&type=all
+{
+  "success": true,
+  "data": {
+    "items": [
+      { "kind": "property", "id": "cmsl...", "digipinId": "cmsl...", "digipinNumber": "WB105516",
+        "city": "Kolkata", "state": "West Bengal", "verificationStatus": "SUBMITTED",
+        "latitude": 22.5493, "longitude": 88.3566 },
+      { "kind": "business", "id": "cmsl...", "name": "Cafe Kolkata", "categoryName": "Cafe",
+        "city": "Kolkata", "state": "West Bengal", "verificationStatus": "VERIFIED",
+        "latitude": 22.56, "longitude": 88.36 }
+    ],
+    "total": 2, "page": 1, "pageSize": 20
+  }
+}
+```
+
+- `type=digipin` matches the DigiPin number only; `type=address` matches address/city/state/pincode; `type=all` matches number **OR** address fields (properties first, then businesses).
+- Only submitted properties (rows with a DigiPin) are searchable.
+- `400 VALIDATION_ERROR` if `q` is missing or `pageSize > 100`.
+
+### GET /api/search/nearby — combined nearby (properties + businesses)
+
+Query params: `lat`, `lng` (required), `radiusKm` (0.1–100, default 5), `page`, `pageSize`.
+
+Uses **stored coordinates (haversine)** — no geocoder call at query time. Results sorted by distance; each item gains `distanceMeters` (rounded int). `total` = matches within the radius.
+
+```jsonc
+{ "success": true, "data": {
+    "items": [ { "kind": "property", "digipinNumber": "UP499807", "distanceMeters": 342, "...": "" } ],
+    "total": 1, "page": 1, "pageSize": 20 } }
+```
+
+### GET /api/locations/nearby — radius search by type
+
+Same as `/api/search/nearby` plus an explicit `type` param: `property` | `business` | `all` (default `all`).
+
+### GET /api/search/history — the user's recent searches (Bearer)
+
+Returns the current user's search history, newest first, **pruned to the last 50** per user.
+
+```jsonc
+{ "success": true, "data": {
+    "items": [ { "id": "cmso...", "query": "Varanasi", "type": "address", "createdAt": "2026-08-11T10:27:36.905Z" } ],
+    "total": 1, "page": 1, "pageSize": 20 } }
+```
+
+### POST /api/search/history — record a search (Bearer)
+
+```jsonc
+// Request
+{ "query": "Varanasi", "type": "address" }   // type optional (default all)
+
+// Response 201
+{ "success": true, "data": { "id": "cmso...", "query": "Varanasi", "type": "address", "createdAt": "2026-08-11T10:27:36.905Z" } }
+```
+
+`401 UNAUTHORIZED` for all history calls without a valid access token.
+
+---
+
+## 9. Business & Categories (Phase 2)
+
+**Visibility rule (hard):** a business is publicly visible **only when VERIFIED + ACTIVE**. Directory/list cards and the public detail carry basic info only; the public **detail** additionally exposes contact (phone/email) once VERIFIED + ACTIVE. Owners always see their own business (full detail) at any status. **No-existence-leak:** a non-verified business requested by a non-owner returns the same `404 BUSINESS_NOT_FOUND` as a missing id.
+
+**Statuses:** `verificationStatus` = `PENDING` (new) → `UNDER_REVIEW` (via verification-request) → `VERIFIED` | `REJECTED` (admin, Module 7); `status` = `ACTIVE` | `SUSPENDED`. Users can **never** set `verificationStatus`/`ownerUserId` (rejected by strict schema + service guard).
+
+**Pagination** (all list endpoints): `page` + `pageSize` (1–100, default 20) → `{ items, total, page, pageSize }`.
+
+### POST /api/businesses — create a business (Bearer, USER)
+
+Body: `name` (required), `categoryId` (required, active category), `subcategoryId` (optional), `description`, `address`, `city`, `state`, `pincode`, `latitude`, `longitude`, `contactPhone`, `contactEmail`, `website`, `openingHours`, `socialLinks`. Creates a **PENDING + ACTIVE** business owned by the current user. Category must be active and (if given) the subcategory must belong to the selected category → else `400 VALIDATION_ERROR`.
+
+```jsonc
+// Response 201
+{ "success": true, "data": {
+  "id": "cmsolam...", "name": "Ganga Cafe", "verificationStatus": "PENDING", "status": "ACTIVE",
+  "category": { "id": "cmsol7jyg...", "name": "Food & Dining" }, "subcategory": { "id": "cmsol7jzu...", "name": "Cafe" },
+  "city": "Varanasi", "state": "Uttar Pradesh", "latitude": 25.2884, "longitude": 83.0066, "..." : "" } }
+```
+
+### GET /api/businesses — public directory OR own list (public + mine=true)
+
+- Without `mine=true` → **public** directory: only VERIFIED + ACTIVE businesses, **never contact/address/images** (cards show name, city, state, status, coords, logo, category, subcategory). Filters: `q` (name/city/state), `categoryId`, `city`, `state`, `lat`+`lng`+`radiusKm` (0.1–100, distance-sorted with `distanceMeters`), pagination.
+- With `mine=true` → **Bearer USER**: the current user's businesses, each with **full detail** (contact + media) at any status.
+
+```jsonc
+// Public card
+{ "success": true, "data": { "items": [
+  { "id": "cmsolam...", "name": "Ganga Cafe", "city": "Varanasi", "state": "Uttar Pradesh",
+    "verificationStatus": "VERIFIED", "status": "ACTIVE", "latitude": 25.2884, "longitude": 83.0066,
+    "logoUrl": "/uploads/.../BUSINESS_LOGO/413f....png",
+    "category": { "id": "cmsol7jyg...", "name": "Food & Dining" }, "subcategory": { "id": "cmsol7jzu...", "name": "Cafe" } } ],
+  "total": 1, "page": 1, "pageSize": 20 } }
+```
+
+### GET /api/businesses/:id — public-safe detail (public via optionalAuth)
+
+- VERIFIED + ACTIVE → whoever: full detail **with contact** (phone/email) + media (images, logo) + category/subcategory.
+- NOT verified → **owner only** sees full detail; anyone else gets the same `404 BUSINESS_NOT_FOUND` as a missing id (no existence leak).
+
+### PATCH /api/businesses/:id — update own business (Bearer, USER owner)
+
+Body: any create field. `verificationStatus`/`ownerUserId` are **not** in the schema → `400 VALIDATION_ERROR`; a status transition attempt is additionally blocked by the service. Owner-only: another user's business → `404 BUSINESS_NOT_FOUND`.
+
+### POST /api/businesses/:id/verification-request — request admin review (Bearer, USER owner)
+
+Gate (400 `BUSINESS_INCOMPLETE` naming the missing fields): requires `name`, `categoryId`, `address`, `city`, `state`, ≥1 image, and a contact (phone or email). Allowed only from `PENDING`/`REJECTED` → `UNDER_REVIEW` (else `400 INVALID_STATUS_TRANSITION`). If the business has no coordinates, they are **geocoded** at this step (reuses the location module). Admin approval/rejection comes in Module 7.
+
+```jsonc
+// Response 200 — starts UNDER_REVIEW; coords geocoded if they were missing
+{ "success": true, "data": { "id": "cmsolam...", "verificationStatus": "UNDER_REVIEW", "status": "ACTIVE", "..." : "" } }
+```
+
+### GET /api/categories — active category tree (public)
+
+Top-level categories with their active subcategories (for the business form).
+
+```jsonc
+{ "success": true, "data": { "items": [
+  { "id": "cmsol7jyg...", "name": "Food & Dining", "subcategories": [
+    { "id": "cmsol7jzu...", "name": "Cafe" } ] } ], "total": 6 } }
+```
+
+### Business media (Bearer, USER owner)
+
+- `POST /api/media/business-images` — multipart `file` + `businessId`; PNG/JPEG magic-byte validated; **max 5 images** per business (6th → `400 BUSINESS_IMAGE_LIMIT`). Response includes `id`, `fileId`, `url`, `order`.
+- `POST /api/media/business-logo` — multipart `file` + `businessId`; **single-slot** (replaces + deletes the previous logo file).
+- `DELETE /api/media/business-images/:businessImageId` — 204 on success; foreign/unknown → 404.
+
+---
+
+## 10. Notifications (Phase 2, USER-only)
+
+**All endpoints require Bearer (USER) and act on the CALLER's own notifications only.** Push is best-effort: an in-app `Notification` row is always the source of truth; `PUSH_PROVIDER` defaults to `console` (FCM drops in later).
+
+Notification shape `NotificationType` ∈ `BUSINESS_VERIFICATION | PROPERTY_VERIFICATION | SUBSCRIPTION | SYSTEM | ADMIN`:
+
+```jsonc
+{ "id": "cmsln...", "title": "Verification approved", "message": "Your business is live",
+  "type": "BUSINESS_VERIFICATION", "readStatus": false, "createdAt": "2026-08-11T..." }
+```
+
+### GET /api/notifications — list the caller's notifications (paginated, Bearer)
+
+Query: `page` + `pageSize` (1-100, default 20), optional `filter` = `all` | `read` | `unread` (default `all`).
+
+```jsonc
+// Response 200
+{ "success": true, "data": {
+  "items": [ /* Notification... */ ],
+  "total": 2, "unread": 1,           // unread tally = badge without a 2nd request
+  "page": 1, "pageSize": 20 } }
+```
+
+`401` without a valid token.
+
+### PATCH /api/notifications/:id/read — mark one read (Bearer)
+
+Owner-only + idempotent. A **foreign or missing** id returns the same `404 NOTIFICATION_NOT_FOUND` (no existence leak).
+
+```jsonc
+// Response 200
+{ "success": true, "data": { "id": "...", "title": "...", "message": "...", "type": "SYSTEM", "readStatus": true, "createdAt": "..." } }
+```
+
+### POST /api/notifications/read-all — mark all of the caller's notifications read (Bearer)
+
+```jsonc
+// Response 200
+{ "success": true, "data": { "updatedCount": 1 } }
+```
+
+### POST /api/notifications/device-token — register a push token (Bearer)
+
+Body: `fcmToken` (1-512), `platform` = `ANDROID | IOS | WEB`. Upserts by (user, fcmToken) — re-registering only refreshes the platform. **Self-registration only; there is no send-to-anyone route** (admin broadcast is Module 7).
+
+```jsonc
+// Response 201
+{ "success": true, "data": { "id": "cmsl...", "fcmToken": "fcm:...", "platform": "IOS", "createdAt": "..." } }
+```
+
+### DELETE /api/notifications/device-token?fcmToken=... — unregister (Bearer)
+
+**204** on success; `404 DEVICE_TOKEN_NOT_FOUND` if the token isn't registered for this user.
+
+---
+
+## 11. Common error codes (any endpoint)
 
 | Code | Status | Meaning |
 |---|---|---|
@@ -436,12 +665,13 @@ Anyone can call this — it returns **no address, no personal data** (privacy-sa
 | `INTERNAL_SERVER_ERROR` | 500 | Server bug — report it |
 
 Media-only: `EMPTY_BODY` 400, `INVALID_CONTENT_TYPE` 400, `FILE_REQUIRED` 400, `EMPTY_FILE` 400, `INVALID_FILE_TYPE` 400, `INVALID_FILE_KEY` 400, `FILE_TOO_LARGE` 413, `MALFORMED_UPLOAD` 400.
-Ownership: `MEDIA_NOT_FOUND` 404, `PROPERTY_NOT_FOUND` 404, `DIGIPIN_NOT_FOUND` 404, `QR_NOT_FOUND` 404, `USER_NOT_FOUND` 404.
+Ownership: `MEDIA_NOT_FOUND` 404, `PROPERTY_NOT_FOUND` 404, `DIGIPIN_NOT_FOUND` 404, `QR_NOT_FOUND` 404, `USER_NOT_FOUND` 404, `BUSINESS_NOT_FOUND` 404, `BUSINESS_IMAGE_NOT_FOUND` 404, `NOTIFICATION_NOT_FOUND` 404, `DEVICE_TOKEN_NOT_FOUND` 404.
 Account: `ACCOUNT_DISABLED` 403 (deactivated/deleted), `ACCOUNT_DELETED` 403.
+Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fields), `INVALID_STATUS_TRANSITION` 400, `BUSINESS_IMAGE_LIMIT` 400 (max 5), `CATEGORY_INVALID` 400.
 
 ---
 
-## 9. Suggested client flow (screens in order)
+## 12. Suggested client flow (screens in order)
 
 1. **Login screen** → `send-otp` → `verify-otp` → store both tokens → if `isNewUser`, show onboarding.
 2. **Profile** → `PATCH /api/users/me` after uploading `profile-image`.
@@ -455,10 +685,24 @@ Account: `ACCOUNT_DISABLED` 403 (deactivated/deleted), `ACCOUNT_DELETED` 403.
 
 ---
 
-## 10. Dev/test reference values
+## 13. Dev/test reference values
 
-- **API test lab (dev harness):** `http://localhost:3000/api-test.html` — same-origin page exercising every endpoint (bypass login, profile, media uploads, location verify with map + GPS auto-fill, property → DigiPin + QR). Serve of convenience, not part of the app.
+- **API test lab (dev harness):** `http://localhost:3000/api-test.html` — same-origin page exercising every endpoint (bypass login, profile, media uploads, location verify with map + GPS auto-fill, property → DigiPin + QR). Serve of convenience, not part of the app, **and not deployed** (gitignored).
 - Login mobile for existing account: `8090780908` (name "Anuraj", ACTIVE).
-- **OTP in dev:** bypass active for `8090780908` → fixed code `123456` (no SMS sent; real code also in the server log).
-- Live DigiPins in dev DB: `UP499807` (SUBMITTED), `UP725207` (SUBMITTED), `WB105516` (SUBMITTED).
-- Swagger spec: `GET /api/openapi.json` · Postman collection: `postman/ownmypin.postman_collection.json`.
+- **OTP in dev:** real SMS via YourBulkSMS only — dev bypass removed 2026-08-11 (`OTP_BYPASS_ENABLED=false`, bypass block commented out of `otp.service.ts`). `OTP_PROVIDER=yourbulksms`. ⚠️ Currently blocked: template `1707163456288183577` ends at `{#var#}` → operator rejects with "Template not Matched"; needs a template with fixed text after the variable. Until then `verify-otp` has no code to check.
+- Live DigiPins in dev DB: `UP499807` (SUBMITTED), `UP725207` (SUBMITTED), `WB105516` (SUBMITTED), `WB855216` (SUBMITTED), `UP617510` (SUBMITTED).
+- Swagger spec: `GET /api/openapi.json` (version 0.5.0) · Swagger UI: `/api/docs` · Postman collection: `postman/ownmypin.postman_collection.json`.
+
+---
+
+## 14. Deployment (Render) quick-start
+
+Deployed to **Render** today for Flutter-frontend testing. Blueprint: `render.yaml` in the repo (`buildCommand: npm run prisma:deploy && npm run seed:categories && npm run build`, `startCommand: npm start`, health check `GET /api/categories`). Full guide: `doc.md §26`.
+
+1. **Push repo** to GitHub — test files + harness are gitignored (`/src/tests/`, `vitest.config.ts`, `public/api-test.html`) and never deployed.
+2. **Render → New → Blueprint** → pick the repo → `render.yaml` auto-configures.
+3. **Fill required secrets** (first build fails without them): `DATABASE_URL` (external MySQL — Aiven/PlanetScale/etc., Render has none), `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `OTP_HASH_SALT`, `ADMIN_JWT_SECRET` — all distinct, ≥32 chars.
+4. **Flutter Web** → add your web origin to `CORS_ALLOWED_ORIGINS` (mobile apps are unaffected by CORS — no Origin header).
+5. **Base URL for the app:** `https://<your-app>.onrender.com`. Test login: real SMS OTP to the tester's mobile (bypass is removed). ⚠️ SMS blocked until the YourBulkSMS template placeholder issue is fixed (see §2 send-otp).
+
+**What is live:** Phase 1 + Phase 2 Modules 1–4 (Search, Business, Trust Score, Notifications). **What is NOT live yet:** Subscriptions/Payments + Badges (deferred to the end), Admin Panel (tomorrow). Until the admin panel ships, businesses can't be approved on Render — they stay `PENDING`/`UNDER_REVIEW` (owner-only visibility). Uploads live on a Render disk; without it they're ephemeral across redeploys.

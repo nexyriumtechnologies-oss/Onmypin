@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { ZodError, type ZodType } from "zod";
+import { ZodError, type ZodTypeAny, z } from "zod";
 import { logger } from "@/lib/logger";
 
 export class ApiError extends Error {
@@ -78,7 +78,7 @@ export async function readJsonBody<T>(req: NextRequest): Promise<T> {
 }
 
 /** Run a Zod schema against the body; on failure throw 400 with field details. */
-export function validateBody<T>(schema: ZodType<T>, body: unknown): T {
+export function validateBody<S extends ZodTypeAny>(schema: S, body: unknown): z.output<S> {
   try {
     return schema.parse(body);
   } catch (err) {

@@ -15,14 +15,18 @@ import { logger } from "@/lib/logger";
 export const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
 export const MAX_OTP_ATTEMPTS = 3;
 
-/** Dev bypass: when enabled, the bypass mobile gets no SMS and its fixed code always verifies. */
-function isOtpBypassEnabled(mobile: string): boolean {
-  return (
-    process.env.OTP_BYPASS_ENABLED === "true" &&
-    process.env.OTP_BYPASS_MOBILE === mobile
-  );
-}
-const OTP_BYPASS_CODE = process.env.OTP_BYPASS_CODE ?? "123456";
+/**
+ * Dev bypass removed on 2026-08-11 — real SMS (YourBulkSMS) is now the only path.
+ * Old behavior: when OTP_BYPASS_ENABLED=true and OTP_BYPASS_MOBILE matched, no SMS
+ * was sent and the fixed OTP_BYPASS_CODE always verified.
+ *   function isOtpBypassEnabled(mobile: string): boolean {
+ *     return (
+ *       process.env.OTP_BYPASS_ENABLED === "true" &&
+ *       process.env.OTP_BYPASS_MOBILE === mobile
+ *     );
+ *   }
+ *   const OTP_BYPASS_CODE = process.env.OTP_BYPASS_CODE ?? "123456";
+ */
 
 export async function isOtpExpired(expiresAt: Date, now = new Date()): Promise<boolean> {
   return expiresAt.getTime() < now.getTime();
@@ -68,11 +72,8 @@ export async function sendOtp(mobile: string, purpose = "AUTH"): Promise<void> {
     },
   });
 
-  if (isOtpBypassEnabled(mobile)) {
-    logger.info(`[OtpBypass] OTP for ${mobile}: ${code} (bypass — no SMS sent)`);
-  } else {
-    await getOtpProvider().sendOtp(mobile, code);
-  }
+  // Dev bypass removed 2026-08-11: always deliver via the real OTP provider.
+  await getOtpProvider().sendOtp(mobile, code);
   logger.info(`OTP generated for ${mobile} (${purpose})`);
 }
 
@@ -94,8 +95,7 @@ export async function verifyOtp(
   if (!canVerifyOtp(record)) {
     throw new ApiError(400, "OTP_EXPIRED", "OTP has expired or attempts exhausted. Request a new one");
   }
-  const bypassOk = isOtpBypassEnabled(mobile) && safeCompare(code, OTP_BYPASS_CODE);
-  if (!bypassOk && !safeCompare(record.otpHash, hashOtp(code))) {
+  if (!safeCompare(record.otpHash, hashOtp(code))) {
     await prisma.otpRecord.update({
       where: { id: record.id },
       data: { attempts: { increment: 1 } },

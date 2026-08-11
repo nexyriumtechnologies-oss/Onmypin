@@ -52,19 +52,32 @@ export class YourBulkSmsOtpProvider {
     }
 
     const body = await res.text();
-    // Success = a message id (digits). Error responses are non-numeric codes.
-    if (!res.ok || !/^\d+$/.test(body.trim())) {
+    const trimmed = body.trim();
+    // Success comes back as either a plain numeric message id or a JSON
+    // envelope like {"Status":"Success","Code":"000","Message-Id":"...","Description":"..."}.
+    let isSuccess = res.ok && /^\d+$/.test(trimmed);
+    let messageId: string | undefined;
+    if (!isSuccess && trimmed.startsWith("{")) {
+      try {
+        const parsed = JSON.parse(trimmed) as { Status?: string; "Message-Id"?: string; Code?: string };
+        isSuccess = res.ok && parsed?.Status === "Success";
+        messageId = parsed?.["Message-Id"];
+      } catch {
+        isSuccess = false;
+      }
+    }
+    if (!isSuccess) {
       logger.error("YourBulkSMS rejected the OTP", {
         status: res.status,
         response: body.slice(0, 300),
         otpProvider: "yourbulksms",
       });
-      throw new Error(`YourBulkSMS send failed (${body.trim().slice(0, 60)})`);
+      throw new Error(`YourBulkSMS send failed (${trimmed.slice(0, 60)})`);
     }
 
     logger.info(`[YourBulkSmsOtpProvider] OTP sent to ${mobile}`, {
       otpProvider: "yourbulksms",
-      messageId: body.trim(),
+      messageId: messageId ?? trimmed,
     });
   }
 }

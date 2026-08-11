@@ -1,0 +1,61 @@
+# Render Blueprint — OwnMyPin Backend
+# Deploy: push to GitHub, connect the repo in Render, this file auto-configures.
+# Required secrets (sync:false) MUST be filled in the Render dashboard under
+# Environment once the service is created — the first build will fail without them.
+#
+#   - DATABASE_URL      MySQL connection string (Render has no MySQL; use Aiven/PlanetScale/Railway)
+#   - JWT_ACCESS_SECRET / JWT_REFRESH_SECRET / OTP_HASH_SALT / ADMIN_JWT_SECRET
+#                       long random strings (openssl rand -hex 64), ALL distinct, min 32 chars
+#                       (the server refuses to boot otherwise)
+#
+# After creating the service, ADD your Flutter WEB origin to CORS_ALLOWED_ORIGINS
+# (mobile apps send no Origin header and are unaffected by CORS).
+
+services:
+  - type: web
+    name: ownmypin-api
+    runtime: node
+    plan: free
+    autoDeploy: true
+    buildCommand: npm run prisma:deploy && npm run seed:categories && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/categories
+    envVars:
+      # ---- required secrets (fill in dashboard) ----
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: OTP_HASH_SALT
+        sync: false
+      - key: ADMIN_JWT_SECRET
+        sync: false
+      # ---- OTP: real SMS only (dev bypass removed 2026-08-11) ----
+      - key: OTP_PROVIDER
+        value: yourbulksms
+      - key: YOURBULKSMS_AUTHKEY
+        sync: false
+      - key: YOURBULKSMS_SENDER_ID
+        value: "URBLKM"
+      - key: YOURBULKSMS_DLT_TE_ID
+        value: "1707163456288183577"
+      - key: YOURBULKSMS_ROUTE
+        value: "2"
+      - key: YOURBULKSMS_COUNTRY
+        value: "0"
+      - key: YOURBULKSMS_OTP_TEMPLATE
+        value: "Your OwnMyPin OTP is {code}"
+      - key: OTP_BYPASS_ENABLED
+        value: "false"
+      # ---- other config ----
+      - key: CORS_ALLOWED_ORIGINS
+        value: "http://localhost:3000"
+        sync: false
+      - key: STORAGE_LOCAL_DIR
+        value: "./public/uploads"
+    disk:
+      - name: uploads
+        mountPath: /opt/render/project/src/public/uploads
+        sizeGB: 1

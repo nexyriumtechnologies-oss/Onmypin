@@ -62,9 +62,11 @@ Cross-cutting rules:
 
 **OtpProvider interface** (`src/lib/otp/index.ts`): `sendOtp(mobile, code)`. Registered providers map (`console` + `yourbulksms` implemented; future SMS providers register without touching auth logic). `src/lib/otp/console.otp.provider.ts` logs the code to stdout in dev.
 
-**YourBulkSMS provider (2026-08-09)** — `src/lib/otp/yourbulksms.otp.provider.ts`: HTTP GET to `http://control.yourbulksms.com/api/sendhttp.php` with `authkey`, `mobiles=91<mobile>`, `message` (from `YOURBULKSMS_OTP_TEMPLATE` with `{code}` substituted), `sender`, `route=2`, `country=0`, `DLT_TE_ID`. Success = numeric message id in the response body; non-numeric body (e.g. `{"Status":"Failed","Code":"012",...}`) → logged + thrown (surfaces as 500 INTERNAL_SERVER_ERROR via the route handler). `OTP_PROVIDER="yourbulksms"` in `.env`; console stays the dev fallback.
+**YourBulkSMS provider (2026-08-09, live-verified 2026-08-11)** — `src/lib/otp/yourbulksms.otp.provider.ts`: HTTP GET to `http://control.yourbulksms.com/api/sendhttp.php` with `authkey`, `mobiles=91<mobile>`, `message` (from `YOURBULKSMS_OTP_TEMPLATE` with `{code}` substituted), `sender`, `route=2`, `country=0`, `DLT_TE_ID`. Success = a plain numeric message id **or** the JSON envelope `{"Status":"Success","Code":"000","Message-Id":...}` (both accepted since 2026-08-11); anything else → logged + thrown (surfaces as 500 INTERNAL_SERVER_ERROR via the route handler). `OTP_PROVIDER="yourbulksms"` in `.env`; console stays the dev fallback.
+- **Live results:** API now accepts sends (`Code: 000`) and SMS arrives on the phone once the message matches the registered DLT template exactly. Template IDs that didn't work: `4567123` ("template not found"). Working: `1707163456288183577` (title "testing", data `Your OwnMyPin OTP is {#var#}`).
+- ⚠️ **Open issue:** the OTP template ends at `{#var#}` (variable = last char) → operator returns "Template not Matched" (DLT 633/5307) for OTP sends. Register a template with fixed text after the variable (e.g. `Your OwnMyPin OTP is {#var#}. Valid for 5 minutes. Do not share it.`) to unblock real OTP delivery.
 
-**Dev OTP bypass (2026-08-09)** — `OTP_BYPASS_ENABLED=true` + `OTP_BYPASS_MOBILE` + `OTP_BYPASS_CODE` (default `123456`): the bypass mobile receives **no SMS** and its fixed code always verifies (rate limits, hashing and the OTP record flow are untouched). Server log prints the real generated code via `[OtpBypass]`. Disable before production.
+**Dev OTP bypass (2026-08-09 → REMOVED 2026-08-11)** — the `OTP_BYPASS_ENABLED`/`OTP_BYPASS_MOBILE`/`OTP_BYPASS_CODE` block in `src/modules/auth/otp.service.ts` is now **commented out**; real SMS (YourBulkSMS) is the only path. `.env` has `OTP_BYPASS_ENABLED=false`; `render.yaml` no longer uses the bypass.
 
 ## 5. Users (module: users)
 
@@ -154,7 +156,7 @@ Test data was deleted after verification (all tables clean).
 
 ## 13. TODOs / stubs for later phases
 
-1. Real OTP/SMS go-live — **YourBulkSMS provider implemented** (authkey + DLT sender `URBLKM` / template `4567123`); **blocked on the client enabling API access** (Code 012). See TODO.md §11 — Phase 1 gate before Phase 2.
+1. Real OTP/SMS go-live — **YourBulkSMS provider implemented**; API access now **enabled** by the client (2026-08-11), delivery verified live. Remaining blocker: DLT template placeholder (see §4 — template must have fixed text after the variable). See TODO.md §13.
 2. S3/GCS storage provider behind `StorageProvider` (`STORAGE_*`)
 3. Real Google Maps geocoding behind `Geocoder` (`GOOGLE_MAPS_API_KEY`)
 4. Redis-backed rate limiter behind `RateLimiter` (`RATE_LIMIT_BACKEND`)
@@ -355,7 +357,8 @@ Follow-up pass after Phase 1 sign-off. **No code regressions** — `tsc`/`lint` 
 ### 20.1 YourBulkSMS OTP provider
 - `src/lib/otp/yourbulksms.otp.provider.ts` (see §4) — real SMS delivery via `sendhttp.php`, DLT-compliant (`sender` + `DLT_TE_ID` + approved template).
 - Wired via the existing `OtpProvider` registry — zero auth-flow changes.
-- **Live test result**: the provider works end-to-end (request reaches the API and the JSON error is parsed correctly) but the account rejects auth: `{"Status":"Failed","Code":"012","Description":"You have not authorised to access API."}` — the client must enable API access / verify the authkey in the YourBulkSMS panel. Retest then; see TODO.md §11.
+- **Live test result (2026-08-09)**: the provider works end-to-end (request reaches the API and the JSON error is parsed correctly) but the account rejects auth: `{"Status":"Failed","Code":"012","Description":"You have not authorised to access API."}` — the client must enable API access / verify the authkey in the YourBulkSMS panel.
+- **Update (2026-08-11)**: API access enabled → live sends accepted (`Code: 000`); fixed the success check to accept the JSON envelope; SMS arrives when the message matches the DLT template. Template `4567123` → "template not found"; current template `1707163456288183577` ends at `{#var#}` → "Template not Matched" — fix in TODO.md §13.
 
 ### 20.2 Dev OTP bypass
 - `OTP_BYPASS_ENABLED/MOBILE/CODE` — bypass mobile receives no SMS; its fixed code always verifies. Verified live: send-otp 200 → verify-otp 200 → tokens issued (user `8090780908`).
@@ -369,3 +372,134 @@ Follow-up pass after Phase 1 sign-off. **No code regressions** — `tsc`/`lint` 
 
 ### 20.4 API test lab
 - `public/api-test.html` — same-origin dev harness exercising every endpoint (bypass login, profile, media uploads, location verify with Leaflet map + GPS auto-fill via reverse-geocode, property draft→submit→DigiPin+QR, QR verify). Not part of the app; harmless dev tool.
+
+## 21. Phase 2 — Milestone 2: Core Features & Admin Panel (plan, 2026-08-11)
+
+Per the signed SOW Milestone 2 scope. **Workflow (user directive):** one module at a time → implement → unit tests → E2E → update `API_REFERENCE.md` + `doc.md` → mark done in TODO.md → compact chat → next module. Module order in TODO.md §12.
+
+### 21.1 Schema foundation (one migration — `12.0.1`)
+- New models: `SearchHistory`, `Business`, `BusinessImage`, `BusinessCategory`, `SubscriptionPlan`, `Subscription`, `Transaction`, `Notification`, `AdminUser`.
+- `User` gains `trustScore Int @default(0)` + `trustScoreUpdatedAt DateTime?`.
+- `MediaPurpose` += `BUSINESS_IMAGE`, `BUSINESS_LOGO`.
+- New enums: `BusinessVerificationStatus` (PENDING/UNDER_REVIEW/VERIFIED/REJECTED/SUSPENDED), `BusinessStatus` (ACTIVE/INACTIVE), `NotificationType`, `SubscriptionTier` (FREE/BASIC/PREMIUM), `SubscriptionStatus` (ACTIVE/EXPIRED/CANCELLED), `TransactionType` (SUBSCRIPTION/OTHER), `TransactionStatus` (PENDING/SUCCESS/FAILED/REFUNDED), `AdminRole` (SUPER_ADMIN/ADMIN/VERIFICATION_ADMIN/CONTENT_ADMIN/FINANCE_ADMIN).
+- Phase 1 tables remain untouched; new tables follow the same conventions (cuid PKs, createdAt/updatedAt, `@@unique`/`@@index`, cascade like User/Property).
+
+### 21.2 New env vars (`12.0.2`)
+- `ADMIN_JWT_SECRET` (required ≥32, distinct — added to `assertSecureEnv`), `ADMIN_SEED_EMAIL`/`ADMIN_SEED_PASSWORD` (one-time SUPER_ADMIN seed), `PAYMENT_PROVIDER` (default `mock`), `PUSH_PROVIDER` (default `console`), `MOCK_PAYMENT_WEBHOOK_SECRET`. Razorpay/FCM keys documented as commented placeholders (live wiring later).
+
+### 21.3 Module 1 — Location & Search APIs (DONE — see §22)
+- `GET /api/locations/nearby`, `GET /api/search`, `GET /api/search/nearby`, `GET /api/search/history`, `POST /api/search/history`.
+- Search uses stored coordinates (haversine) — **no geocoder call at query time** (Nominatim rate-limit safety).
+- Privacy-safe results: DigiPin number + city/state only for properties; **never** full address, owner name, or media.
+- Businesses in public search are restricted to VERIFIED + ACTIVE.
+
+## 22. Phase 2 Module 1 — Search & Location (done, 2026-08-11)
+
+Implemented, unit-tested (9 search tests + 8 authorization-audit tests, 40/40 total), lint + typecheck clean, and functionally verified against the live dev server.
+
+### 22.1 Files
+- `src/modules/search/search.validation.ts` — Zod schemas + shared defaults (`DEFAULT_PAGE_SIZE=20`, `MAX_PAGE_SIZE=100`, `DEFAULT_RADIUS_KM=5`, `MAX_RADIUS_KM=100`).
+- `src/modules/search/search.service.ts` — `searchAll`, `searchNearby`, `propertyWhere`/`businessWhere`, `recordSearch`/`listSearchHistory`, public projections.
+- `src/lib/queryParams.ts` — `parseQueryParams`: URL query string → Zod `.strict()` validation (same 400 `VALIDATION_ERROR` shape as bodies).
+- Routes: `src/app/api/search/route.ts`, `src/app/api/search/nearby/route.ts`, `src/app/api/search/history/route.ts`, `src/app/api/locations/nearby/route.ts`.
+- `src/tests/search.test.ts` — privacy projections (no PII leak), where-clause builders, DigiPin-required gating.
+- `src/tests/authorization.test.ts` — **authorization audit suite** (user-addendum): PUBLIC routes never 401; USER routes 401 on missing/garbage token, 200/201 with a valid signed user JWT (prisma mocked); plus fs-based hard-boundary guards — no `/api/admin/*` routes yet, no non-admin verification-approval route, no trust-score/badges routes, no payments webhook until their modules add them WITH their own auth tests.
+- `src/middleware/errorHandler.ts` — `validateBody` re-typed to `z.output<S>` (fixes optional-field leakage from `.default()` schemas).
+
+### 22.2 Behavior notes
+- **Pagination:** `{ items, total, page, pageSize }`, default 20 / max 100. `searchAll` fills the page from properties first, then businesses; `total` = property + business counts.
+- **Nearby:** fetches candidate rows using stored coords only, computes `distanceMeters` in-app (reuses `distanceMeters` from the location module), filters to radius, sorts by distance, then paginates. No geocoder at query time.
+- **Privacy:** `projectPropertySearch` returns `null` for rows without a DigiPin; the property projection carries only `digipinId`/`digipinNumber`/`city`/`state`/`verificationStatus`/`latitude`/`longitude`. Business public projection: name/category/city/state + status + coords (contact info is Module 2's detail view, verification-gated).
+- **History:** `POST` records a term (prunes to the last 50 per user); `GET` lists newest-first, paginated.
+- **Bug found in E2E:** Prisma rejects `{ digiPin: { isNot: null, digipinNumber: { contains } } }` (can't mix relation filter with field filter) — nested `{ digiPin: { digipinNumber: { contains } } }` already implies existence. Fixed in `propertyWhere`.
+- **Verified live:** `GET /api/search?q=UP` → 3 results; `?type=digipin` WB → WB105516/WB855216; nearby at 25.31,82.97 → both Varanasi properties at distance 0; validation 400s (missing `q`, `pageSize>100`); history requires Bearer (401 without), record→201, list→200.
+- **Swagger:** all four routes annotated; tags Search + Location in `openapi.json` (version 0.2.0).
+- **Auth audit (user addendum, 2026-08-11):** `GET /api/search|nearby` PUBLIC, `GET|POST /api/search/history` USER — enforced and asserted in `authorization.test.ts`; ADMIN boundary deferred to Module 7 (no `/api/admin/*` routes exist yet — enforced by a fs-based guard).
+
+## 23. Phase 2 Module 2 — Business (done, 2026-08-11)
+
+Implemented, unit-tested (19 business tests + authorization suite extended, **59/59 across 7 files**), lint + typecheck clean, and functionally verified E2E against the live dev server on :3001.
+
+### 23.1 Files
+- `src/modules/business/business.validation.ts` — `createBusinessSchema`, `patchBusinessSchema` (deliberately **omits** `verificationStatus`/`ownerUserId` → strict Zod rejects them), `businessesListQuerySchema` (`mine`, `q`, `categoryId`, `city`, `state`, `lat/lng/radiusKm`, pagination).
+- `src/modules/business/business.service.ts` — core: `createBusiness`, `updateBusiness`, `getOwnedBusiness`, `getBusinessDetail`, `listMine`, `listPublicBusinesses` (radius via stored-coords haversine, `distanceMeters`), `requestVerification`, `attachBusinessImage` (cap 5), `setBusinessLogo` (single-slot), `removeBusinessImage`, `listActiveCategories`, projections (`projectBusinessDetail` includes contact — verification authorizes it public; `projectBusinessList` is contact/address/image-**free**).
+- `src/middleware/auth.ts` — added **`optionalAuth`**: returns `userId | null`, never throws; garbage/expired token degrades to anonymous so PUBLIC routes can't 401 on a stale token (used by `GET /api/businesses/:id`).
+- `src/modules/media/media.service.ts` — added `deleteMediaFileIfOwned(userId, fileId)` (silently ignores foreign/missing; used for logo-slot replacement).
+- Routes: `src/app/api/businesses/route.ts`, `src/app/api/businesses/[id]/route.ts`, `src/app/api/businesses/[id]/verification-request/route.ts`, `src/app/api/categories/route.ts`, `src/app/api/media/business-images/route.ts`, `src/app/api/media/business-logo/route.ts`, `src/app/api/media/business-images/[businessImageId]/route.ts` — all `@swagger`-annotated.
+- `scripts/seed-business-categories.mjs` + `npm run seed:categories` (idempotent via `findFirst` — name is **not** unique; `--env-file=.env`). Seeded 33 rows: 6 top-level categories + subs.
+- `src/tests/business.test.ts` — 19 tests: visibility/projection rules, where-public builder, category validation via mocked `$transaction`, public-safe 404s, PATCH lock (schema + service), verification gate + geocode trigger, category tree.
+
+### 23.2 Behavior & auth classification
+- **Visibility (hard rule):** public detail exposes contact **only** when VERIFIED + ACTIVE; directory/list cards never carry contact/address/images; owner always sees own business full-detail at any status; non-owner on non-verified or missing id → identical `404 BUSINESS_NOT_FOUND` (no existence leak).
+- **Lifecycle:** create → `PENDING + ACTIVE`; `verification-request` (only from PENDING/REJECTED → `UNDER_REVIEW`, else `400 INVALID_STATUS_TRANSITION`) with a completeness gate (`name/categoryId/address/city/state/≥1 image/contact`, insufficient → `400 BUSINESS_INCOMPLETE` naming fields); coordinates **geocoded** at this step if missing (reuses location `geocodeAddress` — users never type coords). Admin approve/reject arrives in Module 7.
+- **Image rules:** `POST business-images` pool capped at 5 (6th → `400 BUSINESS_IMAGE_LIMIT`); `POST business-logo` is a single slot (old owned file deleted); both magic-byte validated.
+- **Auth audit (extended):** PUBLIC = `GET /api/categories`, `GET /api/businesses` (no `mine=true`), `GET /api/businesses/:id` (optionalAuth; stale token → anonymous, still 200 for VERIFIED); USER = `POST/PATCH /api/businesses`, `GET ?mine=true`, `POST verification-request`, the three business-media routes. **No USER route can set approval state** (schema + service). fs-guard whitelists `includes("/verification-request/")` (routes include `/route.ts` in paths).
+- **Verified live E2E :3001:** create → 201 PENDING; image/logo uploads (201); verification request → UNDER_REVIEW (geocoded); public no-token → 404 (no leak); owner GET → 200; `mine=true` → full detail w/ logo+5 images; PATCH rename → 200; PATCH `verificationStatus` → `400 VALIDATION_ERROR`; no-token PATCH → 401; DELETE image → 204; **foreign-user** PATCH/GET → 404; 6th image → `400 BUSINESS_IMAGE_LIMIT`; bare business verification → `400 BUSINESS_INCOMPLETE`. After simulating admin approval via direct DB flip (VERIFIED+ACTIVE): public detail → 200 **with contact**, directory → contact-free card, `?q=ganga` + `/api/search/nearby` both surface it. Dev DB keeps sample **Ganga Cafe & Terrace** `cmsolam7u0004o08wvfdxp69m` (VERIFIED+ACTIVE).
+
+## 24. Phase 2 Module 3 — Trust Score (done, 2026-08-11)
+
+Implemented, unit-tested (**70/70 across 8 files**), lint + typecheck clean, and E2E-verified live.
+
+### 24.1 Files
+- `src/modules/trust-score/trust-score.constants.ts` — **the single rule table** (all numbers tunable here): `TRUST_SCORE_MAX=100`, `TRUST_SCORE_FLOOR=0`, positive factors `VERIFIED_PROPERTY +15 (max 3)`, `VERIFIED_BUSINESS +20 (max 2)`, `BUSINESS_IMAGES +5 (max 2)`, `SELFIE_UPLOADED +10`, `PROFILE_IMAGE +5`, `ACCOUNT_AGE` (band top 20) + `ACCOUNT_AGE_BANDS` (5/10/15/20 at 30/90/180/365 days); penalties `REJECTED_PROPERTY −10 (max 2)`, `REJECTED_BUSINESS −10 (max 2)`.
+- `src/modules/trust-score/trust-score.service.ts` — `computeTrustScore` (pure, DB-free, unit-tested), `getTrustScore` (read-only view), `recalculateTrustScore` (persists score+updatedAt; called by Module 7 admin approve/reject; NOT a route).
+- `src/app/api/users/me/trust-score/route.ts` — `@swagger`, GET only.
+- `src/tests/trust-score.test.ts` — 11 tests.
+
+### 24.2 Behavior & auth classification
+- **Derivation:** verified properties/businesses are counted from their `verificationStatus`; selfie from a `SELFIE` media file; profile photo from `User.profileImage`; account age from `User.createdAt`; penalties apply per **currently-rejected** property/business (drops when resubmitted/verified). Caps per factor; total clamped to `[0, 100]`.
+- **Read-only endpoint:** `GET /api/users/me/trust-score` derives live and NEVER writes (`updatedAt` = last admin recalc, `null` if never recalced). POST/PATCH → 405 (Next.js) and fs-guard in `authorization.test.ts` asserts the route file exports only `GET`. Score is NEVER client-settable; the only writer is `recalculateTrustScore` under Module 7.
+- **Auth audit:** endpoint added to `authorization.test.ts` USER_ROUTES (401 missing/garbage, 200 with valid JWT); the "no trust-score/badges routes" guard became a **positive read-only guard** for trust-score + still asserts badges have no routes (Module 6).
+- **Bug found in tests:** the DB mock returned the same value for the VERIFIED and REJECTED property counts → an invisible penalty leaked into assertions; fixed with per-`verificationStatus` mock implementations. Also `ApiError` carries `status` (not `statusCode`), and `ageInDays` is clock-sensitive — tests pinned the account-age band via an epoch `createdAt`.
+- **Verified live:** 401 without token / with garbage token; 200 with valid token → `score: 40` (1 VERIFIED business +20, business photos +5, selfie +10, profile +5; 0 verified properties, 0 penalties; account-age 0 for a few-days-old dev user) — exactly mirrors the Module 2 DB state; `updatedAt: null` confirms the GET never persisted; POST/PATCH → 405. OpenAPI: tag `Trust Score` + path present, version **0.4.0**.
+
+## 25. Phase 2 Module 4 — Notifications (done, 2026-08-11)
+
+Implemented, unit-tested (26), lint + typecheck clean, and live-E2E-verified (20/20). Config: `PUSH_PROVIDER` (default `console`; unknown values fail fast).
+
+### 25.1 Files
+- `src/modules/notifications/notifications.service.ts` — internal `createNotification(userId, title, message, type)` (row only, validates type, 404 on missing user), `listNotifications` (paginated + `filter` + unread tally), `markNotificationRead` (owner-only, idempotent), `markAllNotificationsRead`, `registerDeviceToken` / `removeDeviceToken` (self-scoped upsert/delete), `detectInvalidDeviceTokens` (stubbed → `[]`) + `removeInvalidTokens` + `pruneInvalidDeviceTokens`, `sendDevicePush` (per-token, collects failures), **`notifyUser`** (create row FIRST, then best-effort push — DB is source of truth; used by Modules 5/7 to wire real events).
+- `src/modules/notifications/push.provider.ts` — `PushProvider` interface (`send`), `ConsolePushProvider`, `getPushProvider()`.
+- `src/modules/notifications/notifications.validation.ts` — strict schemas (list query, register body, delete query).
+- Routes under `src/app/api/notifications/`: `route.ts` (GET), `read-all/route.ts` (POST), `[id]/read/route.ts` (PATCH), `device-token/route.ts` (POST/DELETE).
+- `src/tests/notifications.test.ts` — 26 tests (helper 4, list 3, mark-read 3, read-all 2, device-token 3, send-push 3, invalid-token 3, notifyUser 2, providers 3).
+
+### 25.2 Behavior & auth classification
+- **Self-service only:** every notification route acts on the caller's OWN notifications/tokens. `PATCH /:id/read` returns the identical `404 NOTIFICATION_NOT_FOUND` for foreign or missing ids (no existence leak). There is NO user route that sends/broadcasts a notification to anyone — admin broadcast is Module 7 (guarded in the suite).
+- **Push is fire-and-forget:** `notifyUser` persists the row first; a provider failure or missing device tokens never fails the event. `sendDevicePush` returns `{ sent, failed }` for observability. FCM will be a drop-in `PushProvider` plus real `detectInvalidDeviceTokens` (currently stub → `[]`).
+- **Auth audit (authorization.test.ts):** all 5 notification entries added to USER_ROUTES (401 missing/garbage, DEVICE-token 400/deletion 404 etc. covered in unit tests); valid-token acceptance extended with `GET /api/notifications` → 200 and `POST /api/notifications/device-token` → 201. New guard: notification routes must stay out of `/admin/`, no `broadcast|send|notify` flavored path in the user tree, and `device-token` must only reference register/remove helpers.
+- **Swagger gotcha fixed:** a multiline plain-YAML description on `GET /api/notifications` contained `(default: all)` → swagger-jsdoc dropped the whole path (semantic error, only that path missing while siblings parsed). Switched that description to a folded `>-` scalar — all 4 notification paths now emit.
+- **Verified live:** login via OTP bypass; no-token/garbage-token → 401 (INVALID_ACCESS_TOKEN for garbage); device-token register 201 + upsert platform refresh, DELETE 204, re-DELETE 404, bad platform 400; seeded 2 rows via Prisma → list 200 (total 2, unread 2), `?filter=read|unread` narrows, bogus filter 400; PATCH read → 200 readStatus true (missing/foreign id → identical 404); read-all → updatedCount 1, unread → 0; POST on GET-only collection → 405. OpenAPI **0.5.0**: tag Notifications + all 4 paths + `Notification` component schema (all confirmed via `GET /api/openapi.json`).
+
+## 26. Render deployment guide (Flutter-frontend testing, 2026-08-11)
+
+Deployed to Render today so the Flutter dev can test how far the backend is built. Render blueprint: `render.yaml` (this repo). `next build` verified passing; live E2E green on Modules 1–4.
+
+### 26.1 What is deployed vs. what is NOT yet
+- **Live:** full Phase 1 (auth/OTP, users, properties, DigiPin, QR, location, media) + Phase 2 Modules 1–4 (Search & Location, Business, Trust Score, Notifications).
+- **NOT yet:** Subscriptions/Payments + Badges (deferred to the end), Admin Panel (tomorrow, 2026-08-12). **Consequence:** on Render no admin exists yet, so businesses cannot be approved — they stay `PENDING`/`UNDER_REVIEW` and only the owner sees them. Trust score shows live-derived factors (admin recalc column stays `null`). Verification approval is the FIRST thing the admin panel unlocks tomorrow.
+- Tests + the `api-test.html` harness are gitignored and never deployed (`/src/tests/`, `vitest.config.ts`, `public/api-test.html`).
+
+### 26.2 One-click deploy (Render Blueprint)
+1. Push this repo to GitHub (test files already excluded).
+2. Render → New → Blueprint → select the repo → `render.yaml` auto-configures the service.
+3. After creation, fill in the **required secrets** under Environment (the first build fails without them):
+   - `DATABASE_URL` — MySQL connection string. Render does NOT host MySQL: use Aiven/PlanetScale/Railway or any reachable MySQL. Example: `mysql://user:pass@host:3306/ownmypin?connection_limit=5`
+   - `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `OTP_HASH_SALT`, `ADMIN_JWT_SECRET` — all **distinct**, ≥32 chars (`openssl rand -hex 64`). The server refuses to boot otherwise (`src/lib/env.ts`).
+4. Add your **Flutter Web** origin to `CORS_ALLOWED_ORIGINS` (comma-separated). Mobile/desktop apps send no `Origin` header → unaffected by CORS.
+5. Deploy. Build = `npm run prisma:deploy && npm run seed:categories && npm run build`; start = `npm start` (`next start`, auto-uses Render's `PORT`). Health check: `GET /api/categories`.
+
+### 26.3 Environment knobs used for this testing phase
+- `OTP_PROVIDER=yourbulksms` — real SMS (dev bypass removed 2026-08-11). Configure `YOURBULKSMS_AUTHKEY` (secret), `YOURBULKSMS_SENDER_ID=URBLKM`, `YOURBULKSMS_DLT_TE_ID` + `YOURBULKSMS_OTP_TEMPLATE` (must match the registered DLT template). ⚠️ SMS OTP still blocked by the template-placeholder issue (see §4) until the template is re-registered with fixed text after the variable.
+- `STORAGE_LOCAL_DIR=./public/uploads` + a 1 GB Render Disk mounted at `/opt/render/project/src/public/uploads` → uploads survive redeploys. **Without the disk, uploads are ephemeral (wiped on every redeploy)** — fine for early testing.
+- `PUSH_PROVIDER=console` (push is logged, not sent).
+
+### 26.4 From the Flutter app
+- Base URL: `https://<your-app>.onrender.com` (the health/Swagger surface is `/api/openapi.json`, docs UI at `/api/docs`).
+- Login = `POST /api/auth/send-otp` → `POST /api/auth/verify-otp` (see API_REFERENCE.md §1–2). Each tester uses their own mobile; OTP is delivered via real SMS once the DLT template is fixed.
+- Rate limits apply (`RATE_LIMIT_BACKEND=memory`); OTP route is mobile-first rate-limited (3 sends/mobile/10 min), so repeated test sends to one number throttle quickly.
+
+### 26.5 Notes / gotchas
+- `swagger-jsdoc` semantic YAML gotcha already fixed (folded `>-` descriptions) so all 4 notification paths emit in the deployed spec.
+- `.env` is gitignored; `render.yaml` holds non-secret values only. Secrets live in the Render dashboard.
+- `next build` was run and passed locally (17.6 s) before this guide was written.
