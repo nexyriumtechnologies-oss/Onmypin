@@ -56,11 +56,11 @@ Public. Sends a 6-digit OTP to the mobile. Rate limited: 3 sends/mobile/10 min +
 | Bad mobile / unknown field | 400 | `VALIDATION_ERROR` |
 | Too many requests | 429 | `RATE_LIMITED` |
 
-> Dev note: OTP is delivered by **YourBulkSMS** (`OTP_PROVIDER=yourbulksms`) as the only path — the old console/dev bypass was removed on 2026-08-11. The SMS text is the approved DLT template from `YOURBULKSMS_OTP_TEMPLATE` with `{code}` substituted for the 6 digits. With the `console` provider the OTP is printed in the server log instead (`[ConsoleOtpProvider] OTP for <mobile>: 123456`).
+> Dev note: OTP is delivered by **YourBulkSMS** (`OTP_PROVIDER=yourbulksms`) with a **dev bypass** re-enabled on 2026-08-12 for the pre-approval Flutter-testing phase: for `OTP_BYPASS_MOBILE` (dev: `8090780908`) no SMS is sent and `OTP_BYPASS_CODE` (dev: `123456`) always verifies. With the `console` provider the OTP is printed in the server log instead (`[ConsoleOtpProvider] OTP for <mobile>: 123456`).
 
-**YourBulkSMS config** (`.env` / `render.yaml`): `YOURBULKSMS_AUTHKEY` (secret, sync:false), `YOURBULKSMS_SENDER_ID=URBLKM`, `YOURBULKSMS_DLT_TE_ID` (registered template ID, currently `1707163456288183577`), `YOURBULKSMS_ROUTE=2`, `YOURBULKSMS_COUNTRY=0`, `YOURBULKSMS_OTP_TEMPLATE` (must match the registered DLT template byte-for-byte after `{code}` substitution; template `1707163456288183577` = `Your OwnMyPin OTP is {#var#}`).
+**YourBulkSMS config** (`.env` / `render.yaml`): `YOURBULKSMS_AUTHKEY` (secret, sync:false), `YOURBULKSMS_SENDER_ID=URBLKM`, `YOURBULKSMS_DLT_TE_ID` (registered template ID, currently `1707163456288183577`), `YOURBULKSMS_ROUTE=2`, `YOURBULKSMS_COUNTRY=0`, `YOURBULKSMS_OTP_TEMPLATE` (pending-approved **Option A** message with `{code}` substitution: `Dear User, Your OwnMyPin OTP is {code}. It is valid for 5 minutes. Please do not share it with anyone. - OwnMyPin`). The SMS text must match the registered DLT template after substitution.
 
-> ⚠️ **DLT placeholder gotcha (open):** the registered template currently ends at `{#var#}` (variable = last char) which fails operator matching with "Template not Matched" (633/5307). Fix = register a template with fixed text after the variable, e.g. `Your OwnMyPin OTP is {#var#}. Valid for 5 minutes. Do not share it.`, update `YOURBULKSMS_DLT_TE_ID` + `YOURBULKSMS_OTP_TEMPLATE` accordingly, then the code reaches the phone.
+> ⚠️ **DLT approval pending (post-MVP deploy):** the current registered template ends at `{#var#}` → operator rejects OTP sends with "Template not Matched". The **Option A** message above is what gets registered with the DLT provider once the MVP is live; until then the dev bypass above is the auth path. After approval: update `YOURBULKSMS_DLT_TE_ID` + `YOURBULKSMS_OTP_TEMPLATE` and set `OTP_BYPASS_ENABLED=false`.
 
 ### POST /api/auth/verify-otp — verify OTP, get tokens
 Public. Creates the user on first login. Max 3 attempts per OTP.
@@ -689,7 +689,7 @@ Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fi
 
 - **API test lab (dev harness):** `http://localhost:3000/api-test.html` — same-origin page exercising every endpoint (bypass login, profile, media uploads, location verify with map + GPS auto-fill, property → DigiPin + QR). Serve of convenience, not part of the app, **and not deployed** (gitignored).
 - Login mobile for existing account: `8090780908` (name "Anuraj", ACTIVE).
-- **OTP in dev:** real SMS via YourBulkSMS only — dev bypass removed 2026-08-11 (`OTP_BYPASS_ENABLED=false`, bypass block commented out of `otp.service.ts`). `OTP_PROVIDER=yourbulksms`. ⚠️ Currently blocked: template `1707163456288183577` ends at `{#var#}` → operator rejects with "Template not Matched"; needs a template with fixed text after the variable. Until then `verify-otp` has no code to check.
+- **OTP in dev:** bypass active for `8090780908` → fixed code `123456` (no SMS sent; server does NOT log the code — Flutter dev uses `123456` via the API only). Re-enabled 2026-08-12 so the Flutter app can test before the DLT template is approved post-deploy. On Render the bypass stays ON during the Flutter-testing phase (same mobile/code).
 - Live DigiPins in dev DB: `UP499807` (SUBMITTED), `UP725207` (SUBMITTED), `WB105516` (SUBMITTED), `WB855216` (SUBMITTED), `UP617510` (SUBMITTED).
 - Swagger spec: `GET /api/openapi.json` (version 0.5.0) · Swagger UI: `/api/docs` · Postman collection: `postman/ownmypin.postman_collection.json`.
 
@@ -703,6 +703,6 @@ Deployed to **Render** today for Flutter-frontend testing. Blueprint: `render.ya
 2. **Render → New → Blueprint** → pick the repo → `render.yaml` auto-configures.
 3. **Fill required secrets** (first build fails without them): `DATABASE_URL` (external MySQL — Aiven/PlanetScale/etc., Render has none), `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `OTP_HASH_SALT`, `ADMIN_JWT_SECRET` — all distinct, ≥32 chars.
 4. **Flutter Web** → add your web origin to `CORS_ALLOWED_ORIGINS` (mobile apps are unaffected by CORS — no Origin header).
-5. **Base URL for the app:** `https://<your-app>.onrender.com`. Test login: real SMS OTP to the tester's mobile (bypass is removed). ⚠️ SMS blocked until the YourBulkSMS template placeholder issue is fixed (see §2 send-otp).
+5. **Base URL for the app:** `https://<your-app>.onrender.com`. Test login: `8090780908` / `123456` (OTP bypass ON for this phase; will flip to real SMS after DLT template approval).
 
 **What is live:** Phase 1 + Phase 2 Modules 1–4 (Search, Business, Trust Score, Notifications). **What is NOT live yet:** Subscriptions/Payments + Badges (deferred to the end), Admin Panel (tomorrow). Until the admin panel ships, businesses can't be approved on Render — they stay `PENDING`/`UNDER_REVIEW` (owner-only visibility). Uploads live on a Render disk; without it they're ephemeral across redeploys.

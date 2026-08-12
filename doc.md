@@ -64,9 +64,9 @@ Cross-cutting rules:
 
 **YourBulkSMS provider (2026-08-09, live-verified 2026-08-11)** — `src/lib/otp/yourbulksms.otp.provider.ts`: HTTP GET to `http://control.yourbulksms.com/api/sendhttp.php` with `authkey`, `mobiles=91<mobile>`, `message` (from `YOURBULKSMS_OTP_TEMPLATE` with `{code}` substituted), `sender`, `route=2`, `country=0`, `DLT_TE_ID`. Success = a plain numeric message id **or** the JSON envelope `{"Status":"Success","Code":"000","Message-Id":...}` (both accepted since 2026-08-11); anything else → logged + thrown (surfaces as 500 INTERNAL_SERVER_ERROR via the route handler). `OTP_PROVIDER="yourbulksms"` in `.env`; console stays the dev fallback.
 - **Live results:** API now accepts sends (`Code: 000`) and SMS arrives on the phone once the message matches the registered DLT template exactly. Template IDs that didn't work: `4567123` ("template not found"). Working: `1707163456288183577` (title "testing", data `Your OwnMyPin OTP is {#var#}`).
-- ⚠️ **Open issue:** the OTP template ends at `{#var#}` (variable = last char) → operator returns "Template not Matched" (DLT 633/5307) for OTP sends. Register a template with fixed text after the variable (e.g. `Your OwnMyPin OTP is {#var#}. Valid for 5 minutes. Do not share it.`) to unblock real OTP delivery.
+- **Open issue (blocked until DLT approval):** registered template `1707163456288183577` (title "testing", data `Your OwnMyPin OTP is {#var#}`) ends at the variable → operator returns "Template not Matched". **Planned message (Option A, to register after MVP deploy):** `Dear User, Your OwnMyPin OTP is {#var#}. It is valid for 5 minutes. Please do not share it with anyone. - OwnMyPin`. Until approval, the **dev bypass** (§4, `OTP_BYPASS_ENABLED=true`) covers Flutter testing — send-otp returns 200, code `123456` verifies for mobile `8090780908`.
 
-**Dev OTP bypass (2026-08-09 → REMOVED 2026-08-11)** — the `OTP_BYPASS_ENABLED`/`OTP_BYPASS_MOBILE`/`OTP_BYPASS_CODE` block in `src/modules/auth/otp.service.ts` is now **commented out**; real SMS (YourBulkSMS) is the only path. `.env` has `OTP_BYPASS_ENABLED=false`; `render.yaml` no longer uses the bypass.
+**Dev OTP bypass (re-enabled 2026-08-12 for the Flutter testing phase)** — `OTP_BYPASS_ENABLED=true` + `OTP_BYPASS_MOBILE` + `OTP_BYPASS_CODE`: the bypass mobile receives **no SMS** and its fixed code always verifies (rate limits, hashing and the OTP record flow are untouched). Real-SMS approval requires the DLT template to be registered AFTER the MVP deploy, so the bypass stays ON until then; flip `OTP_BYPASS_ENABLED=false` (and point `YOURBULKSMS_DLT_TE_ID` at the approved template) once the live template is approved. Was removed on 2026-08-11 then restored for this phase.
 
 ## 5. Users (module: users)
 
@@ -490,13 +490,13 @@ Deployed to Render today so the Flutter dev can test how far the backend is buil
 5. Deploy. Build = `npm run prisma:deploy && npm run seed:categories && npm run build`; start = `npm start` (`next start`, auto-uses Render's `PORT`). Health check: `GET /api/categories`.
 
 ### 26.3 Environment knobs used for this testing phase
-- `OTP_PROVIDER=yourbulksms` — real SMS (dev bypass removed 2026-08-11). Configure `YOURBULKSMS_AUTHKEY` (secret), `YOURBULKSMS_SENDER_ID=URBLKM`, `YOURBULKSMS_DLT_TE_ID` + `YOURBULKSMS_OTP_TEMPLATE` (must match the registered DLT template). ⚠️ SMS OTP still blocked by the template-placeholder issue (see §4) until the template is re-registered with fixed text after the variable.
+- `OTP_PROVIDER=yourbulksms` + **bypass ON** (`OTP_BYPASS_ENABLED=true`, `OTP_BYPASS_MOBILE=8090780908`, `OTP_BYPASS_CODE=123456`) → testers log in with mobile `8090780908` + code `123456` (no SMS). Swapped to real SMS once the DLT template (Option A) is approved after deploy; then configure `YOURBULKSMS_AUTHKEY`, `YOURBULKSMS_DLT_TE_ID` + `YOURBULKSMS_OTP_TEMPLATE` and set bypass `false`.
 - `STORAGE_LOCAL_DIR=./public/uploads` + a 1 GB Render Disk mounted at `/opt/render/project/src/public/uploads` → uploads survive redeploys. **Without the disk, uploads are ephemeral (wiped on every redeploy)** — fine for early testing.
 - `PUSH_PROVIDER=console` (push is logged, not sent).
 
 ### 26.4 From the Flutter app
 - Base URL: `https://<your-app>.onrender.com` (the health/Swagger surface is `/api/openapi.json`, docs UI at `/api/docs`).
-- Login = `POST /api/auth/send-otp` → `POST /api/auth/verify-otp` (see API_REFERENCE.md §1–2). Each tester uses their own mobile; OTP is delivered via real SMS once the DLT template is fixed.
+- Test creds: `8090780908` / `123456`. Login = `POST /api/auth/send-otp` → `POST /api/auth/verify-otp` (see API_REFERENCE.md §1–2). Bypass sends no SMS; the fixed code verifies while `OTP_BYPASS_ENABLED=true` (until the DLT template is approved).
 - Rate limits apply (`RATE_LIMIT_BACKEND=memory`); OTP route is mobile-first rate-limited (3 sends/mobile/10 min), so repeated test sends to one number throttle quickly.
 
 ### 26.5 Notes / gotchas
