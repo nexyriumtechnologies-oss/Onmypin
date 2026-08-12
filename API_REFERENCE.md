@@ -705,4 +705,259 @@ Deployed to **Render** today for Flutter-frontend testing. Blueprint: `render.ya
 4. **Flutter Web** → add your web origin to `CORS_ALLOWED_ORIGINS` (mobile apps are unaffected by CORS — no Origin header).
 5. **Base URL for the app:** `https://<your-app>.onrender.com`. Test login: `8090780908` / `123456` (OTP bypass ON for this phase; will flip to real SMS after DLT template approval).
 
-**What is live:** Phase 1 + Phase 2 Modules 1–4 (Search, Business, Trust Score, Notifications). **What is NOT live yet:** Subscriptions/Payments + Badges (deferred to the end), Admin Panel (tomorrow). Until the admin panel ships, businesses can't be approved on Render — they stay `PENDING`/`UNDER_REVIEW` (owner-only visibility). Uploads live on a Render disk; without it they're ephemeral across redeploys.
+**What is live:** Phase 1 + Phase 2 Modules 1–4 (Search, Business, Trust Score, Notifications). **Module 7 Admin Panel: code complete, E2E pending** — all routes are built and lint-clean; `npm run admin:seed` seeds the first SUPER_ADMIN. Subscriptions/Payments + Badges remain deferred. Until the E2E pass is complete and Render is redeployed, businesses still can't be approved on Render. Uploads live on a Render disk; without it they're ephemeral across redeploys.
+
+---
+
+## 12. Admin Panel
+
+> **Separate URL prefix:** `/admin/*` — NOT `/api/admin/*`. Admin tokens use `ADMIN_JWT_SECRET` and are completely isolated from user tokens.
+
+### 12.1 Admin Token Flow
+
+```
+1. POST /admin/auth/login → { admin, accessToken, refreshToken }
+2. Use:  Authorization: Bearer <accessToken>   (15 min)
+3. POST /admin/auth/refresh { refreshToken } → new { accessToken, refreshToken }  (rotate)
+4. POST /admin/auth/logout  { refreshToken } → 204
+```
+
+**Rate limits on login:** 5 attempts / email / 15 min + 15 attempts / IP / 15 min.
+
+**First-time setup:** run `npm run admin:seed` (or `node scripts/seed-admin.mjs`) to create the first SUPER_ADMIN from `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD` in `.env`. Idempotent — safe to run multiple times.
+
+### 12.2 Roles & Capabilities
+
+| Role | Who |
+|---|---|
+| `SUPER_ADMIN` | Full access to everything |
+| `ADMIN` | Users, dashboard, digipins, businesses (read), broadcast — no verification or finance |
+| `VERIFICATION_ADMIN` | View + approve/reject properties and businesses only |
+| `CONTENT_ADMIN` | Categories CRUD + broadcast only |
+| `FINANCE_ADMIN` | Plans CRUD + subscriptions/transactions view only |
+
+### 12.3 Auth Routes
+
+**`POST /admin/auth/login`** — Public, rate-limited
+```jsonc
+// Request
+{ "email": "admin@example.com", "password": "MyAdminPass123!" }
+
+// Response 200
+{
+  "success": true,
+  "data": {
+    "admin": { "id": "...", "email": "admin@example.com", "name": "Super Admin", "role": "SUPER_ADMIN" },
+    "accessToken": "eyJ...",
+    "refreshToken": "eyJ..."
+  }
+}
+
+// Errors
+401 INVALID_ADMIN_CREDENTIALS — wrong email or password
+401 ADMIN_INACTIVE          — account deactivated
+429 RATE_LIMITED            — too many attempts (includes retryAfterSeconds)
+```
+
+**`POST /admin/auth/refresh`** — Public
+```jsonc
+// Request
+{ "refreshToken": "eyJ..." }
+// Response: same shape as login (new tokens)
+// 401 INVALID_REFRESH_TOKEN / TOKEN_REUSE_DETECTED / REFRESH_TOKEN_EXPIRED
+```
+
+**`POST /admin/auth/logout`** — Requires admin token
+```jsonc
+// Request
+{ "refreshToken": "eyJ..." }
+// Response: 204 No Content
+```
+
+**`GET /admin/auth/me`** — Requires admin token
+```jsonc
+// Response 200
+{ "success": true, "data": { "id": "...", "email": "...", "name": "...", "role": "SUPER_ADMIN" } }
+```
+
+### 12.4 Admin Management (SUPER_ADMIN only)
+
+**`GET /admin/admins?page=1&pageSize=20`**
+```jsonc
+{ "admins": [ { "id": "...", "email": "...", "name": "...", "role": "ADMIN", "isActive": true, "createdAt": "..." } ],
+  "total": 3, "page": 1, "pageSize": 20, "totalPages": 1 }
+```
+
+**`POST /admin/admins`**
+```jsonc
+// Request
+{ "name": "Verif Admin", "email": "verif@example.com", "password": "TempPass123!",
+  "role": "VERIFICATION_ADMIN"  // SUPER_ADMIN | ADMIN | VERIFICATION_ADMIN | CONTENT_ADMIN | FINANCE_ADMIN
+}
+// 409 ADMIN_EMAIL_EXISTS
+```
+
+**`PATCH /admin/admins/:id`**
+```jsonc
+// Request (all optional)
+{ "role": "ADMIN", "isActive": false }
+// 400 CANNOT_DEACTIVATE_SELF
+// 400 LAST_SUPER_ADMIN — cannot demote or deactivate the only SUPER_ADMIN
+```
+
+### 12.5 Dashboard
+
+**`GET /admin/dashboard`** — requires `dashboard` capability
+```jsonc
+{
+  "users":    { "total": 42, "active": 40, "deactivated": 2, "newThisWeek": 5, "newThisMonth": 12 },
+  "digipins": { "total": 35, "verified": 28, "pending": 7 },
+  "businesses": { "total": 18, "verified": 10, "pending": 8 },
+  "subscriptions": { "activeCount": 0, "allTimeRevenue": 0, "thisMonthRevenue": 0 },
+  "recentActivity": {
+    "registrations": [ /* last 10 users */ ],
+    "transactions":  [ /* last 10 transactions */ ],
+    "broadcasts":    [ /* last 10 broadcasts */ ]
+  }
+}
+```
+
+### 12.6 User Management
+
+**`GET /admin/users`** — requires `users:read`
+Query: `page`, `pageSize`, `status` (ACTIVE|DEACTIVATED|DELETED), `search` (name/mobile/email), `sortBy`, `sortOrder`
+
+**`GET /admin/users/:id`** — requires `users:read`
+Returns full user profile including properties, businesses, notifications (last 10), subscriptions, and derived badges.
+
+**`PATCH /admin/users/:id/status`** — requires `users:manage`
+```jsonc
+{ "accountStatus": "DEACTIVATED" }  // or "ACTIVE"
+// Deactivating immediately revokes all user refresh tokens + sessions
+// 400 ACCOUNT_DELETED — can't modify deleted accounts
+```
+
+### 12.7 Property & DigiPin Management
+
+**`GET /admin/properties`** — requires `property:read`
+Query: `page`, `pageSize`, `verificationStatus`, `city`, `state`, `search`, `sortBy`, `sortOrder`
+
+**`GET /admin/properties/:id`** — requires `property:read`
+Returns property + DigiPin (incl. QR) + owner (name/mobile/email) + media files (PROPERTY_IMAGE + SELFIE).
+
+**`PATCH /admin/properties/:id/verification`** — requires `property:verify`
+```jsonc
+// Request
+{ "action": "APPROVE" }            // or "REJECT"
+{ "action": "REJECT", "reason": "Unclear selfie" }   // reason required for REJECT
+
+// APPROVE → sets verificationStatus=VERIFIED on property + DigiPin + triggers recalculateTrustScore + notifyUser
+// REJECT  → sets REJECTED + notifyUser with reason
+// 400 REASON_REQUIRED  — REJECT without reason
+// 400 INVALID_STATUS_TRANSITION — already VERIFIED
+```
+
+**`GET /admin/digipins`** — requires `digipin:read`
+Query: `page`, `pageSize`, `search`, `sortBy`, `sortOrder`
+
+**`PATCH /admin/digipins/:id/status`** — requires `digipin:status`
+```jsonc
+{ "status": "INACTIVE" }   // or "ACTIVE"
+```
+
+### 12.8 Business Management
+
+**`GET /admin/businesses`** — requires `business:read`
+Query: `page`, `pageSize`, `verificationStatus`, `categoryId`, `city`, `sortBy`, `sortOrder`
+
+**`GET /admin/businesses/:id`** — requires `business:read`
+Full detail including category, subcategory, all images, owner info.
+
+**`PATCH /admin/businesses/:id/verification`** — requires `business:verify`
+```jsonc
+{ "action": "APPROVE" }
+{ "action": "REJECT",   "reason": "Incomplete documents" }
+{ "action": "SUSPEND",  "reason": "Policy violation" }
+// APPROVE → VERIFIED + recalcTrustScore + notify
+// REJECT/SUSPEND → reason required + notify
+// 400 REASON_REQUIRED | INVALID_STATUS_TRANSITION
+```
+
+**`GET /admin/categories`** — requires `category:manage` — includes inactive categories
+
+**`POST /admin/categories`** — requires `category:manage`
+```jsonc
+{ "name": "Health & Wellness", "parentId": null, "order": 5 }
+// parentId = null → top-level; parentId = "<id>" → subcategory
+// 404 CATEGORY_NOT_FOUND if parentId invalid
+```
+
+**`PATCH /admin/categories/:id`** — requires `category:manage`
+```jsonc
+{ "name": "Healthcare", "order": 3, "isActive": false }
+```
+
+### 12.9 Subscription Plans & Finance
+
+**`GET /admin/subscription-plans`** — requires `plan:manage` — all plans incl. inactive
+
+**`POST /admin/subscription-plans`** — requires `plan:manage`
+```jsonc
+{ "name": "Business Pro", "tier": "PREMIUM", "price": 999, "durationDays": 30,
+  "features": { "maxListings": 5, "verifiedBadge": true }, "isActive": true }
+```
+
+**`PATCH /admin/subscription-plans/:id`** — requires `plan:manage`
+```jsonc
+{ "isActive": false }   // deactivating stops new purchases but doesn't cancel existing
+```
+
+**`GET /admin/subscriptions`** — requires `finance:view`
+Query: `page`, `pageSize`, `status`, `planId`, `userId`, `sortBy`, `sortOrder`
+
+**`GET /admin/transactions`** — requires `finance:view`
+Query: `page`, `pageSize`, `status`, `userId`, `dateFrom` (ISO), `dateTo` (ISO), `search` (paymentReference), `sortBy`, `sortOrder`
+
+### 12.10 Notifications & Broadcast
+
+**`POST /admin/notifications/send`** — requires `notify:broadcast`
+```jsonc
+// Target all active users
+{ "target": "ALL", "title": "New Feature!", "message": "Check out...", "type": "SYSTEM" }
+
+// Target a specific user
+{ "target": "USER", "userId": "<userId>", "title": "Your property was reviewed", "message": "...", "type": "PROPERTY_VERIFICATION" }
+
+// Target a segment
+{ "target": "SEGMENT", "segment": "BUSINESS_OWNERS",  "title": "...", "message": "...", "type": "SYSTEM" }
+{ "target": "SEGMENT", "segment": "VERIFIED_USERS",   "title": "...", "message": "...", "type": "SYSTEM" }
+
+// Response: the created Broadcast record incl. sentCount
+// 400 USER_ID_REQUIRED — target=USER without userId
+// 404 USER_NOT_FOUND  — target=USER with invalid userId
+```
+
+**Notification types:** `PROPERTY_VERIFICATION` | `BUSINESS_VERIFICATION` | `SUBSCRIPTION` | `PAYMENT` | `SYSTEM`
+
+**`GET /admin/notifications`** — requires `notify:broadcast`
+Query: `page`, `pageSize` — returns paginated **Broadcast** records (the admin-sent log), not individual user notifications.
+
+### 12.11 Error Code Reference (Admin-specific)
+
+| Code | Status | When |
+|---|---|---|
+| `MISSING_ADMIN_TOKEN` | 401 | No Authorization header on protected admin route |
+| `INVALID_ADMIN_TOKEN` | 401 | Token is invalid, expired, or not an admin token |
+| `ADMIN_INACTIVE` | 401 | Admin account has been deactivated |
+| `INSUFFICIENT_ADMIN_PERMISSIONS` | 403 | Token is valid but role lacks the required capability |
+| `INVALID_ADMIN_CREDENTIALS` | 401 | Wrong email or password on login |
+| `TOKEN_REUSE_DETECTED` | 401 | Refresh token was already used (family revoked) |
+| `REFRESH_TOKEN_EXPIRED` | 401 | Refresh token TTL has passed |
+| `ADMIN_EMAIL_EXISTS` | 409 | Creating admin with already-registered email |
+| `ADMIN_NOT_FOUND` | 404 | PATCH on non-existent admin id |
+| `CANNOT_DEACTIVATE_SELF` | 400 | Admin trying to deactivate their own account |
+| `LAST_SUPER_ADMIN` | 400 | Cannot demote or deactivate the only SUPER_ADMIN |
+| `REASON_REQUIRED` | 400 | REJECT/SUSPEND action without `reason` field |
+| `INVALID_STATUS_TRANSITION` | 400 | e.g. approving an already-VERIFIED item |
+| `USER_ID_REQUIRED` | 400 | Broadcast target=USER without userId |
+| `RATE_LIMITED` | 429 | Login rate limit hit (includes `retryAfterSeconds`) |

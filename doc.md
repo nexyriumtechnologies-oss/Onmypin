@@ -496,10 +496,121 @@ Deployed to Render today so the Flutter dev can test how far the backend is buil
 
 ### 26.4 From the Flutter app
 - Base URL: `https://<your-app>.onrender.com` (the health/Swagger surface is `/api/openapi.json`, docs UI at `/api/docs`).
-- Test creds: `8090780908` / `123456`. Login = `POST /api/auth/send-otp` → `POST /api/auth/verify-otp` (see API_REFERENCE.md §1–2). Bypass sends no SMS; the fixed code verifies while `OTP_BYPASS_ENABLED=true` (until the DLT template is approved).
-- Rate limits apply (`RATE_LIMIT_BACKEND=memory`); OTP route is mobile-first rate-limited (3 sends/mobile/10 min), so repeated test sends to one number throttle quickly.
+- Test creds: `8090780908` / `123456`. Login = `POST /api/auth/send-otp` → `POST /api/auth/verify-otp` (see API_REFERENCE.md §1–2). Bypass sends no SMS; the fixed code verifies while `O
+## 27. Phase 2 Module 7 — Admin Panel (code complete 2026-08-12, E2E pending)
 
-### 26.5 Notes / gotchas
-- `swagger-jsdoc` semantic YAML gotcha already fixed (folded `>-` descriptions) so all 4 notification paths emit in the deployed spec.
-- `.env` is gitignored; `render.yaml` holds non-secret values only. Secrets live in the Render dashboard.
-- `next build` was run and passed locally (17.6 s) before this guide was written.
+All service logic, route handlers, middleware, Zod schemas, seed script, lint fixes, and test suite are implemented. The `tsc --noEmit` is clean. Remaining: `npm test` confirmation, E2E live pass, OpenAPI bump, and doc/API_REFERENCE update.
+
+### 27.1 Architecture & Design Decisions
+
+- **Separate URL namespace:** Admin routes live under `/admin/*` (not `/api/admin/*`). This cleanly separates the admin surface from the user-facing API at the Next.js routing level.
+- **Dual JWT secret isolation:** `ADMIN_JWT_SECRET` is required ≥32 chars, distinct from `JWT_ACCESS_SECRET` + `JWT_REFRESH_SECRET`. A user token cannot be used on an admin route and vice versa.
+- **Capability-based RBAC (not role-level checks):** `requireAdminAuth(req, ["capability:name"])` checks the caller's capability set (derived from `adminPermissions.ts` role→capability map) rather than comparing roles directly. This means the same middleware works for all roles without if/else chains, and adding a new role just updates one map.
+- **Session family revocation:** Admin refresh tokens use the same pattern as user tokens — `AdminRefreshToken.sessionId` links tokens to a session; token reuse revokes the entire family via `updateMany({ where: { sessionId } })`.
+- **Last SUPER_ADMIN guardrail:** `updateAdmin` prevents demoting or deactivating the last active SUPER_ADMIN (checked at service layer, not route layer — always enforced regardless of how it's called).
+- **Trust score + notifications wired into verification:** `PATCH /admin/properties/:id/verification` and `PATCH /admin/businesses/:id/verification` call `recalculateTrustScore(userId)` and `notifyUser(...)` immediately after status update — no separate step needed.
+
+### 27.2 Files Delivered
+
+**Foundation (pre-existing, lint-cleaned 2026-08-12):**
+- `src/lib/adminPassword.ts` — scrypt hash/verify; removed unused `createHash` import
+- `src/lib/adminJwt.ts` — sign/verify access (15m) and refresh (7d) tokens
+- `src/lib/adminPermissions.ts` — central role→capability map (5 roles, 15 capabilities)
+- `src/middleware/adminAuth.ts` — `requireAdminAuth`, `optionalAdminAuth`, `withAdminAuth`; typed `AdminRole` casts replacing `as any`
+- `src/modules/admin/admin.validation.ts` — Zod schemas for all admin routes (strict)
+- `src/modules/admin/admin.auth.service.ts` — login/refresh/logout/me/createAdmin/listAdmins/updateAdmin; replaced `require("crypto")` with ES import, removed unused `getClientIp`, typed `AdminRole` casts
+- `src/modules/admin/admin.service.ts` — all service functions: dashboard aggregate, user CRUD, property/digipin/business verification, categories CRUD, subscription-plans CRUD, subscriptions/transactions list, broadcast fan-out; typed enum casts replacing 7× `as any`
+- `scripts/seed-admin.mjs` — idempotent SUPER_ADMIN seeder (`npm run admin:seed`)
+
+**Route handlers (`src/app/admin/`):**
+
+| Route | Handler | Capability |
+|---|---|---|
+| `POST /admin/auth/login` | rate-limited (5/email/15min + 15/IP/15min), public | — |
+| `POST /admin/auth/refresh` | token rotation + family revoke on reuse, public | — |
+| `POST /admin/auth/logout` | revoke token + session | auth |
+| `GET /admin/auth/me` | current admin profile | auth |
+| `GET /admin/admins` | paginated list | admins:manage |
+| `POST /admin/admins` | create admin | admins:manage |
+| `PATCH /admin/admins/:id` | change role/isActive | admins:manage |
+| `GET /admin/dashboard` | aggregate stats + recent activity | dashboard |
+| `GET /admin/users` | paginated, filter/search/sort | users:read |
+| `GET /admin/users/:id` | full profile + badges | users:read |
+| `PATCH /admin/users/:id/status` | activate/deactivate + revokeAllUserSessions | users:manage |
+| `GET /admin/properties` | paginated, filter verificationStatus/city/state/search | property:read |
+| `GET /admin/properties/:id` | full detail incl. media files | property:read |
+| `PATCH /admin/properties/:id/verification` | APPROVE/REJECT + recalcTrustScore + notify | property:verify |
+| `GET /admin/digipins` | paginated, search | digipin:read |
+| `PATCH /admin/digipins/:id/status` | activate/deactivate | digipin:status |
+| `GET /admin/businesses` | paginated, filter verificationStatus/category/city | business:read |
+| `GET /admin/businesses/:id` | full detail incl. images + owner | business:read |
+| `PATCH /admin/businesses/:id/verification` | APPROVE/REJECT/SUSPEND + recalcTrustScore + notify | business:verify |
+| `GET /admin/categories` | all categories incl. inactive | category:manage |
+| `POST /admin/categories` | create category/subcategory | category:manage |
+| `PATCH /admin/categories/:id` | edit name/order/isActive | category:manage |
+| `GET /admin/subscription-plans` | all plans incl. inactive | plan:manage |
+| `POST /admin/subscription-plans` | create plan | plan:manage |
+| `PATCH /admin/subscription-plans/:id` | edit/activate/deactivate | plan:manage |
+| `GET /admin/subscriptions` | paginated, filter status/plan/user | finance:view |
+| `GET /admin/transactions` | paginated, filter status/user/date/ref | finance:view |
+| `POST /admin/notifications/send` | broadcast ALL/USER/SEGMENT | notify:broadcast |
+| `GET /admin/notifications` | paginated broadcast history | notify:broadcast |
+
+**Lint fixes applied (2026-08-12):**
+- `adminPassword.ts` — removed unused `createHash`
+- `adminAuth.ts` — 2× `as any` → `as AdminRole`, added `import type { AdminRole }` from Prisma
+- `admin.auth.service.ts` — removed unused `getClientIp`, `require("crypto")` → `import { randomBytes } from "crypto"`, 2× `as any` → `as AdminRole`
+- `admin.service.ts` — added `AccountStatus`, `VerificationStatus`, `SubscriptionStatus`, `TransactionStatus` from Prisma; 7× `as any` → typed casts; `features` typed as `Prisma.InputJsonValue`
+- `auth/login/route.ts` — `max` → `limit` in rate limit config objects (matches `RateLimiter` interface)
+- All list routes — `parseQueryParams(req.url, ...)` → `parseQueryParams(req, ...)` (matches `queryParams.ts` signature)
+
+### 27.3 RBAC Role→Capability Map
+
+| Capability | SUPER | ADMIN | VERIF | CONTENT | FINANCE |
+|---|---|---|---|---|---|
+| auth | ✅ | ✅ | ✅ | ✅ | ✅ |
+| dashboard | ✅ | ✅ | ✅ | ✅ | ✅ |
+| users:read | ✅ | ✅ | ✅ | — | — |
+| users:manage | ✅ | ✅ | — | — | — |
+| admins:manage | ✅ | — | — | — | — |
+| property:read | ✅ | ✅ | ✅ | — | — |
+| property:verify | ✅ | — | ✅ | — | — |
+| digipin:read | ✅ | ✅ | ✅ | — | — |
+| digipin:status | ✅ | ✅ | — | — | — |
+| business:read | ✅ | ✅ | ✅ | — | — |
+| business:verify | ✅ | — | ✅ | — | — |
+| category:manage | ✅ | — | — | ✅ | — |
+| plan:manage | ✅ | — | — | — | ✅ |
+| finance:view | ✅ | — | — | — | ✅ |
+| notify:broadcast | ✅ | ✅ | — | ✅ | — |
+
+### 27.4 Test Suite (`src/tests/admin.test.ts`)
+
+20 tests across 4 describe blocks:
+- **RBAC map** (6): all 5 roles × correct capability set + `roleHasCapability` helper
+- **scrypt hash/verify** (4): format, correct password, wrong password, malformed hash — all using the real (un-mocked) implementation via `vi.importActual`
+- **adminLogin** (4): success path, unknown email, inactive account, wrong password
+- **createAdmin + listAdmins + updateAdmin guardrails** (6): ADMIN_EMAIL_EXISTS, success, paginated shape, CANNOT_DEACTIVATE_SELF, LAST_SUPER_ADMIN on demotion, LAST_SUPER_ADMIN on deactivation, success when count > 1
+
+`authorization.test.ts` updated: old fs-guard ("no admin routes") replaced with positive inventory — all 26 expected admin route files are present, every non-public route calls `requireAdminAuth`, no admin signup/register route exists.
+
+### 27.5 Remaining (E2E + Docs)
+
+1. **`npm test`** — verify full suite passes (~97 existing + ~20 admin = ~117 total)
+2. **`npm run admin:seed`** — seed SUPER_ADMIN from `.env` `ADMIN_SEED_EMAIL`/`ADMIN_SEED_PASSWORD`
+3. **E2E live pass** against `http://localhost:3000`:
+   - Login → me → dashboard stats
+   - Users list/detail → deactivate user (sessions revoked) → reactivate
+   - Properties list → approve property → trust score recalc + notification appears
+   - Reject property with reason → verify reason required (no reason → 400)
+   - Business list → approve business → trust score + notification
+   - Categories CRUD
+   - Broadcast to ALL → user notification row appears
+   - Subscription plans CRUD
+   - Transactions list
+   - RBAC: VERIFICATION_ADMIN token → 403 on `GET /admin/admins`; user JWT → 401 on any admin route
+4. **OpenAPI:** bump to 0.6.0, add Admin tag paths + schemas, update `@swagger` JSDoc on all 29 admin routes
+5. **Postman:** Admin folder + `adminToken` collection variable
+6. **`API_REFERENCE.md §12`** — admin token flow, all routes with request/response JSON, error codes
+
+

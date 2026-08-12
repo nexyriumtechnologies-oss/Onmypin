@@ -115,3 +115,13 @@ async function revokeSessionFamily(sessionId: string): Promise<void> {
   });
   await prisma.session.deleteMany({ where: { id: sessionId } });
 }
+
+/** Revoke all active sessions and refresh tokens for a user (e.g. on deactivation). */
+export async function revokeAllUserSessions(userId: string): Promise<void> {
+  await prisma.refreshToken.updateMany({
+    where: { userId, revoked: false },
+    data: { revoked: true, revokedAt: new Date() },
+  });
+  await prisma.session.deleteMany({ where: { userId } });
+}
+

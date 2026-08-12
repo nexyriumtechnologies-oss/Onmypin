@@ -19,6 +19,7 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "seed:categories": "node scripts/seed-business-categories.mjs",
+    "admin:seed": "node scripts/seed-admin.mjs",
     "export:postman": "node scripts/export-postman.mjs"
   },
   "dependencies": {

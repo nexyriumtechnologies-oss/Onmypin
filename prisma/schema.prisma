@@ -430,5 +430,55 @@ model AdminUser {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  sessions      AdminSession[]
+  refreshTokens AdminRefreshToken[]
+
   @@map("admin_users")
+}
+
+model AdminSession {
+  id         String   @id @default(cuid())
+  adminId    String
+  deviceInfo String?
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+
+  admin         AdminUser           @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  refreshTokens AdminRefreshToken[]
+
+  @@index([adminId])
+  @@map("admin_sessions")
+}
+
+model AdminRefreshToken {
+  id        String    @id @default(cuid())
+  adminId   String
+  sessionId String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revoked   Boolean   @default(false)
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  admin    AdminUser    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  session  AdminSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([sessionId])
+  @@map("admin_refresh_tokens")
+}
+
+model Broadcast {
+  id        String   @id @default(cuid())
+  target    String
+  userId    String?
+  segment   String?
+  title     String
+  message   String
+  type      String
+  sentCount Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("broadcasts")
 }
