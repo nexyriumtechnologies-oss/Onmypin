@@ -4,7 +4,26 @@ import { adminRefreshSchema } from "@/modules/admin/admin.validation";
 import { adminLogout } from "@/modules/admin/admin.auth.service";
 import { requireAdminAuth } from "@/middleware/adminAuth";
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
+
+/**
+ * @swagger
+ * /admin/auth/logout:
+ *   post:
+ *     summary: Admin logout
+ *     tags: [Admin]
+ *     security: [{ adminBearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken: { type: 'string' }
+ *     responses:
+ *       204:
+ *         description: Success
+ */\nexport const POST = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["auth"]);
   const body = validateBody(adminRefreshSchema, await readJsonBody(req));
   await adminLogout(body.refreshToken);

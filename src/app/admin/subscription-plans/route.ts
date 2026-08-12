@@ -5,7 +5,18 @@ import { subscriptionPlanSchema } from "@/modules/admin/admin.validation";
 import { createAdminSubscriptionPlan, listAdminSubscriptionPlans } from "@/modules/admin/admin.service";
 import { ok, created } from "@/lib/response";
 
-export const GET = withErrorHandler(async (req: NextRequest) => {
+
+/**
+ * @swagger
+ * /admin/subscription-plans:
+ *   get:
+ *     summary: List plans
+ *     tags: [Admin]
+ *     security: [{ adminBearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: Success
+ */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["plan:manage"]);
   const plans = await listAdminSubscriptionPlans();
   return ok({ items: plans, total: plans.length });

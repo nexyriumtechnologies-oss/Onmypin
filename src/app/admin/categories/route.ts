@@ -11,7 +11,18 @@ const categoryCreateSchema = z.object({
   order: z.number().int().optional(),
 });
 
-export const GET = withErrorHandler(async (req: NextRequest) => {
+
+/**
+ * @swagger
+ * /admin/categories:
+ *   get:
+ *     summary: List categories
+ *     tags: [Admin]
+ *     security: [{ adminBearerAuth: [] }]
+ *     responses:
+ *       200:
+ *         description: List of categories
+ */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["category:manage"]);
   const categories = await listAdminCategories();
   return ok({ items: categories, total: categories.length });

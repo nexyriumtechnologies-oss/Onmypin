@@ -8,7 +8,7 @@ module.exports = {
   openapi: "3.0.0",
   info: {
     title: "OwnMyPin API",
-    version: "0.5.0",
+    version: "0.6.0",
     description:
       "OwnMyPin backend — Phase 1 (auth/OTP, users, properties, DigiPin, QR, location, media) + Phase 2 (search, businesses, trust score, notifications, subscriptions, badges, admin).\n\n" +
       "1. POST /api/auth/send-otp, then POST /api/auth/verify-otp to get tokens.\n" +

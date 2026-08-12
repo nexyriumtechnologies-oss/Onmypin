@@ -1,13 +1,12 @@
-# OwnMyPin Backend — Phase 1 (Core Backend)
+# OwnMyPin Backend — Phase 1 & 2 (Core + Admin)
 
-Digital identity / smart-address platform backend. **Phase 1 only**: auth + OTP, users,
-properties, DigiPin generation, QR, location, media upload.
+Digital identity / smart-address platform backend. **Phase 1**: auth + OTP, users, properties, DigiPin generation, QR, location, media upload. **Phase 2**: Search, businesses, trust score, notifications, subscriptions (deferred), badges (deferred), admin panel.
 
 ## Tech stack
 
 - Next.js (App Router, API routes only) + TypeScript (strict)
 - Prisma ORM + MySQL
-- JWT auth (15 min access + 7 day rotating refresh tokens)
+- JWT auth (15 min access + 7 day rotating refresh tokens; isolated user vs admin secrets)
 - Zod validation (strict on every route), central error handling, in-memory rate limiting
 - Swagger UI docs (`/api/docs`) + Postman collection export
 
@@ -97,7 +96,7 @@ Import it in Postman (File > Import). Set collection variables:
 `baseUrl = http://localhost:3000` and `bearerToken` = the access token from
 `POST /api/auth/verify-otp` (auth is pre-wired to the `Authorization` header).
 
-## API surface (Phase 1)
+## API surface (Phase 1 & 2)
 
 | Method | Route                        | Auth | Notes                             |
 | ------ | ---------------------------- | ---- | --------------------------------- |
@@ -112,15 +111,27 @@ Import it in Postman (File > Import). Set collection variables:
 | POST   | /api/media/profile-image | ✓    | multipart profile image (single slot, replaces previous) |
 | POST   | /api/media/selfie        | ✓    | multipart selfie (single slot, replaces previous) |
 | POST   | /api/media/property-images | ✓  | multipart property image (pool capped at 3, oldest evicted) |
+| POST   | /api/media/business-images | ✓  | multipart business image (pool capped at 5) |
+| POST   | /api/media/business-logo | ✓    | multipart business logo (single slot) |
 | DELETE | /api/media/:fileId       | ✓    | owner-only delete                 |
 | POST   | /api/properties              | ✓    | creates DRAFT                     |
 | GET    | /api/properties              | ✓    | own properties only               |
 | GET    | /api/properties/:id          | ✓    | owner-only (404 otherwise)        |
 | PATCH  | /api/properties/:id          | ✓    | fills registration steps          |
-| POST   | /api/properties/:id/submit   | ✓    | DRAFT→SUBMITTED; requires propertyImages (≥1) + selfieImage; lat/lng optional — server geocodes the address; generates DigiPin + QR |
+| POST   | /api/properties/:id/submit   | ✓    | DRAFT→SUBMITTED; lat/lng optional; generates DigiPin + QR |
 | GET    | /api/digipins/:id/qr         | ✓    | opaque-token QR                   |
 | POST   | /api/qr/verify               | -    | resolves token → public info only |
-| POST   | /api/location/verify         | -    | geocodes the address (osm/mock); optional device GPS cross-checked (500 m) → verified |
+| POST   | /api/location/verify         | -    | geocodes address; optional GPS cross-check |
+| GET    | /api/locations/nearby        | -    | location-based radius search |
+| GET    | /api/search                  | -    | unified text search |
+| GET    | /api/search/history          | ✓    | user search history |
+| POST   | /api/search/history          | ✓    | add search to history |
+| GET    | /api/categories              | -    | business categories |
+| GET/POST/PATCH | /api/businesses      | ✓*   | *GET is public-safe, POST/PATCH are owner-only |
+| POST   | /api/businesses/:id/verification-request | ✓ | Submit business for review |
+| GET    | /api/users/me/trust-score    | ✓    | get derived trust score |
+| GET/POST/PATCH | /api/notifications   | ✓    | user notifications |
+| ALL    | /admin/*                     | ADMIN| 29+ endpoints for admin panel management |
 
 Response envelope: `{ "success": true, "data": ... }`
 Error envelope: `{ "success": false, "error": { "code", "message" } }`

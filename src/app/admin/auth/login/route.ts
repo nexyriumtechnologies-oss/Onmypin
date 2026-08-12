@@ -8,7 +8,26 @@ import { ok } from "@/lib/response";
 const ADMIN_LOGIN_EMAIL_LIMIT = { limit: 5, windowMs: 15 * 60 * 1000 };
 const ADMIN_LOGIN_IP_LIMIT = { limit: 15, windowMs: 15 * 60 * 1000 };
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
+
+/**
+ * @swagger
+ * /admin/auth/login:
+ *   post:
+ *     summary: Admin login
+ *     tags: [Admin]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email: { type: 'string' }
+ *               password: { type: 'string' }
+ *     responses:
+ *       200:
+ *         description: Success
+ */\nexport const POST = withErrorHandler(async (req: NextRequest) => {
   const body = validateBody(adminLoginSchema, await readJsonBody(req));
 
   const emailKey = `admin:login:email:${body.email.toLowerCase()}`;

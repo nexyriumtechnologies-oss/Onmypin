@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "d579fdd6-38bc-4ea1-a490-94bd79315fd6",
+      "id": "8bd5469c-2f13-41e2-8b83-563218c9972e",
       "name": "Auth",
       "description": {
         "content": "OTP login, token refresh, logout, current user",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "d019aed1-d63f-4377-990e-90d5044fbb2c",
+          "id": "6572124a-3624-461d-a89f-40c6f9519634",
           "name": "Verify the OTP and receive tokens",
           "request": {
             "name": "Verify the OTP and receive tokens",
@@ -53,7 +53,7 @@
           },
           "response": [
             {
-              "id": "0eaa03e0-9f29-4e6e-a6bf-10a8d371e65a",
+              "id": "c6ea0e65-8621-47a4-8c39-1b19f0f1129e",
               "name": "Tokens issued",
               "originalRequest": {
                 "url": {
@@ -98,7 +98,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "2fef9140-2588-4a54-868f-796b721599e9",
+              "id": "f61a5c13-e9ce-4780-8436-12b4a3992cef",
               "name": "Invalid OTP, expired, attempts exhausted, or bad payload",
               "originalRequest": {
                 "url": {
@@ -137,7 +137,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "f5e00dce-116a-4708-bc0f-3147e5bc0ff0",
+              "id": "17fd7509-f8e7-42d2-a5da-b5420e67e6dd",
               "name": "Account deactivated/deleted",
               "originalRequest": {
                 "url": {
@@ -176,7 +176,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "692aa2c2-dc8c-422c-97e9-472d89e51df3",
+              "id": "34e654a9-ae0b-4a92-86e4-4fce62759841",
               "name": "Rate limited",
               "originalRequest": {
                 "url": {
@@ -221,7 +221,7 @@
           }
         },
         {
-          "id": "0cf799c6-c39a-48a7-a573-1a784cc7b879",
+          "id": "190de186-ea3b-4cf7-965e-c85e55720110",
           "name": "Send a 6-digit OTP to a mobile number",
           "request": {
             "name": "Send a 6-digit OTP to a mobile number",
@@ -265,7 +265,7 @@
           },
           "response": [
             {
-              "id": "56b2c80e-1ade-4094-b5bf-2c9b5b5ae550",
+              "id": "11752269-c8f1-4d14-a7bb-fd52f16ee49a",
               "name": "OTP generated and handed to the provider",
               "originalRequest": {
                 "url": {
@@ -310,7 +310,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "08c8557c-c4be-47e3-b446-d95fb354f638",
+              "id": "9755b804-e607-4b5a-9e55-4b34736904d1",
               "name": "Invalid mobile or unknown fields",
               "originalRequest": {
                 "url": {
@@ -349,7 +349,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "98c6930d-0435-4b9d-9dbb-d600b28516bf",
+              "id": "6512992b-cd9e-42e4-8c32-5578b2f83c9f",
               "name": "Rate limited (per-mobile or per-IP)",
               "originalRequest": {
                 "url": {
@@ -400,7 +400,7 @@
           }
         },
         {
-          "id": "aa1c1399-9f22-433c-a132-695b066b70ff",
+          "id": "3cea3991-2dab-49ec-8a2c-9e4b91092234",
           "name": "Rotate the refresh token",
           "request": {
             "name": "Rotate the refresh token",
@@ -444,7 +444,7 @@
           },
           "response": [
             {
-              "id": "abc1db01-71a5-4add-930e-87dc3ab97071",
+              "id": "7b78d294-c946-4bd2-a647-a0fa9c840de5",
               "name": "New token pair",
               "originalRequest": {
                 "url": {
@@ -489,7 +489,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "e913d34d-4817-4bb5-8b0d-7f8679496cb5",
+              "id": "ecb5123d-7b96-4082-a6f0-d100a6fa65d7",
               "name": "Invalid, expired, or reused refresh token (generic)",
               "originalRequest": {
                 "url": {
@@ -528,7 +528,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "e370a26c-f859-49cb-beb3-f5e5a9b21e58",
+              "id": "47878ff4-b91b-4256-9855-7b0137f44518",
               "name": "Account not active",
               "originalRequest": {
                 "url": {
@@ -573,7 +573,7 @@
           }
         },
         {
-          "id": "199450b9-82a9-4337-91f8-bc69c2abad28",
+          "id": "a081d390-b4ba-4661-afda-b76734e46f9a",
           "name": "Get the current user profile",
           "request": {
             "name": "Get the current user profile",
@@ -612,7 +612,7 @@
           },
           "response": [
             {
-              "id": "e684a7c0-285d-44a9-9810-e171a4a46b7a",
+              "id": "0d76784b-2b6f-467b-8f8d-cfefa3ea06f2",
               "name": "Current user",
               "originalRequest": {
                 "url": {
@@ -652,12 +652,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"ACTIVE\",\n    \"createdAt\": \"2011-08-05T08:01:44.076Z\",\n    \"updatedAt\": \"2016-03-19T10:46:05.922Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"DELETED\",\n    \"createdAt\": \"2021-07-27T23:51:58.739Z\",\n    \"updatedAt\": \"2007-10-15T16:47:03.040Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "8bb10664-bcc8-4799-aa75-9494d6c0ffc7",
+              "id": "e9c945c1-c5a3-4512-b42f-d49b25dc854b",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -704,7 +704,7 @@
           }
         },
         {
-          "id": "6bffc5c9-01d7-450b-9eeb-965d6851f54b",
+          "id": "63e24d15-5d0a-4abc-97ad-997acc93017f",
           "name": "Log out (revoke the session)",
           "request": {
             "name": "Log out (revoke the session)",
@@ -752,7 +752,7 @@
           },
           "response": [
             {
-              "id": "c1334c82-fb58-4aef-8553-0f7a3765b4f8",
+              "id": "5103f9ef-6a90-4da7-bfb9-3f43e1616f77",
               "name": "Logged out",
               "originalRequest": {
                 "url": {
@@ -801,7 +801,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "ab036ace-ed42-4490-9d1e-12bf6c969f54",
+              "id": "bd5ede65-787e-4ef1-be22-5b0039ca6d9a",
               "name": "Missing/invalid access token or refresh token",
               "originalRequest": {
                 "url": {
@@ -859,7 +859,7 @@
       "event": []
     },
     {
-      "id": "aa9a1231-57c7-46ec-afa2-4f6da35f1d88",
+      "id": "976a1956-2bae-45a0-874d-fdce49a758d3",
       "name": "Users",
       "description": {
         "content": "Own-profile management (name, email, profile image, language)",
@@ -867,7 +867,7 @@
       },
       "item": [
         {
-          "id": "d9dbe5b2-d2d7-4282-957c-ebb2f696aa6e",
+          "id": "a83e7860-75c0-4108-8db1-18b5b5d0e848",
           "name": "Get own profile",
           "request": {
             "name": "Get own profile",
@@ -903,7 +903,7 @@
           },
           "response": [
             {
-              "id": "718b5e8c-2fd8-4dc4-afae-9c361be1ac39",
+              "id": "017b38a7-12a9-40d0-bf1d-e048ff3b45b1",
               "name": "Own profile",
               "originalRequest": {
                 "url": {
@@ -943,12 +943,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"ACTIVE\",\n    \"createdAt\": \"2011-08-05T08:01:44.076Z\",\n    \"updatedAt\": \"2016-03-19T10:46:05.922Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"DELETED\",\n    \"createdAt\": \"2021-07-27T23:51:58.739Z\",\n    \"updatedAt\": \"2007-10-15T16:47:03.040Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "87602d2e-7064-4e89-801e-2c7c9f074b86",
+              "id": "bd89c81a-1beb-44d3-8d1c-4da266f4965b",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -995,7 +995,7 @@
           }
         },
         {
-          "id": "1988e4a8-9f74-44e2-819b-f8f3e4f880e5",
+          "id": "9c9140aa-3089-4f15-b92a-7a0a97db0949",
           "name": "Update own profile",
           "request": {
             "name": "Update own profile",
@@ -1047,7 +1047,7 @@
           },
           "response": [
             {
-              "id": "281ed40c-e99a-457c-b71f-5bf4f80f528a",
+              "id": "2d54dcd2-81b7-4b2d-8642-4a8601142473",
               "name": "Updated profile",
               "originalRequest": {
                 "url": {
@@ -1095,12 +1095,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"ACTIVE\",\n    \"createdAt\": \"2011-08-05T08:01:44.076Z\",\n    \"updatedAt\": \"2016-03-19T10:46:05.922Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"DELETED\",\n    \"createdAt\": \"2021-07-27T23:51:58.739Z\",\n    \"updatedAt\": \"2007-10-15T16:47:03.040Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "2c87924b-80dc-4a55-acf6-120a2eb216b0",
+              "id": "b0875005-5e15-4e0f-b9f8-b9525966bc8b",
               "name": "Invalid payload or unknown fields",
               "originalRequest": {
                 "url": {
@@ -1149,7 +1149,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "73243649-0780-44c5-928c-67b5394a239b",
+              "id": "312c9e0f-94c0-4a54-91a5-21d1f7e544af",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -1198,7 +1198,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "18c8182d-31fc-4045-b11a-021576d9ff28",
+              "id": "8da4f014-5149-4eba-8228-9599623f7091",
               "name": "Account deleted/deactivated",
               "originalRequest": {
                 "url": {
@@ -1253,7 +1253,7 @@
           }
         },
         {
-          "id": "b4544813-40af-4cb4-b376-df4eaabb46d2",
+          "id": "a4c34353-8659-4695-a161-774cbb0882db",
           "name": "Soft-delete own account",
           "request": {
             "name": "Soft-delete own account",
@@ -1286,7 +1286,7 @@
           },
           "response": [
             {
-              "id": "b17ef7a9-3771-4d3d-a337-c8f6d7523b95",
+              "id": "dfb572fe-f11f-4f8f-a902-9b78628a83ad",
               "name": "Deleted",
               "originalRequest": {
                 "url": {
@@ -1327,7 +1327,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b159fcb9-da78-4374-bfe9-43ce10846039",
+              "id": "249784ff-893a-4caa-b9f1-61c40eb9d25a",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -1377,7 +1377,7 @@
       "event": []
     },
     {
-      "id": "a9a9627f-af5b-4cee-9f51-2b7c35c622ff",
+      "id": "95ca4b08-2dd2-4a9f-bf02-0a9fb4e3f822",
       "name": "Properties",
       "description": {
         "content": "Property draft → step-fill → submit",
@@ -1385,7 +1385,7 @@
       },
       "item": [
         {
-          "id": "8ce20a41-f3f5-4e79-b817-140a228c5499",
+          "id": "11974467-6b37-404a-9d7b-642c07df2a60",
           "name": "Create a property (DRAFT)",
           "request": {
             "name": "Create a property (DRAFT)",
@@ -1432,7 +1432,7 @@
           },
           "response": [
             {
-              "id": "c98b1c08-3ff7-4327-a0ea-02ce38aa66b6",
+              "id": "92ffab4d-e6ee-4d3d-b7da-6f257aea2e66",
               "name": "Draft created",
               "originalRequest": {
                 "url": {
@@ -1480,7 +1480,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "af283447-cb77-435e-a0da-52716ca73387",
+              "id": "ecc0c6bc-71a4-4900-bf95-3f0ac19cdf20",
               "name": "Invalid payload",
               "originalRequest": {
                 "url": {
@@ -1528,7 +1528,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "cd022d6c-6a9d-46c7-9d46-98ed9b032124",
+              "id": "297d788d-9dbf-47ae-b839-cd6f9587d7d2",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -1582,7 +1582,7 @@
           }
         },
         {
-          "id": "05e122d7-b2e5-47db-84d9-4adeae6bd77c",
+          "id": "5e9dcba2-f385-4be4-8979-c95b11400757",
           "name": "List own properties",
           "request": {
             "name": "List own properties",
@@ -1611,7 +1611,7 @@
           },
           "response": [
             {
-              "id": "d5fe7a5f-c4c5-464b-86da-ffd14cbc7ac7",
+              "id": "d9468923-1540-40cd-bd87-9d240c0c0903",
               "name": "Own properties, newest first",
               "originalRequest": {
                 "url": {
@@ -1651,7 +1651,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "089d597b-1f7d-4e8a-af70-3ee8223701b4",
+              "id": "4914d817-cfa7-4ba6-b947-a6c2024ffaee",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -1697,7 +1697,7 @@
           }
         },
         {
-          "id": "14b79566-59ff-4e90-a3fe-b7ad403bbd66",
+          "id": "31daf0a9-82e1-488c-8e0b-2bb0c707e5c3",
           "name": "Get own property",
           "request": {
             "name": "Get own property",
@@ -1738,7 +1738,7 @@
           },
           "response": [
             {
-              "id": "d948f665-6ef1-432a-9c08-d6cf28b7ff6a",
+              "id": "a6244b7a-bdbe-4de0-8829-d9071383c861",
               "name": "Property",
               "originalRequest": {
                 "url": {
@@ -1787,7 +1787,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "2fdd8095-501b-42db-ad6a-3d5b07146a9a",
+              "id": "65d33a4f-82d5-4575-868e-8b7a99d560cc",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -1836,7 +1836,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "33814352-bfb8-4f14-a63f-c50ae3253d01",
+              "id": "6e533ddc-c98d-4b05-8351-3b8bf7994e63",
               "name": "Not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -1891,7 +1891,7 @@
           }
         },
         {
-          "id": "db221c61-e80e-4fc9-b189-18d3fb451578",
+          "id": "2ae9b145-7391-4f5f-b285-0478f144993e",
           "name": "Fill in property steps (progressive draft completion)",
           "request": {
             "name": "Fill in property steps (progressive draft completion)",
@@ -1947,7 +1947,7 @@
           },
           "response": [
             {
-              "id": "0aa55e64-b453-48fe-a851-47a1be990de6",
+              "id": "10a70d99-4f60-4523-b46e-0929644e97b4",
               "name": "Updated property",
               "originalRequest": {
                 "url": {
@@ -2004,7 +2004,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b3cd9318-aebb-4474-87d6-187d4eb8e9fd",
+              "id": "d3814b7a-9914-48d1-bd41-b418bc1fa6f0",
               "name": "Invalid payload / empty body",
               "originalRequest": {
                 "url": {
@@ -2061,7 +2061,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "33e70be3-f101-4b65-bfe7-02e8efd9b1e8",
+              "id": "c9547852-1118-470f-938b-7edfc2eba7c1",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -2118,7 +2118,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "0dd200cd-710e-4d6e-9a80-a24f6a6ef029",
+              "id": "b63895aa-6dac-4181-a189-47988d14b7d6",
               "name": "Not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -2181,7 +2181,7 @@
           }
         },
         {
-          "id": "d9e0e6d9-2e9e-4cd8-9112-c39994b1717f",
+          "id": "755f9c59-e18c-4ef3-8154-8c9635cdde97",
           "name": "Submit a property for verification",
           "request": {
             "name": "Submit a property for verification",
@@ -2242,7 +2242,7 @@
           },
           "response": [
             {
-              "id": "cdbf49d5-f408-40a1-998c-5afbeeec3b12",
+              "id": "9b293b37-5652-4c67-a9b2-3b12ad7f2418",
               "name": "Submitted — DigiPin generated",
               "originalRequest": {
                 "url": {
@@ -2299,12 +2299,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"property\": {\n      \"id\": \"string\",\n      \"verificationStatus\": \"SUBMITTED\"\n    },\n    \"digipinNumber\": \"WB472801\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"property\": {\n      \"id\": \"string\",\n      \"verificationStatus\": \"SUBMITTED\"\n    },\n    \"digipinNumber\": \"WB472801\",\n    \"digipinId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "ff602420-ba05-48cd-94e3-db277641820d",
+              "id": "c0a30f68-07b8-42b8-a27c-b63e687c77ee",
               "name": "Incomplete property, invalid media, or bad transition",
               "originalRequest": {
                 "url": {
@@ -2362,7 +2362,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "766a8172-69dc-49aa-ba67-a7ddd016e4b4",
+              "id": "9c4e01f5-907b-402c-9872-15e91aeb9bc4",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -2420,7 +2420,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "9a35686c-ccc3-4c0e-8be1-8defbc942180",
+              "id": "12fca578-380b-4718-af82-0eaef2c20503",
               "name": "Property not found",
               "originalRequest": {
                 "url": {
@@ -2478,7 +2478,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "305172a3-dfc7-481e-ab69-ddbe1df089fd",
+              "id": "07071cdd-8452-43b3-9c5c-ddfe9adce1fb",
               "name": "Location geocoding failed (no GPS sent and the address could not be resolved)",
               "originalRequest": {
                 "url": {
@@ -2545,7 +2545,7 @@
       "event": []
     },
     {
-      "id": "9e710fbf-a31c-4003-8430-0a76c6defb6c",
+      "id": "90f674d8-238e-4460-879d-332fb8b1beec",
       "name": "DigiPin",
       "description": {
         "content": "Generated on property submit",
@@ -2555,7 +2555,7 @@
       "event": []
     },
     {
-      "id": "1edc43b7-3ef8-4a64-a1b1-7a01804b7ab3",
+      "id": "532b3889-15d4-4a4b-9ea7-b9ebdbbe85b8",
       "name": "QR",
       "description": {
         "content": "QR tokens for DigiPins and public verification",
@@ -2563,7 +2563,7 @@
       },
       "item": [
         {
-          "id": "6844367f-b646-417a-9337-0a7dbb36cac8",
+          "id": "e967d221-1eb9-4d60-8590-68ad62b4ac9a",
           "name": "Verify a QR token (public, no auth)",
           "request": {
             "name": "Verify a QR token (public, no auth)",
@@ -2607,7 +2607,7 @@
           },
           "response": [
             {
-              "id": "2ad361f0-b5d9-4e81-b027-98f7d7de7142",
+              "id": "663ea656-91db-44b1-b5fd-f18749f13506",
               "name": "Verified",
               "originalRequest": {
                 "url": {
@@ -2652,7 +2652,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "3e648eaf-fcf0-452c-8309-e1afd90721bb",
+              "id": "aa63457d-e7dd-4a6c-96d9-56f8640ddfce",
               "name": "Invalid payload",
               "originalRequest": {
                 "url": {
@@ -2691,7 +2691,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b143cc4c-288a-4116-8cd4-574bb288883e",
+              "id": "8d5da684-d932-421a-9f2e-2b37e5c30c82",
               "name": "QR code is invalid or disabled",
               "originalRequest": {
                 "url": {
@@ -2730,7 +2730,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "1ec97ce7-cbdc-42c5-9e9c-3763869c57c1",
+              "id": "4429dd5c-a4a4-44a4-b4ec-12aa78591da9",
               "name": "DigiPin is not active",
               "originalRequest": {
                 "url": {
@@ -2775,7 +2775,7 @@
           }
         },
         {
-          "id": "4ee08b2b-1bc8-44b9-a5fe-09b6033ad384",
+          "id": "b12a6376-42c7-4797-a713-658afefffd68",
           "name": "Get (or create) the QR for a DigiPin",
           "request": {
             "name": "Get (or create) the QR for a DigiPin",
@@ -2823,7 +2823,7 @@
           },
           "response": [
             {
-              "id": "da304ef3-5ba1-44d7-870a-1fb577c19f33",
+              "id": "eeafae6c-d5b5-43dc-901d-5ccc5193fc62",
               "name": "QR data",
               "originalRequest": {
                 "url": {
@@ -2877,7 +2877,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "978ec322-5c1a-467f-9b91-936d7f73471c",
+              "id": "27bd1b90-fb60-406f-96d2-af08ce27021c",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -2927,7 +2927,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "e8f5334f-f358-469b-a788-8e9fc9ca7c85",
+              "id": "388e33bb-a9e3-4e9d-92b5-7a5e8e492e3b",
               "name": "DigiPin not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -2986,7 +2986,7 @@
       "event": []
     },
     {
-      "id": "6fe50672-1dff-49d3-8f6b-f49881e6f2f8",
+      "id": "0fbb3d4c-4c62-4599-815e-e708b4ef8b1b",
       "name": "Location",
       "description": {
         "content": "Address geocoding + GPS cross-check (Nominatim osm / mock provider)",
@@ -2994,7 +2994,195 @@
       },
       "item": [
         {
-          "id": "dad2b452-0990-4843-a5d8-2b8ac946a71b",
+          "id": "9fb3c10f-32de-4f80-a32b-393e508c79c9",
+          "name": "Nearby properties and/or businesses within a radius",
+          "request": {
+            "name": "Nearby properties and/or businesses within a radius",
+            "description": {
+              "content": "Radius search over STORED coordinates (haversine) — no geocoder call at query time. Returns submitted properties (DigiPin public projection) and VERIFIED businesses, sorted by distance, paginated. Privacy-safe: never the full address, owner name, or media.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "locations",
+                "nearby"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "lat",
+                  "value": "<number>",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "key": "lng",
+                  "value": "<number>",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "key": "radiusKm",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "key": "type",
+                  "value": "all"
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6d0f30bd-605d-4802-899e-5fc23974612b",
+              "name": "Nearby results",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "locations",
+                    "nearby"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "lat",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "lng",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "radiusKm",
+                      "value": "5"
+                    },
+                    {
+                      "key": "type",
+                      "value": "all"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"kind\": \"property\",\n        \"distanceMeters\": 7345\n      },\n      {\n        \"kind\": \"property\",\n        \"distanceMeters\": 9278\n      }\n    ],\n    \"total\": 6361,\n    \"page\": 2285,\n    \"pageSize\": 536\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1feb06a0-99b7-4f15-aca9-fd16add7d750",
+              "name": "Invalid or missing query params",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "locations",
+                    "nearby"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "lat",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "lng",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "radiusKm",
+                      "value": "5"
+                    },
+                    {
+                      "key": "type",
+                      "value": "all"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "52c477c8-ba7a-4592-b8fa-861492e321af",
           "name": "Verify an address (geocodes it; cross-checks device GPS if sent)",
           "request": {
             "name": "Verify an address (geocodes it; cross-checks device GPS if sent)",
@@ -3038,7 +3226,7 @@
           },
           "response": [
             {
-              "id": "4d9f76d5-3c99-45f3-af43-d403cb8f3b73",
+              "id": "14fa4967-6af9-4b9b-9cfe-0053d4d74f1c",
               "name": "Geocoding + (optional) GPS cross-check result",
               "originalRequest": {
                 "url": {
@@ -3078,12 +3266,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"latitude\": 1590.5904383159198,\n    \"longitude\": 155.6969336427083,\n    \"formattedAddress\": \"string\",\n    \"verified\": false,\n    \"source\": \"osm\",\n    \"gps\": {\n      \"latitude\": 5336.502345386838,\n      \"longitude\": 8141.6203476813935\n    },\n    \"distanceMeters\": 7478.646518142195\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"latitude\": 9216.327317178831,\n    \"longitude\": 2583.4497565709235,\n    \"formattedAddress\": \"string\",\n    \"verified\": false,\n    \"source\": \"osm\",\n    \"gps\": {\n      \"latitude\": 8764.76336806191,\n      \"longitude\": 3265.511173301845\n    },\n    \"distanceMeters\": 8361.067116799912\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "a59a8992-6a2a-4652-9f89-24b331f1eee1",
+              "id": "39b52c19-64a9-4fa6-ab54-d34ddd849b65",
               "name": "Invalid payload",
               "originalRequest": {
                 "url": {
@@ -3122,7 +3310,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "aa408f81-6bd3-49d3-b41d-a6509185bdc1",
+              "id": "e8d8a294-2d1e-4f6e-bcca-be43404e078f",
               "name": "Geocoder failure (no match or upstream error)",
               "originalRequest": {
                 "url": {
@@ -3165,12 +3353,185 @@
           "protocolProfileBehavior": {
             "disableBodyPruning": true
           }
+        },
+        {
+          "id": "02b96547-85a8-4101-8bcc-6192ba52e494",
+          "name": "Reverse-geocode a GPS point to a place name",
+          "request": {
+            "name": "Reverse-geocode a GPS point to a place name",
+            "description": {
+              "content": "Turns device GPS coordinates into a readable address (used to auto-fill the address field on the client). Returns 502 GEOCODE_FAILED when the provider cannot resolve the point.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "location",
+                "reverse"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "0eab66fb-4b9b-461c-b57d-575ecaba1c36",
+              "name": "Place name for the coordinates",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "location",
+                    "reverse"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"formattedAddress\": \"string\",\n    \"source\": \"mock\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "821f952e-7d33-49cb-b18a-0f0d098606f8",
+              "name": "Invalid payload",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "location",
+                    "reverse"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "a50e372b-e07a-4241-b8b2-e17101b7de73",
+              "name": "Reverse geocoding failed",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "location",
+                    "reverse"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Gateway",
+              "code": 502,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
         }
       ],
       "event": []
     },
     {
-      "id": "7e3f3d4c-2df8-43f2-8bda-433a8db8e905",
+      "id": "745efed3-3019-45d5-9dfc-66be5f82dd44",
       "name": "Media",
       "description": {
         "content": "Image upload / delete and fileId attach",
@@ -3178,7 +3539,7 @@
       },
       "item": [
         {
-          "id": "d5642253-0bf6-40ca-841e-9d2037521d1f",
+          "id": "789f2168-9b22-452d-9ea1-6b3d23d465b5",
           "name": "Delete an uploaded file",
           "request": {
             "name": "Delete an uploaded file",
@@ -3219,7 +3580,7 @@
           },
           "response": [
             {
-              "id": "e6348aae-1a99-4779-a6f3-0694d7a34488",
+              "id": "f13e4986-48e6-4f95-a8ad-58fff90034ef",
               "name": "Deleted",
               "originalRequest": {
                 "url": {
@@ -3268,7 +3629,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b07644ae-65f9-453e-a053-972cc3858b3f",
+              "id": "44ab3023-a683-453d-9581-f40087e4b5a2",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -3317,7 +3678,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "45f0d713-3a8c-45bf-95c3-81e5edd5815c",
+              "id": "ce676420-2e1d-48bd-aeeb-8b449b13db06",
               "name": "File not found (or owned by another user)",
               "originalRequest": {
                 "url": {
@@ -3372,7 +3733,7 @@
           }
         },
         {
-          "id": "dc34cbb2-43a4-47e1-a214-c022ba09772d",
+          "id": "a2e4f238-e55a-4e49-850e-83f96a239800",
           "name": "Upload your selfie (replaces any previous one)",
           "request": {
             "name": "Upload your selfie (replaces any previous one)",
@@ -3425,7 +3786,7 @@
           },
           "response": [
             {
-              "id": "af056cb4-05a2-4687-b0b1-c524276772b4",
+              "id": "e5c1c83d-f55c-45ed-b8d3-9b61dc5aee8a",
               "name": "Uploaded — this fileId is the user's current selfie",
               "originalRequest": {
                 "url": {
@@ -3478,12 +3839,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"SELFIE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 2374,\n    \"createdAt\": \"1989-05-15T12:16:38.942Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"SELFIE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 3298,\n    \"createdAt\": \"2014-09-21T03:49:38.587Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "c7b6cf99-e59e-4814-a53c-bad9ce1b41b5",
+              "id": "b84fafb6-5af2-45dd-95a7-2e7bb01190cc",
               "name": "Missing file, invalid file type, or file too large",
               "originalRequest": {
                 "url": {
@@ -3537,7 +3898,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "4fbb0ecf-99cf-442a-b4dc-a4de2a452ca1",
+              "id": "ec7e0ab6-6893-4e39-9fac-8df155f477f7",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -3597,7 +3958,7 @@
           }
         },
         {
-          "id": "581cd999-0a81-4e86-bfc2-e04103a84480",
+          "id": "efbd9e60-2181-4c89-885d-05868f9fc573",
           "name": "Upload a property image (pool capped at 3)",
           "request": {
             "name": "Upload a property image (pool capped at 3)",
@@ -3650,7 +4011,7 @@
           },
           "response": [
             {
-              "id": "553fdccc-8e70-4527-b2cb-178ce8694c54",
+              "id": "e286e732-3c7d-4fa4-baa1-2974ef1e8d59",
               "name": "Uploaded — pool count is now 1..3",
               "originalRequest": {
                 "url": {
@@ -3702,12 +4063,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"PROPERTY_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 8104,\n    \"createdAt\": \"2024-01-23T14:26:09.119Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"PROPERTY_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 7200,\n    \"createdAt\": \"1973-03-05T08:30:24.455Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "c787edc2-d32e-407a-bf2c-0bf0ca841dee",
+              "id": "75ae10f6-b0d2-4309-9bd1-0b27424a3c09",
               "name": "Missing file, invalid file type, or file too large",
               "originalRequest": {
                 "url": {
@@ -3760,7 +4121,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "f8440668-4047-439e-9541-28fd2e1fb0a4",
+              "id": "690de442-2a38-47b3-a8db-e1d35a420cab",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -3819,7 +4180,7 @@
           }
         },
         {
-          "id": "83b91e37-cb94-483c-aed3-08c88ee6db37",
+          "id": "e9bc06aa-b0a5-4190-b415-38bf4331bb37",
           "name": "Upload your profile image (replaces any previous one)",
           "request": {
             "name": "Upload your profile image (replaces any previous one)",
@@ -3872,7 +4233,7 @@
           },
           "response": [
             {
-              "id": "e4f7c50d-f227-43ab-86c0-9079b6dfdbc3",
+              "id": "26ae93fc-c2ee-497a-9966-7f4d8af4711e",
               "name": "Uploaded — this fileId is the user's current profile image",
               "originalRequest": {
                 "url": {
@@ -3924,12 +4285,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"PROFILE_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 1113,\n    \"createdAt\": \"2005-09-27T08:41:59.588Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"PROFILE_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 9108,\n    \"createdAt\": \"1991-03-26T17:28:55.222Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "1580b8fb-d0b9-443b-9e7b-ddcf68a36834",
+              "id": "5eb83dd3-6616-461c-9924-c668ae7964fb",
               "name": "Missing file, invalid file type, or file too large",
               "originalRequest": {
                 "url": {
@@ -3982,7 +4343,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "d8f3a22a-abef-447b-b49f-32df475c1ab2",
+              "id": "636b0d33-3a64-4246-b99b-9ed33e4c96a3",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -4042,6 +4403,3799 @@
         }
       ],
       "event": []
+    },
+    {
+      "id": "f00917e4-8b7e-4497-8973-7a032aabef26",
+      "name": "Search",
+      "description": {
+        "content": "Unified search, nearby search, search history",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "d78a5baa-1918-4a8b-823f-12e824396cbd",
+          "name": "Unified search across DigiPin number, address, and business name",
+          "request": {
+            "name": "Unified search across DigiPin number, address, and business name",
+            "description": {
+              "content": "Text (case-insensitive contains) over stored fields. `type` filters the surface: digipin | address | business | all. Privacy-safe projections — DigiPin number + city/state for properties, name/category/city/state for businesses (verified only); never full address, owner name, or media.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "search"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "q",
+                  "value": "<string>",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "key": "type",
+                  "value": "all"
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "101c3f05-d8ff-4224-a2d6-6e9bf5ae278e",
+              "name": "Search results",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "type",
+                      "value": "all"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"total\": 9121,\n    \"page\": 5731,\n    \"pageSize\": 4901\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "04a0a626-f1a0-478e-ad89-a9471ab314fc",
+              "name": "Missing q or invalid params",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "type",
+                      "value": "all"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "63d0445c-fe0e-4084-a25a-dca89d73a33e",
+          "name": "Nearby search combining properties + businesses",
+          "request": {
+            "name": "Nearby search combining properties + businesses",
+            "description": {
+              "content": "Combines submitted properties and VERIFIED businesses within the radius, sorted by distance, paginated. Stored-coordinate haversine — no geocoder call at query time.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "search",
+                "nearby"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "lat",
+                  "value": "<number>",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "key": "lng",
+                  "value": "<number>",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "key": "radiusKm",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "88a1d07c-5caf-4857-b137-a7fb0796efb9",
+              "name": "Nearby combined results",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "search",
+                    "nearby"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "lat",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "lng",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "radiusKm",
+                      "value": "5"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "03441ac4-6634-4131-8c07-daecf1241408",
+              "name": "Invalid or missing query params",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "search",
+                    "nearby"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "lat",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "lng",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "radiusKm",
+                      "value": "5"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a61c2d56-9ffa-40c6-a3c7-942b4f905f26",
+          "name": "The authenticated user's recent searches (paginated)",
+          "request": {
+            "name": "The authenticated user's recent searches (paginated)",
+            "description": {
+              "content": "Newest first; pruned to the last 50 searches per user.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "search",
+                "history"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "6311e475-6628-4811-902b-78c4910858cd",
+              "name": "Search history",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "search",
+                    "history"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"string\",\n        \"query\": \"string\",\n        \"type\": \"string\",\n        \"createdAt\": \"1999-12-04T06:01:47.357Z\"\n      },\n      {\n        \"id\": \"string\",\n        \"query\": \"string\",\n        \"type\": \"string\",\n        \"createdAt\": \"1975-02-10T05:01:11.731Z\"\n      }\n    ],\n    \"total\": 1493,\n    \"page\": 7510,\n    \"pageSize\": 7233\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "52c7913b-a6ba-4426-8f2a-91ba28aaa1c1",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "search",
+                    "history"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1081d946-e128-4468-996f-6d10ddc0814c",
+          "name": "Record a search term against the current user",
+          "request": {
+            "name": "Record a search term against the current user",
+            "description": {
+              "content": "Used by the client to log what the user searched. Prunes the per-user history to the last 50 entries.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "search",
+                "history"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"<string>\",\n  \"type\": \"all\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "61733f44-6b8b-4947-915c-ce162b3b751c",
+              "name": "Recorded",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "search",
+                    "history"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"<string>\",\n  \"type\": \"all\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"query\": \"string\",\n    \"type\": \"string\",\n    \"createdAt\": \"2024-05-14T09:21:05.830Z\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3b719d5c-7a31-4608-8af2-0d0abd132da5",
+              "name": "Invalid payload",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "search",
+                    "history"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"<string>\",\n  \"type\": \"all\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1a87cc28-680e-4521-b676-8ae3807423fd",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "search",
+                    "history"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"<string>\",\n  \"type\": \"all\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "251356a1-fa99-4815-b34b-4da4ab846df4",
+      "name": "Business",
+      "description": {
+        "content": "Business profiles, categories, business images, verification requests",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "57ceca12-cbc0-477d-8f1a-4470076751af",
+          "name": "Upload a business logo (single slot)",
+          "request": {
+            "name": "Upload a business logo (single slot)",
+            "description": {
+              "content": "Multipart form with `file` (JPEG/PNG/WebP/HEIC, max 5 MB, magic-byte validated) and `businessId` (must belong to the caller). Each business has exactly one logo — uploading again replaces the previous one (the old owned file is deleted).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "media",
+                "business-logo"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "(Required) "
+                },
+                {
+                  "key": "businessId",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) "
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "ff0adfb0-2592-4408-badf-318f133e7704",
+              "name": "Uploaded and set as logo",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-logo"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "businessId",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"BUSINESS_LOGO\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 7922,\n    \"createdAt\": \"1987-07-29T20:40:53.545Z\",\n    \"businessId\": \"string\",\n    \"logoFileId\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e47c30f3-7e39-4c25-8cd3-1c508428b010",
+              "name": "Missing/invalid file or businessId",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-logo"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "businessId",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "3c9ba477-d13f-4b65-ba0f-82f7594553d4",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-logo"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "businessId",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "cdb3d707-f609-4524-82a4-d7d556f59bdb",
+              "name": "Business not found (or owned by someone else)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-logo"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "businessId",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "60cf3065-e18b-4031-ac0d-c64ee746ea04",
+          "name": "Upload a business image",
+          "request": {
+            "name": "Upload a business image",
+            "description": {
+              "content": "Multipart form with `file` (JPEG/PNG/WebP/HEIC, max 5 MB, magic-byte validated) and `businessId` (must belong to the caller). Attaches the image to that business. Capped at 5 images per business — a 6th upload is rejected with 400 BUSINESS_IMAGE_LIMIT.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "media",
+                "business-images"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "(Required) "
+                },
+                {
+                  "key": "businessId",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required) "
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "76dab3ae-13a7-409a-b28a-47f3ec485f49",
+              "name": "Uploaded and attached",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-images"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "type": "file"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "businessId",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"BUSINESS_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 6702,\n    \"createdAt\": \"2026-04-03T08:16:34.489Z\",\n    \"businessImageId\": \"string\",\n    \"order\": 5282\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "fa7510ca-5e87-4450-afd2-a0c51eb33a85",
+              "name": "Missing/invalid file or businessId, or image limit reached",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-images"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "type": "file"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "businessId",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "e3b085a0-9ee5-4cf7-aad9-4b8252febdc3",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-images"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "type": "file"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "businessId",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "10d2a942-a324-4292-ba2f-d315538f845b",
+              "name": "Business not found (or owned by someone else)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-images"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "type": "file"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required) ",
+                        "type": "text/plain"
+                      },
+                      "key": "businessId",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a71a00fb-442c-4ec5-ae82-0dad46b5d411",
+          "name": "Delete one business image",
+          "request": {
+            "name": "Delete one business image",
+            "description": {
+              "content": "Removes the business-image join row and the underlying media file, but only when the owning business belongs to the requesting user. Foreign or missing ids return an identical 404 (no existence leak).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "media",
+                "business-images",
+                ":businessImageId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "businessImageId",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "5e68e346-deba-4798-84d0-90e9834e4c76",
+              "name": "Deleted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-images",
+                    ":businessImageId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "businessImageId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "fa80f926-e747-445e-91f5-3cee6736f577",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-images",
+                    ":businessImageId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "businessImageId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "cbb1deb9-7abb-4b0d-99b0-9d8587a8e9b4",
+              "name": "Image not found (or owned by someone else)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "media",
+                    "business-images",
+                    ":businessImageId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "businessImageId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "bd003ccc-954f-4cb0-b054-324677a5d7bb",
+          "name": "Active business categories (form builder)",
+          "request": {
+            "name": "Active business categories (form builder)",
+            "description": {
+              "content": "Top-level active categories, each with its active subcategories, ordered by the configured `order`. Used to build the category dropdowns on the business form. PUBLIC — no auth.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "categories"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "493b19a9-0392-4727-b666-4adedbda474b",
+              "name": "Category tree",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "categories"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"order\": 3759,\n      \"subcategories\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 1000\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 750\n        }\n      ]\n    },\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"order\": 3996,\n      \"subcategories\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 7546\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 1038\n        }\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e960f42c-c4ea-4877-91bd-77a10b9efe07",
+          "name": "Create a business (starts PENDING)",
+          "request": {
+            "name": "Create a business (starts PENDING)",
+            "description": {
+              "content": "Creates a business owned by the caller, starting PENDING. Only `name` is required at creation — address/category/contact/images are completed via PATCH and uploads before requesting verification.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "businesses"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"categoryId\": \"<string>\",\n  \"subcategoryId\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\",\n  \"contactPhone\": \"<string>\",\n  \"contactEmail\": \"<email>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "97d17fb4-e382-4f12-a073-a6a1b4af55c9",
+              "name": "Business created (PENDING)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"categoryId\": \"<string>\",\n  \"subcategoryId\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\",\n  \"contactPhone\": \"+919876543210\",\n  \"contactEmail\": \"<email>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "2fa035f9-6781-4051-88b9-1e6c418c8fd7",
+              "name": "Invalid payload or unknown category",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"categoryId\": \"<string>\",\n  \"subcategoryId\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\",\n  \"contactPhone\": \"+919876543210\",\n  \"contactEmail\": \"<email>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "324a484a-fa96-4ca4-b9ee-887334f0ee8e",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"categoryId\": \"<string>\",\n  \"subcategoryId\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\",\n  \"contactPhone\": \"+919876543210\",\n  \"contactEmail\": \"<email>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d9d7389e-7ed4-4850-aca6-6eaae80448f4",
+          "name": "Own businesses OR public directory",
+          "request": {
+            "name": "Own businesses OR public directory",
+            "description": {
+              "content": "One route, two views. With `?mine=true` + a Bearer token it lists the caller's businesses (any verification status, full detail). Otherwise it is the PUBLIC directory — VERIFIED + ACTIVE businesses only, with filters `q`, `categoryId`, `city`, `state`, and optional radius search via `lat`/`lng`/`radiusKm`. Directory cards never include contact info.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "businesses"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "mine",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "q",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "categoryId",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "city",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "state",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "lat",
+                  "value": "<number>"
+                },
+                {
+                  "disabled": false,
+                  "key": "lng",
+                  "value": "<number>"
+                },
+                {
+                  "disabled": false,
+                  "key": "radiusKm",
+                  "value": "5"
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ad07eaec-26fc-4e34-b791-ad7940acfedb",
+              "name": "Businesses",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "mine",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "q",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "categoryId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "city",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "state",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "lat",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "lng",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "radiusKm",
+                      "value": "5"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "b9d9e61f-ac81-41f6-beba-4a7f2e5f32df",
+              "name": "Missing token when mine=true",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "mine",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "q",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "categoryId",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "city",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "state",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "lat",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "lng",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "radiusKm",
+                      "value": "5"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "0c8fa8fa-8735-4d69-9ff2-3382271ed8f3",
+          "name": "Business detail (public-safe)",
+          "request": {
+            "name": "Business detail (public-safe)",
+            "description": {
+              "content": "VERIFIED + ACTIVE businesses are public (contact info included — that is the point of verification). A non-verified business is only visible to its owner. Non-owners asking for a non-verified business get the same 404 as a missing one (no existence leak).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "businesses",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "3532bf90-a003-4c0a-95df-58c578034852",
+              "name": "Business detail",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "f750c590-a0f7-4d16-8189-55dbf5bff522",
+              "name": "Not found / not yet verified (unless owner)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4c2b625e-ee73-4786-9a51-cbe6dba8dda7",
+          "name": "Update own business",
+          "request": {
+            "name": "Update own business",
+            "description": {
+              "content": "Owner-only. verificationStatus can never be changed here (see POST /api/businesses/{id}/verification-request); ownerUserId is also locked. Unknown fields rejected.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "businesses",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"categoryId\": \"<string>\",\n  \"subcategoryId\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\",\n  \"contactPhone\": \"<string>\",\n  \"contactEmail\": \"<email>\",\n  \"status\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "a824059d-386a-48f0-8149-72353ffbea4b",
+              "name": "Updated business (full owner view)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"categoryId\": \"<string>\",\n  \"subcategoryId\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\",\n  \"contactPhone\": \"<string>\",\n  \"contactEmail\": \"<email>\",\n  \"status\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "12318c49-9711-4de7-aae4-7d879d6a14e3",
+              "name": "Invalid payload / forbidden field",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"categoryId\": \"<string>\",\n  \"subcategoryId\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\",\n  \"contactPhone\": \"<string>\",\n  \"contactEmail\": \"<email>\",\n  \"status\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "761587c0-437a-4e65-89b6-c81c75b6ff60",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"categoryId\": \"<string>\",\n  \"subcategoryId\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\",\n  \"contactPhone\": \"<string>\",\n  \"contactEmail\": \"<email>\",\n  \"status\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "e26b54af-c2f7-4d7a-9ee7-57219cede3da",
+              "name": "Not found (or owned by someone else)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"categoryId\": \"<string>\",\n  \"subcategoryId\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\",\n  \"contactPhone\": \"<string>\",\n  \"contactEmail\": \"<email>\",\n  \"status\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "15245c98-48fe-44aa-941c-8fa8ca56b445",
+          "name": "Request business verification",
+          "request": {
+            "name": "Request business verification",
+            "description": {
+              "content": "Moves a PENDING (or REJECTED) business to UNDER_REVIEW. Gate: name, category, address, city, state, at least one business image, and a contact (phone or email). Missing coordinates are geocoded from the stored address at this point (users never type coordinates).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "businesses",
+                ":id",
+                "verification-request"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "c8c6474c-d760-4307-b874-a6aeccd76d4a",
+              "name": "Moved to UNDER_REVIEW",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id",
+                    "verification-request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"verificationStatus\": \"UNDER_REVIEW\",\n  \"updatedAt\": \"1974-11-19T18:44:22.220Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "35921157-4ad5-4217-9f82-c8a0c3acc2f7",
+              "name": "Incomplete business or wrong status",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id",
+                    "verification-request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "823e1c8b-6b42-408c-883c-00cfc00f27b9",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id",
+                    "verification-request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "0e149bee-ec1d-43c0-bb2a-f7408eda58db",
+              "name": "Not found (or owned by someone else)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "businesses",
+                    ":id",
+                    "verification-request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "e8d8b58c-5ebc-4c25-a8d9-1a9f2d481fae",
+      "name": "Trust Score",
+      "description": {
+        "content": "Server-derived user trust score + factor breakdown",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "90d702a2-7990-4db5-903d-f78cb7c54fcd",
+          "name": "Get own trust score and factor breakdown",
+          "request": {
+            "name": "Get own trust score and factor breakdown",
+            "description": {
+              "content": "Read-only. The score is derived server-side from verified properties, verified businesses, media (selfie, profile photo, business photos), account age and unresolved verification rejections. It is NEVER client-settable and is re-persisted by the platform only on admin approve/reject events (Module 7).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "me",
+                "trust-score"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "bf328064-dae2-447a-87d9-716139deca08",
+              "name": "Own trust score breakdown",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "me",
+                    "trust-score"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"score\": 94,\n    \"maxScore\": 100,\n    \"updatedAt\": \"1999-02-09T04:57:35.563Z\",\n    \"factors\": [\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 807,\n        \"units\": 1927,\n        \"details\": \"string\",\n        \"applied\": true\n      },\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 9854,\n        \"units\": 7973,\n        \"details\": \"string\",\n        \"applied\": true\n      }\n    ],\n    \"penalties\": [\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 4905,\n        \"units\": 8944,\n        \"applied\": false\n      },\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 8224,\n        \"units\": 6785,\n        \"applied\": true\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "807a1d2b-9da7-4828-ab03-0953cfcdb0ad",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "me",
+                    "trust-score"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "c88ff191-7834-4d52-8dba-16a6098e7139",
+      "name": "Notifications",
+      "description": {
+        "content": "In-app notifications + device-token (push) registration",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "2b90d058-769a-47ef-b284-431bff1b8d3a",
+          "name": "List the caller's in-app notifications (paginated)",
+          "request": {
+            "name": "List the caller's in-app notifications (paginated)",
+            "description": {
+              "content": "Newest first, scoped to the authenticated user. An unread tally is included so the client can badge the bell icon without a second request. The `filter` parameter narrows to read/unread (default: all).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "notifications"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "all"
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "78b0c76c-23e4-4c29-aa58-859d3c2be042",
+              "name": "Paginated notifications",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter",
+                      "value": "all"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"string\",\n        \"title\": \"string\",\n        \"message\": \"string\",\n        \"type\": \"BUSINESS_VERIFICATION\",\n        \"readStatus\": false,\n        \"createdAt\": \"2026-04-19T06:09:43.752Z\"\n      },\n      {\n        \"id\": \"string\",\n        \"title\": \"string\",\n        \"message\": \"string\",\n        \"type\": \"PROPERTY_VERIFICATION\",\n        \"readStatus\": true,\n        \"createdAt\": \"1976-01-29T16:42:25.883Z\"\n      }\n    ],\n    \"total\": 9399,\n    \"unread\": 9547,\n    \"page\": 7850,\n    \"pageSize\": 2676\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "69373cc3-6a5f-4009-ae6c-884ad6f0a63a",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter",
+                      "value": "all"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "20"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "49e3a8dd-b311-4352-8746-ac74eac56475",
+          "name": "Mark one notification as read",
+          "request": {
+            "name": "Mark one notification as read",
+            "description": {
+              "content": "Owner-only. A foreign or missing id returns an identical 404 (no existence leak). Idempotent — re-reading an already-read notification still succeeds.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "notifications",
+                ":id",
+                "read"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "29e55e3d-bd25-4dbc-bc76-0e7b073bd035",
+              "name": "Updated notification",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    ":id",
+                    "read"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"title\": \"string\",\n    \"message\": \"string\",\n    \"type\": \"SYSTEM\",\n    \"readStatus\": false,\n    \"createdAt\": \"2001-03-21T05:33:17.164Z\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8b15ed57-fd80-4363-b1b6-70f4d0be74d0",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    ":id",
+                    "read"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "6dfa248b-2221-4b09-a09f-1e85e01d25b1",
+              "name": "Notification not found (or owned by someone else)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    ":id",
+                    "read"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b6b0ba05-8ca6-4bae-8901-a92ab7ea518c",
+          "name": "Mark all of the caller's notifications as read",
+          "request": {
+            "name": "Mark all of the caller's notifications as read",
+            "description": {
+              "content": "Only the caller's OWN unread notifications are touched.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "notifications",
+                "read-all"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "e2edff58-fe70-4f40-9b24-5bd7319bc821",
+              "name": "Updated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    "read-all"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"updatedCount\": 2122\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0e87f367-5922-4d7f-a14a-20af396972a6",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    "read-all"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "8f5854f9-27fc-471c-b2fc-bc11e24ef5e8",
+          "name": "Register a push token for the caller",
+          "request": {
+            "name": "Register a push token for the caller",
+            "description": {
+              "content": "Upserts the (user, fcmToken) pair — re-registering the same token only refreshes its platform. Tokens are only ever used to push notifications TO the caller; there is no send-to-anyone route.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "notifications",
+                "device-token"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fcmToken\": \"<string>\",\n  \"platform\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "1bc110a7-53a8-4660-a544-5f01213e3874",
+              "name": "Registered",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    "device-token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fcmToken\": \"<string>\",\n  \"platform\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"fcmToken\": \"string\",\n    \"platform\": \"string\",\n    \"createdAt\": \"2009-09-16T07:41:04.090Z\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "399ff348-a2b2-4bf8-833e-7a228db30e04",
+              "name": "Invalid payload",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    "device-token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fcmToken\": \"<string>\",\n  \"platform\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "18e3fc31-2eeb-4992-9ac4-22bd60e1be55",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    "device-token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fcmToken\": \"<string>\",\n  \"platform\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "823b6989-8b7a-4b1c-bd73-609558a3b3f6",
+          "name": "Remove a push token for the caller (unregister)",
+          "request": {
+            "name": "Remove a push token for the caller (unregister)",
+            "description": {
+              "content": "The token is passed as the `fcmToken` query parameter.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "notifications",
+                "device-token"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "fcmToken",
+                  "value": "<string>",
+                  "description": "(Required) "
+                }
+              ],
+              "variable": []
+            },
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "39ccbe31-161f-4056-b6ed-c9f2e2280726",
+              "name": "Removed",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    "device-token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "fcmToken",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "e30d4124-3cc6-4b9e-91b1-67c415b4b0d6",
+              "name": "Missing or invalid access token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    "device-token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "fcmToken",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4202b2ab-8712-4912-b337-7b40f77c95a4",
+              "name": "Token not registered for this user",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "notifications",
+                    "device-token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "fcmToken",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "6d84cad7-e0cf-4d33-ad44-9d16019f648a",
+      "name": "Subscriptions",
+      "description": {
+        "content": "Plans, purchase, verify, cancel, entitlements",
+        "type": "text/plain"
+      },
+      "item": [],
+      "event": []
+    },
+    {
+      "id": "e6442aca-de17-4cd4-a64e-e2752c0b990d",
+      "name": "Payments",
+      "description": {
+        "content": "Payment provider (mock/razorpay), webhook",
+        "type": "text/plain"
+      },
+      "item": [],
+      "event": []
+    },
+    {
+      "id": "d9a2f00a-dc36-4de4-86be-1f66ce2e8e8e",
+      "name": "Admin",
+      "description": {
+        "content": "Admin auth (separate JWT), dashboard, user/property/business/category/plan/notification management",
+        "type": "text/plain"
+      },
+      "item": [],
+      "event": []
     }
   ],
   "event": [],
@@ -4053,11 +8207,11 @@
     }
   ],
   "info": {
-    "_postman_id": "cac17410-80c7-4842-acb1-4817ee2807d5",
+    "_postman_id": "91cfd75b-72d4-4e68-9163-23281dad6c43",
     "name": "OwnMyPin API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {
-      "content": "OwnMyPin backend — Phase 1 (auth/OTP, users, properties, DigiPin, QR, location, media).\n\n1. POST /api/auth/send-otp, then POST /api/auth/verify-otp to get tokens.\n2. Click the green **Authorize** button, paste `Bearer <accessToken>`, and every protected route is unlocked.",
+      "content": "OwnMyPin backend — Phase 1 (auth/OTP, users, properties, DigiPin, QR, location, media) + Phase 2 (search, businesses, trust score, notifications, subscriptions, badges, admin).\n\n1. POST /api/auth/send-otp, then POST /api/auth/verify-otp to get tokens.\n2. Click the green **Authorize** button, paste `Bearer <accessToken>`, and every protected route is unlocked.\n3. Admin routes use a SEPARATE token (POST /api/admin/auth/login → `AdminBearerAuth`) — user tokens are never accepted there.",
       "type": "text/plain"
     }
   }

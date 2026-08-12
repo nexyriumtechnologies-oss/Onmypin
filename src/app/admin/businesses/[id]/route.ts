@@ -4,7 +4,23 @@ import { requireAdminAuth } from "@/middleware/adminAuth";
 import { getAdminBusinessDetail } from "@/modules/admin/admin.service";
 import { ok } from "@/lib/response";
 
-export const GET = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
+
+/**
+ * @swagger
+ * /admin/businesses/{id}:
+ *   get:
+ *     summary: Get business details
+ *     tags: [Admin]
+ *     security: [{ adminBearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: 'string' }
+ *     responses:
+ *       200:
+ *         description: Success
+ */\nexport const GET = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
   await requireAdminAuth(req, ["business:read"]);
   const { id } = await props.params;
   const detail = await getAdminBusinessDetail(id);

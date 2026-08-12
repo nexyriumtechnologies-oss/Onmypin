@@ -14,7 +14,33 @@ const categoryUpdateSchema = z
   .strict()
   .refine((data) => Object.keys(data).length > 0, { message: "At least one field required" });
 
-export const PATCH = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
+
+/**
+ * @swagger
+ * /admin/categories/{id}:
+ *   patch:
+ *     summary: Update category
+ *     tags: [Admin]
+ *     security: [{ adminBearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: 'string' }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: 'string' }
+ *               order: { type: 'integer' }
+ *               isActive: { type: 'boolean' }
+ *     responses:
+ *       200:
+ *         description: Updated
+ */\nexport const PATCH = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
   await requireAdminAuth(req, ["category:manage"]);
   const { id } = await props.params;
   const body = validateBody(categoryUpdateSchema, await readJsonBody(req));

@@ -6,7 +6,25 @@ import { listAdminUsers } from "@/modules/admin/admin.service";
 import { parseQueryParams } from "@/lib/queryParams";
 import { ok } from "@/lib/response";
 
-export const GET = withErrorHandler(async (req: NextRequest) => {
+
+/**
+ * @swagger
+ * /admin/users:
+ *   get:
+ *     summary: List users
+ *     tags: [Admin]
+ *     security: [{ adminBearerAuth: [] }]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: 'integer' }
+ *       - in: query
+ *         name: pageSize
+ *         schema: { type: 'integer' }
+ *     responses:
+ *       200:
+ *         description: Paginated list
+ */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["users:read"]);
   const query = parseQueryParams(req, adminUsersQuerySchema);
   const result = await listAdminUsers(query);

@@ -12,7 +12,25 @@ const adminsQuerySchema = z.object({
   pageSize: z.coerce.number().int().positive().max(100).default(20),
 });
 
-export const GET = withErrorHandler(async (req: NextRequest) => {
+
+/**
+ * @swagger
+ * /admin/admins:
+ *   get:
+ *     summary: List admins
+ *     tags: [Admin]
+ *     security: [{ adminBearerAuth: [] }]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: 'integer' }
+ *       - in: query
+ *         name: pageSize
+ *         schema: { type: 'integer' }
+ *     responses:
+ *       200:
+ *         description: Paginated list of admins
+ */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["admins:manage"]);
   const query = parseQueryParams(req, adminsQuerySchema);
   const result = await listAdmins(query.page, query.pageSize);

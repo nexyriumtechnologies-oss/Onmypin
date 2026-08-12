@@ -6,7 +6,25 @@ import { listAdminBroadcasts } from "@/modules/admin/admin.service";
 import { parseQueryParams } from "@/lib/queryParams";
 import { ok } from "@/lib/response";
 
-export const GET = withErrorHandler(async (req: NextRequest) => {
+
+/**
+ * @swagger
+ * /admin/notifications:
+ *   get:
+ *     summary: List broadcast history
+ *     tags: [Admin]
+ *     security: [{ adminBearerAuth: [] }]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: 'integer' }
+ *       - in: query
+ *         name: pageSize
+ *         schema: { type: 'integer' }
+ *     responses:
+ *       200:
+ *         description: Paginated list
+ */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["notify:broadcast"]);
   const query = parseQueryParams(req, adminNotificationsQuerySchema);
   const result = await listAdminBroadcasts(query.page, query.pageSize);
