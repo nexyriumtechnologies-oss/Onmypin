@@ -16,7 +16,8 @@ import { ok, created } from "@/lib/response";
  *     responses:
  *       200:
  *         description: Success
- */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
+ */
+export const GET = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["plan:manage"]);
   const plans = await listAdminSubscriptionPlans();
   return ok({ items: plans, total: plans.length });

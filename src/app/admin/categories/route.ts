@@ -22,7 +22,8 @@ const categoryCreateSchema = z.object({
  *     responses:
  *       200:
  *         description: List of categories
- */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
+ */
+export const GET = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["category:manage"]);
   const categories = await listAdminCategories();
   return ok({ items: categories, total: categories.length });

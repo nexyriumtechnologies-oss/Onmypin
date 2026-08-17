@@ -24,7 +24,8 @@ import { ok } from "@/lib/response";
  *     responses:
  *       200:
  *         description: Paginated list
- */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
+ */
+export const GET = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["finance:view"]);
   const query = parseQueryParams(req, adminTransactionsQuerySchema);
   const result = await listAdminTransactions(query);

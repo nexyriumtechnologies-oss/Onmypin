@@ -29,7 +29,8 @@ import { created } from "@/lib/response";
  *     responses:
  *       200:
  *         description: Success
- */\nexport const POST = withErrorHandler(async (req: NextRequest) => {
+ */
+export const POST = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["notify:broadcast"]);
   const body = validateBody(broadcastSendSchema, await readJsonBody(req));
   const broadcast = await sendAdminBroadcast(body);

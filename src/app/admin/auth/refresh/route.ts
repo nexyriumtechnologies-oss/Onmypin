@@ -22,7 +22,8 @@ import { ok } from "@/lib/response";
  *     responses:
  *       200:
  *         description: Success
- */\nexport const POST = withErrorHandler(async (req: NextRequest) => {
+ */
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const body = validateBody(adminRefreshSchema, await readJsonBody(req));
   const result = await adminRefresh(body.refreshToken);
   return ok(result);

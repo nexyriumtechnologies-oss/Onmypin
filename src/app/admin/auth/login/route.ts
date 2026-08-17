@@ -27,7 +27,8 @@ const ADMIN_LOGIN_IP_LIMIT = { limit: 15, windowMs: 15 * 60 * 1000 };
  *     responses:
  *       200:
  *         description: Success
- */\nexport const POST = withErrorHandler(async (req: NextRequest) => {
+ */
+export const POST = withErrorHandler(async (req: NextRequest) => {
   const body = validateBody(adminLoginSchema, await readJsonBody(req));
 
   const emailKey = `admin:login:email:${body.email.toLowerCase()}`;

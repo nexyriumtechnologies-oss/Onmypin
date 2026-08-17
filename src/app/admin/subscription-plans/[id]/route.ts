@@ -29,7 +29,8 @@ import { ok } from "@/lib/response";
  *     responses:
  *       200:
  *         description: Updated
- */\nexport const PATCH = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
+ */
+export const PATCH = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
   await requireAdminAuth(req, ["plan:manage"]);
   const { id } = await props.params;
   const body = validateBody(subscriptionPlanUpdateSchema, await readJsonBody(req));

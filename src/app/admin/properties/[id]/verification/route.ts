@@ -30,7 +30,8 @@ import { ok } from "@/lib/response";
  *     responses:
  *       200:
  *         description: Success
- */\nexport const PATCH = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
+ */
+export const PATCH = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
   await requireAdminAuth(req, ["property:verify"]);
   const { id } = await props.params;
   const body = validateBody(propertyVerificationSchema, await readJsonBody(req));

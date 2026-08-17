@@ -40,7 +40,8 @@ const categoryUpdateSchema = z
  *     responses:
  *       200:
  *         description: Updated
- */\nexport const PATCH = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
+ */
+export const PATCH = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
   await requireAdminAuth(req, ["category:manage"]);
   const { id } = await props.params;
   const body = validateBody(categoryUpdateSchema, await readJsonBody(req));

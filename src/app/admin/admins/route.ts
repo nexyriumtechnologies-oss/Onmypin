@@ -30,7 +30,8 @@ const adminsQuerySchema = z.object({
  *     responses:
  *       200:
  *         description: Paginated list of admins
- */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
+ */
+export const GET = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["admins:manage"]);
   const query = parseQueryParams(req, adminsQuerySchema);
   const result = await listAdmins(query.page, query.pageSize);

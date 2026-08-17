@@ -20,7 +20,8 @@ import { ok } from "@/lib/response";
  *     responses:
  *       200:
  *         description: Success
- */\nexport const GET = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
+ */
+export const GET = withErrorHandler(async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
   await requireAdminAuth(req, ["property:read"]);
   const { id } = await props.params;
   const detail = await getAdminPropertyDetail(id);

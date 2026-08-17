@@ -15,7 +15,8 @@ import { ok } from "@/lib/response";
  *     responses:
  *       200:
  *         description: Success
- */\nexport const GET = withErrorHandler(async (req: NextRequest) => {
+ */
+export const GET = withErrorHandler(async (req: NextRequest) => {
   const adminCtx = await requireAdminAuth(req, ["auth"]);
   const admin = await adminMe(adminCtx.adminId);
   return ok(admin);
