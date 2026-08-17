@@ -7,23 +7,23 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "postinstall": "npx prisma generate",
+    "postinstall": "prisma generate",
     "lint": "next lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prisma:generate": "npx prisma generate",
-    "prisma:migrate": "npx prisma migrate dev",
-    "prisma:deploy": "npx prisma migrate deploy",
-    "prisma:studio": "npx prisma studio",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
     "seed:categories": "node scripts/seed-business-categories.mjs",
     "admin:seed": "node scripts/seed-admin.mjs",
     "export:postman": "node scripts/export-postman.mjs"
   },
   "dependencies": {
-    "@prisma/client": "^7.9.1",
+    "@prisma/client": "^6.19.3",
     "busboy": "^1.6.0",
     "jsonwebtoken": "^9.0.2",
     "next": "^15.3.0",
@@ -31,7 +31,7 @@
     "react-dom": "^19.1.0",
     "swagger-jsdoc": "^6.3.0",
     "zod": "^3.24.2",
-    "prisma": "^7.9.1"
+    "prisma": "^6.19.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
