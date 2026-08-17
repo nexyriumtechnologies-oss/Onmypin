@@ -23,7 +23,8 @@ import { requireAdminAuth } from "@/middleware/adminAuth";
  *     responses:
  *       204:
  *         description: Success
- */\nexport const POST = withErrorHandler(async (req: NextRequest) => {
+ */
+export const POST = withErrorHandler(async (req: NextRequest) => {
   await requireAdminAuth(req, ["auth"]);
   const body = validateBody(adminRefreshSchema, await readJsonBody(req));
   await adminLogout(body.refreshToken);
