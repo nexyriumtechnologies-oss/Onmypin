@@ -16,10 +16,9 @@ export const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
 export const MAX_OTP_ATTEMPTS = 3;
 
 /**
- * Dev bypass (re-enabled 2026-08-12): real-SMS approval is pending DLT template
- * registration after the MVP deploy. Until then OTP_BYPASS_ENABLED=true makes the
- * OTP_BYPASS_MOBILE receive no SMS; its fixed OTP_BYPASS_CODE always verifies.
- * Set OTP_BYPASS_ENABLED=false (real SMS only) once the approved template is live.
+ * Dev bypass (2026-08-20): DLT template approved — real SMS active by default
+ * (OTP_BYPASS_ENABLED=false). When flipped on, OTP_BYPASS_MOBILE receives no SMS
+ * and its fixed OTP_BYPASS_CODE always verifies (offline/dev testing only).
  */
 function isOtpBypassEnabled(mobile: string): boolean {
   return (
@@ -130,3 +129,47 @@ export async function verifyOtp(
 
   return openSession(user.id, deviceInfo, isNewUser);
 }
+
+/**
+ * Internal helper — verify OTP hash only, no session creation.
+ * Used by register.service.ts to validate the registration OTP without
+ * tying it to user-creation (that happens in the caller after this returns).
+ * Throws ApiError on any failure.
+ */
+export async function verifyOtpCode(
+  mobile: string,
+  code: string,
+  purpose = "AUTH",
+): Promise<void> {
+  const record = await prisma.otpRecord.findFirst({
+    where: { mobile, purpose, verified: false },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!record) {
+    throw new ApiError(400, "OTP_NOT_FOUND", "No pending OTP found. Request a new one");
+  }
+  if (!canVerifyOtp(record)) {
+    throw new ApiError(400, "OTP_EXPIRED", "OTP has expired or attempts exhausted. Request a new one");
+  }
+
+  const bypassOk = isOtpBypassEnabled(mobile) && safeCompare(code, OTP_BYPASS_CODE);
+  if (!bypassOk && !safeCompare(record.otpHash, hashOtp(code))) {
+    await prisma.otpRecord.update({
+      where: { id: record.id },
+      data: { attempts: { increment: 1 } },
+    });
+    const attemptsLeft = MAX_OTP_ATTEMPTS - record.attempts - 1;
+    throw new ApiError(
+      400,
+      "OTP_INVALID",
+      attemptsLeft > 0 ? `Invalid OTP. ${attemptsLeft} attempt(s) left` : "Invalid OTP. Request a new one",
+    );
+  }
+
+  await prisma.otpRecord.update({
+    where: { id: record.id },
+    data: { verified: true },
+  });
+}
+

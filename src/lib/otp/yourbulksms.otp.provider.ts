@@ -30,7 +30,7 @@ export class YourBulkSmsOtpProvider {
       );
     }
 
-    const message = template.replace("{code}", code);
+    const message = template.replace("{#var#}", code);
     const url = new URL("http://control.yourbulksms.com/api/sendhttp.php");
     url.searchParams.set("authkey", authkey);
     url.searchParams.set("mobiles", `91${mobile}`);

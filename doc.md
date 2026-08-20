@@ -21,7 +21,7 @@ Scope: Phase 1 — Core Backend (per SOW Milestone 1 scope: database, auth/OTP, 
 
 MySQL provider, `cuid()` PKs, `createdAt`/`updatedAt` everywhere applicable. Models:
 
-- **User** — mobile (unique), email (unique, optional), name, profileImage, language, accountStatus enum (ACTIVE/DEACTIVATED/DELETED)
+- **User** — mobile (unique), email (optional, **not unique**), name, passwordHash, profileImage, language, accountStatus enum (ACTIVE/DEACTIVATED/DELETED)
 - **OtpRecord** — mobile, otpHash (never plain OTP), purpose, expiresAt, attempts, verified
 - **Session** — userId, deviceInfo, createdAt, expiresAt
 - **RefreshToken** — userId, tokenHash (unique), expiresAt, revoked, revokedAt
@@ -64,9 +64,9 @@ Cross-cutting rules:
 
 **YourBulkSMS provider (2026-08-09, live-verified 2026-08-11)** — `src/lib/otp/yourbulksms.otp.provider.ts`: HTTP GET to `http://control.yourbulksms.com/api/sendhttp.php` with `authkey`, `mobiles=91<mobile>`, `message` (from `YOURBULKSMS_OTP_TEMPLATE` with `{code}` substituted), `sender`, `route=2`, `country=0`, `DLT_TE_ID`. Success = a plain numeric message id **or** the JSON envelope `{"Status":"Success","Code":"000","Message-Id":...}` (both accepted since 2026-08-11); anything else → logged + thrown (surfaces as 500 INTERNAL_SERVER_ERROR via the route handler). `OTP_PROVIDER="yourbulksms"` in `.env`; console stays the dev fallback.
 - **Live results:** API now accepts sends (`Code: 000`) and SMS arrives on the phone once the message matches the registered DLT template exactly. Template IDs that didn't work: `4567123` ("template not found"). Working: `1707163456288183577` (title "testing", data `Your OwnMyPin OTP is {#var#}`).
-- **Open issue (blocked until DLT approval):** registered template `1707163456288183577` (title "testing", data `Your OwnMyPin OTP is {#var#}`) ends at the variable → operator returns "Template not Matched". **Planned message (Option A, to register after MVP deploy):** `Dear User, Your OwnMyPin OTP is {#var#}. It is valid for 5 minutes. Please do not share it with anyone. - OwnMyPin`. Until approval, the **dev bypass** (§4, `OTP_BYPASS_ENABLED=true`) covers Flutter testing — send-otp returns 200, code `123456` verifies for mobile `8090780908`.
+- **Status (2026-08-20):** DLT template **approved** (`1777178721813553031`, message `Dear User, Your OwnMyPin registration OTP is {#var#}. It is valid for 5 minutes. Please do not share it with anyone.`) — real SMS verified live end-to-end (register → OTP SMS → verify → login). The older "testing" template `1707163456288183577` (ends at the variable → "Template not Matched") is obsolete.
 
-**Dev OTP bypass (re-enabled 2026-08-12 for the Flutter testing phase)** — `OTP_BYPASS_ENABLED=true` + `OTP_BYPASS_MOBILE` + `OTP_BYPASS_CODE`: the bypass mobile receives **no SMS** and its fixed code always verifies (rate limits, hashing and the OTP record flow are untouched). Real-SMS approval requires the DLT template to be registered AFTER the MVP deploy, so the bypass stays ON until then; flip `OTP_BYPASS_ENABLED=false` (and point `YOURBULKSMS_DLT_TE_ID` at the approved template) once the live template is approved. Was removed on 2026-08-11 then restored for this phase.
+**Dev OTP bypass (available for offline testing only)** — `OTP_BYPASS_ENABLED=true` + `OTP_BYPASS_MOBILE` + `OTP_BYPASS_CODE`: the bypass mobile receives **no SMS** and its fixed code always verifies (rate limits, hashing and the OTP record flow are untouched). The DLT template is now **approved** and the bypass is **OFF** (`OTP_BYPASS_ENABLED=false`) — real SMS OTPs go to the entered mobile. Verified live 2026-08-20. Flip bypass back on only for offline/dev work.
 
 ## 5. Users (module: users)
 
@@ -359,10 +359,10 @@ Follow-up pass after Phase 1 sign-off. **No code regressions** — `tsc`/`lint` 
 - Wired via the existing `OtpProvider` registry — zero auth-flow changes.
 - **Live test result (2026-08-09)**: the provider works end-to-end (request reaches the API and the JSON error is parsed correctly) but the account rejects auth: `{"Status":"Failed","Code":"012","Description":"You have not authorised to access API."}` — the client must enable API access / verify the authkey in the YourBulkSMS panel.
 - **Update (2026-08-11)**: API access enabled → live sends accepted (`Code: 000`); fixed the success check to accept the JSON envelope; SMS arrives when the message matches the DLT template. Template `4567123` → "template not found"; current template `1707163456288183577` ends at `{#var#}` → "Template not Matched" — fix in TODO.md §13.
+- **DLT approval (2026-08-20)**: new template `1777178721813553031` approved (`Dear User, Your OwnMyPin registration OTP is {#var#}...`); real SMS verified live end-to-end on `8090780908`.
 
 ### 20.2 Dev OTP bypass
-- `OTP_BYPASS_ENABLED/MOBILE/CODE` — bypass mobile receives no SMS; its fixed code always verifies. Verified live: send-otp 200 → verify-otp 200 → tokens issued (user `8090780908`).
-- Purpose: unblock client/frontend work while the SMS API access is pending; `OTP_BYPASS_ENABLED=false` for production.
+- `OTP_BYPASS_ENABLED/MOBILE/CODE` — bypass mobile receives no SMS; its fixed code always verifies. **Currently OFF** (`OTP_BYPASS_ENABLED=false`) since the DLT template is approved — real SMS active. Flip to `true` only for offline/dev testing.
 
 ### 20.3 Location robustness (user-reported 502s)
 - Root cause: Nominatim rate limiting (429) under rapid verify+submit, plus zero-match queries for house-level addresses.
@@ -490,13 +490,13 @@ Deployed to Render today so the Flutter dev can test how far the backend is buil
 5. Deploy. Build = `npm run prisma:deploy && npm run seed:categories && npm run build`; start = `npm start` (`next start`, auto-uses Render's `PORT`). Health check: `GET /api/categories`.
 
 ### 26.3 Environment knobs used for this testing phase
-- `OTP_PROVIDER=yourbulksms` + **bypass ON** (`OTP_BYPASS_ENABLED=true`, `OTP_BYPASS_MOBILE=8090780908`, `OTP_BYPASS_CODE=123456`) → testers log in with mobile `8090780908` + code `123456` (no SMS). Swapped to real SMS once the DLT template (Option A) is approved after deploy; then configure `YOURBULKSMS_AUTHKEY`, `YOURBULKSMS_DLT_TE_ID` + `YOURBULKSMS_OTP_TEMPLATE` and set bypass `false`.
+- `OTP_PROVIDER=yourbulksms` + **real SMS active** (`OTP_BYPASS_ENABLED=false`) → OTPs delivered via the approved DLT template (`1777178721813553031`). Offline dev can flip bypass back on (`OTP_BYPASS_ENABLED=true`, `OTP_BYPASS_MOBILE=8090780908`, `OTP_BYPASS_CODE=123456`).
 - `STORAGE_LOCAL_DIR=./public/uploads` + a 1 GB Render Disk mounted at `/opt/render/project/src/public/uploads` → uploads survive redeploys. **Without the disk, uploads are ephemeral (wiped on every redeploy)** — fine for early testing.
 - `PUSH_PROVIDER=console` (push is logged, not sent).
 
 ### 26.4 From the Flutter app
 - Base URL: `https://<your-app>.onrender.com` (the health/Swagger surface is `/api/openapi.json`, docs UI at `/api/docs`).
-- Test creds: `8090780908` / `123456`. Login = `POST /api/auth/send-otp` → `POST /api/auth/verify-otp` (see API_REFERENCE.md §1–2). Bypass sends no SMS; the fixed code verifies while `O
+- Test creds: `8090780908` (register via real-SMS OTP, then login with mobile+password). Legacy bypass creds `8090780908` / `123456` only when `OTP_BYPASS_ENABLED=true`.
 ## 27. Phase 2 Module 7 — Admin Panel (code complete 2026-08-12, E2E pending)
 
 All service logic, route handlers, middleware, Zod schemas, seed script, lint fixes, and test suite are implemented. The `tsc --noEmit` is clean. Remaining: `npm test` confirmation, E2E live pass, OpenAPI bump, and doc/API_REFERENCE update.
@@ -612,5 +612,80 @@ All service logic, route handlers, middleware, Zod schemas, seed script, lint fi
 4. **OpenAPI:** bump to 0.6.0, add Admin tag paths + schemas, update `@swagger` JSDoc on all 29 admin routes
 5. **Postman:** Admin folder + `adminToken` collection variable
 6. **`API_REFERENCE.md §12`** — admin token flow, all routes with request/response JSON, error codes
+
+---
+
+## 28. Auth Redesign — Register + Password Login (2026-08-20)
+
+### 28.1 Background
+
+The original auth flow was entirely OTP-based: `send-otp → verify-otp → tokens`. No passwords, no email-based login. This section documents the new register+login flow added on 2026-08-20.
+
+### 28.2 New Flow
+
+```
+[Register]
+POST /api/auth/register     { name, email, mobile, password }
+  → validates mobile uniqueness (email is NOT unique)
+  → hashes password (scrypt N=16384, r=8, p=1, 64-byte key, random 32-byte salt)
+  → stores PendingRegistration (TTL = 5 min, same as OTP)
+  → sends OTP to mobile (purpose="REGISTER", real SMS)
+
+POST /api/auth/register/verify    { mobile, otp, deviceInfo? }
+  → verifyOtpCode(mobile, otp, "REGISTER")
+  → loads PendingRegistration, checks expiry
+  → race-guard: re-checks mobile uniqueness only
+  → prisma.$transaction: creates User + deletes PendingRegistration
+  → openSession → { accessToken, refreshToken, userId, isNewUser: true }
+
+[Login]
+POST /api/auth/login    { mobile, password, deviceInfo? }
+  → finds user by mobile
+  → constant-time scrypt verify (dummy hash on miss → no timing leak)
+  → checks accountStatus = ACTIVE
+  → openSession → { accessToken, refreshToken, userId, isNewUser: false }
+```
+
+**Login identifier = mobile** (unique, OTP-verified). Email is optional and **not unique** — the same email may exist on multiple accounts.
+
+### 28.3 Schema Changes
+
+**Migrations:** `20260820174740_add_password_and_pending_registration`, `20260820183835_widen_password_hash` (User.passwordHash → `VARCHAR(512)`), `20260820184031_widen_pending_password_hash` (PendingRegistration.passwordHash → `VARCHAR(512)`), `20260820184933_make_email_non_unique` (dropped `users_email_key` + `pending_registrations_email_key`)
+
+- `User.passwordHash String? @db.VarChar(512)` — null for OTP-only legacy accounts; set on register flow. scrypt `salt:key` hex is 193 chars, hence 512 not the default 191.
+- `User.email String?` — **not unique** (same email allowed across accounts)
+- New `PendingRegistration` model (`pending_registrations` table): `id, mobile (unique), name, email (not unique), passwordHash @db.VarChar(512), expiresAt, createdAt`
+
+### 28.4 Files Added / Modified
+
+| File | Change |
+|---|---|
+| `prisma/schema.prisma` | `User.passwordHash` field + `PendingRegistration` model |
+| `src/modules/auth/auth.validation.ts` | Added `passwordSchema`, `registerInitSchema`, `registerVerifySchema`, `loginSchema`; extended purpose enum to `["AUTH", "REGISTER"]` |
+| `src/modules/auth/otp.service.ts` | Added `verifyOtpCode()` internal helper (verify hash only, no session) |
+| `src/modules/auth/register.service.ts` | NEW — `initiateRegister()` + `completeRegister()` + `hashPassword()` + `verifyPassword()` |
+| `src/modules/auth/login.service.ts` | NEW — `loginWithPassword()` with constant-time compare + no-leak 401 |
+| `src/app/api/auth/register/route.ts` | NEW — `POST /api/auth/register` |
+| `src/app/api/auth/register/verify/route.ts` | NEW — `POST /api/auth/register/verify` |
+| `src/app/api/auth/login/route.ts` | NEW — `POST /api/auth/login` |
+
+### 28.5 Security Notes
+
+- **scrypt params:** N=16384, r=8, p=1, 64-byte key, 32-byte random salt — same as Admin password hashing
+- **Timing safety:** `loginWithPassword` always runs scrypt verify even on mobile miss (dummy hash) — no timing oracle
+- **No existence leak:** unknown mobile returns identical `401 INVALID_CREDENTIALS` as wrong password
+- **PendingRegistration TTL:** matches OTP TTL (5 min); expired sessions return `REGISTRATION_EXPIRED`
+- **Legacy accounts:** users created via the old OTP flow have `passwordHash = null` and can still use `send-otp / verify-otp`
+
+### 28.6 OTP Template (updated 2026-08-20)
+
+DLT-registered template (ID `1777178721813553031`, **approved** — real SMS active):
+```
+Dear User, Your OwnMyPin registration OTP is {#var#}. It is valid for 5 minutes. Please do not share it with anyone.
+```
+
+Provider replaces `{#var#}` in `yourbulksms.otp.provider.ts`. Verified live (2026-08-20, bypass OFF): register fired a real SMS to `8090780908`, OTP `308956` verified → account + tokens; then mobile+password login → 200. The bypass (`OTP_BYPASS_ENABLED=true`, mobile `8090780908`, code `123456`) stays available for offline testing only.
+
+
 
 

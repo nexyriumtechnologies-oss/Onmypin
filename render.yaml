@@ -32,24 +32,23 @@ services:
         sync: false
       - key: ADMIN_JWT_SECRET
         sync: false
-      # ---- OTP: bypass active for Flutter testing until the DLT template is approved ----
-      # (Option A message is registered/post-approval; swap bypass OFF + update DLT_TE_ID then)
+      # ---- OTP: real SMS via approved DLT template (bypass OFF) ----
       - key: OTP_PROVIDER
         value: yourbulksms
       - key: YOURBULKSMS_AUTHKEY
         sync: false
       - key: YOURBULKSMS_SENDER_ID
-        value: "URBLKM"
+        value: "OWNMY"
       - key: YOURBULKSMS_DLT_TE_ID
-        value: "1707163456288183577"
+        value: "1777178721813553031"
       - key: YOURBULKSMS_ROUTE
         value: "2"
       - key: YOURBULKSMS_COUNTRY
         value: "0"
       - key: YOURBULKSMS_OTP_TEMPLATE
-        value: "Dear User, Your OwnMyPin OTP is {code}. It is valid for 5 minutes. Please do not share it with anyone. - OwnMyPin"
+        value: "Dear User, Your OwnMyPin registration OTP is {#var#}. It is valid for 5 minutes. Please do not share it with anyone."
       - key: OTP_BYPASS_ENABLED
-        value: "true"
+        value: "false"
       - key: OTP_BYPASS_MOBILE
         value: "8090780908"
       - key: OTP_BYPASS_CODE

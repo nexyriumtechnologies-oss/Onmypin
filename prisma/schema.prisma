@@ -122,10 +122,11 @@ model User {
   id                  String        @id @default(cuid())
   name                String?
   mobile              String        @unique
-  email               String?       @unique
+  email               String?       // not unique — same email allowed across accounts
   profileImage        String?
   language            String        @default("en")
   accountStatus       AccountStatus @default(ACTIVE)
+  passwordHash        String?       @db.VarChar(512) // null for OTP-only legacy accounts; set on register flow
   trustScore          Int           @default(0)
   trustScoreUpdatedAt DateTime?
   createdAt           DateTime      @default(now())
@@ -158,6 +159,20 @@ model OtpRecord {
 
   @@index([mobile, purpose])
   @@map("otp_records")
+}
+
+// Holds unverified registration data between POST /api/auth/register and
+// POST /api/auth/register/verify. Cleaned up once the OTP is consumed.
+model PendingRegistration {
+  id           String   @id @default(cuid())
+  mobile       String   @unique
+  name         String
+  email        String   // not unique — same email allowed across accounts
+  passwordHash String   @db.VarChar(512)
+  expiresAt    DateTime // matches OTP TTL (5 min)
+  createdAt    DateTime @default(now())
+
+  @@map("pending_registrations")
 }
 
 model Session {

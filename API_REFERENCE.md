@@ -25,16 +25,27 @@ Special statuses with **no body**: `204 No Content` (logout, delete), `201 Creat
 | Access token | JWT, **15 min** — send on every protected call |
 | Refresh token | Opaque, **7 days** — rotate when access expires; **one-time use** |
 
-**Token flow (must follow exactly):**
+**Two auth paths (both produce the same tokens):**
 
 ```
-send-otp → verify-otp (get accessToken + refreshToken)
-  → [use accessToken for 15 min]
-  → on 401: refresh (post refreshToken, get a NEW pair — old refresh dies)
-  → logout (post current refreshToken)
+[New users]
+POST /api/auth/register  (name + email + mobile + password  →  OTP sent to mobile)
+POST /api/auth/register/verify  (mobile + OTP  →  account created + tokens)
+
+[Returning users]
+POST /api/auth/login  (mobile + password  →  tokens)
+
+[Token lifecycle — same for both paths]
+  → use accessToken (15 min) on every protected request
+  → on 401: POST /api/auth/refresh  →  new pair (old refresh revoked)
+  → POST /api/auth/logout  (revokes refresh + session)
 ```
 
 **Rule:** never reuse a refresh token twice. After every `refresh` response, **discard the old refreshToken and store the new one**. Reusing a rotated token revokes the user's entire session family (all devices) with a generic 401.
+
+> **Legacy OTP flow** (`send-otp` / `verify-otp`) remains available for any OTP-only use cases but is no longer the primary auth path.
+
+**Email uniqueness:** email is **not unique** — the same email may exist on multiple accounts. Mobile is the unique account identifier.
 
 ---
 
@@ -56,13 +67,100 @@ Public. Sends a 6-digit OTP to the mobile. Rate limited: 3 sends/mobile/10 min +
 | Bad mobile / unknown field | 400 | `VALIDATION_ERROR` |
 | Too many requests | 429 | `RATE_LIMITED` |
 
-> Dev note: OTP is delivered by **YourBulkSMS** (`OTP_PROVIDER=yourbulksms`) with a **dev bypass** re-enabled on 2026-08-12 for the pre-approval Flutter-testing phase: for `OTP_BYPASS_MOBILE` (dev: `8090780908`) no SMS is sent and `OTP_BYPASS_CODE` (dev: `123456`) always verifies. With the `console` provider the OTP is printed in the server log instead (`[ConsoleOtpProvider] OTP for <mobile>: 123456`).
+> Dev note: OTP is delivered by **YourBulkSMS** (`OTP_PROVIDER=yourbulksms`). The DLT template is **approved** — real SMS OTPs go to the entered mobile. The dev bypass (`OTP_BYPASS_ENABLED=true`, mobile `8090780908`, code `123456`) can be flipped back on for offline testing; with the `console` provider the OTP is printed in the server log instead (`[ConsoleOtpProvider] OTP for <mobile>: 123456`).
 
-**YourBulkSMS config** (`.env` / `render.yaml`): `YOURBULKSMS_AUTHKEY` (secret, sync:false), `YOURBULKSMS_SENDER_ID=URBLKM`, `YOURBULKSMS_DLT_TE_ID` (registered template ID, currently `1707163456288183577`), `YOURBULKSMS_ROUTE=2`, `YOURBULKSMS_COUNTRY=0`, `YOURBULKSMS_OTP_TEMPLATE` (pending-approved **Option A** message with `{code}` substitution: `Dear User, Your OwnMyPin OTP is {code}. It is valid for 5 minutes. Please do not share it with anyone. - OwnMyPin`). The SMS text must match the registered DLT template after substitution.
+**YourBulkSMS config** (`.env` / `render.yaml`): `YOURBULKSMS_AUTHKEY` (secret, sync:false), `YOURBULKSMS_SENDER_ID=OWNMY`, `YOURBULKSMS_DLT_TE_ID` (approved template ID, `1777178721813553031`), `YOURBULKSMS_ROUTE=2`, `YOURBULKSMS_COUNTRY=0`, `YOURBULKSMS_OTP_TEMPLATE` (DLT-approved message: `Dear User, Your OwnMyPin registration OTP is {#var#}. It is valid for 5 minutes. Please do not share it with anyone.`).
 
-> ⚠️ **DLT approval pending (post-MVP deploy):** the current registered template ends at `{#var#}` → operator rejects OTP sends with "Template not Matched". The **Option A** message above is what gets registered with the DLT provider once the MVP is live; until then the dev bypass above is the auth path. After approval: update `YOURBULKSMS_DLT_TE_ID` + `YOURBULKSMS_OTP_TEMPLATE` and set `OTP_BYPASS_ENABLED=false`.
+> **Real SMS active:** `OTP_BYPASS_ENABLED=false`. OTPs are sent to the entered mobile via the approved DLT template (verified live 2026-08-20: register → SMS arrives → verify → account + tokens). Flip `OTP_BYPASS_ENABLED=true` only for offline/dev testing with mobile `8090780908` / code `123456`.
 
-### POST /api/auth/verify-otp — verify OTP, get tokens
+### POST /api/auth/register — initiate registration
+Public. Validates name/email/mobile/password, stores a pending registration, and sends a 6-digit OTP to the mobile. Rate limited same as send-otp.
+
+```jsonc
+// Request
+{
+  "name": "Anuraj Kumar",
+  "email": "anuraj@example.com",
+  "mobile": "9876543210",           // 10 digits, must start 6-9
+  "password": "SecurePass1"          // min 8 chars, ≥1 uppercase, ≥1 digit
+}
+
+// Response 200
+{ "success": true, "data": { "message": "OTP sent to your mobile number...", "mobile": "9876543210" } }
+```
+
+| Error | Status | Code |
+|---|---|---|
+| Mobile already registered | 409 | `MOBILE_TAKEN` |
+| Weak password / bad format | 400 | `VALIDATION_ERROR` |
+| Too many OTP requests | 429 | `RATE_LIMITED` |
+
+### POST /api/auth/register/verify — complete registration with OTP
+Public. Verifies the OTP, creates the account, and returns tokens. Max 3 attempts.
+
+```jsonc
+// Request
+{
+  "mobile": "9876543210",
+  "otp": "483920",
+  "deviceInfo": "Pixel 9 / app 1.0"   // optional
+}
+
+// Response 200
+{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOi...",
+    "refreshToken": "a3f2...",
+    "userId": "cmsl...",
+    "isNewUser": true
+  }
+}
+```
+
+| Error | Status | Code |
+|---|---|---|
+| Wrong OTP | 400 | `OTP_INVALID` |
+| Expired / exhausted | 400 | `OTP_EXPIRED` |
+| Registration session expired | 400 | `REGISTRATION_EXPIRED` |
+| Mobile race conflict | 409 | `MOBILE_TAKEN` |
+
+### POST /api/auth/login — login with mobile + password
+Public. All failure paths return the same generic 401 (no mobile-existence leak).
+
+```jsonc
+// Request
+{
+  "mobile": "9876543210",
+  "password": "SecurePass1",
+  "deviceInfo": "Pixel 9 / app 1.0"   // optional
+}
+
+// Response 200
+{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOi...",
+    "refreshToken": "a3f2...",
+    "userId": "cmsl...",
+    "isNewUser": false
+  }
+}
+```
+
+| Error | Status | Code |
+|---|---|---|
+| Wrong mobile or password | 401 | `INVALID_CREDENTIALS` |
+| Account deactivated/deleted | 403 | `ACCOUNT_DISABLED` |
+
+---
+
+## 2. Auth endpoints (legacy OTP flow)
+
+> These routes remain for any OTP-only use cases but are no longer the primary auth path.
+
+### POST /api/auth/send-otp — request a login OTP
+Public. Sends a 6-digit OTP to the mobile. Rate limited: 3 sends/mobile/10 min + 15/IP/10 min.
 Public. Creates the user on first login. Max 3 attempts per OTP.
 
 ```jsonc
@@ -689,7 +787,7 @@ Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fi
 
 - **API test lab (dev harness):** `http://localhost:3000/api-test.html` — same-origin page exercising every endpoint (bypass login, profile, media uploads, location verify with map + GPS auto-fill, property → DigiPin + QR). Serve of convenience, not part of the app, **and not deployed** (gitignored).
 - Login mobile for existing account: `8090780908` (name "Anuraj", ACTIVE).
-- **OTP in dev:** bypass active for `8090780908` → fixed code `123456` (no SMS sent; server does NOT log the code — Flutter dev uses `123456` via the API only). Re-enabled 2026-08-12 so the Flutter app can test before the DLT template is approved post-deploy. On Render the bypass stays ON during the Flutter-testing phase (same mobile/code).
+- **OTP in dev:** real SMS active (`OTP_BYPASS_ENABLED=false`) via the approved DLT template — register an account and the OTP arrives on the entered mobile. For offline testing only, flip bypass on for `8090780908` → fixed code `123456` (no SMS sent; server does NOT log the code).
 - Live DigiPins in dev DB: `UP499807` (SUBMITTED), `UP725207` (SUBMITTED), `WB105516` (SUBMITTED), `WB855216` (SUBMITTED), `UP617510` (SUBMITTED).
 - Swagger spec: `GET /api/openapi.json` (version 0.5.0) · Swagger UI: `/api/docs` · Postman collection: `postman/ownmypin.postman_collection.json`.
 
@@ -703,7 +801,7 @@ Deployed to **Render** today for Flutter-frontend testing. Blueprint: `render.ya
 2. **Render → New → Blueprint** → pick the repo → `render.yaml` auto-configures.
 3. **Fill required secrets** (first build fails without them): `DATABASE_URL` (external MySQL — Aiven/PlanetScale/etc., Render has none), `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `OTP_HASH_SALT`, `ADMIN_JWT_SECRET` — all distinct, ≥32 chars.
 4. **Flutter Web** → add your web origin to `CORS_ALLOWED_ORIGINS` (mobile apps are unaffected by CORS — no Origin header).
-5. **Base URL for the app:** `https://<your-app>.onrender.com`. Test login: `8090780908` / `123456` (OTP bypass ON for this phase; will flip to real SMS after DLT template approval).
+5. **Base URL for the app:** `https://<your-app>.onrender.com`. Auth: register via real-SMS OTP on the entered mobile, then login with mobile + password. Legacy bypass (`8090780908` / `123456`) only when `OTP_BYPASS_ENABLED=true`.
 
 **What is live:** Phase 1 + Phase 2 Modules 1–4 (Search, Business, Trust Score, Notifications). **Module 7 Admin Panel: code complete, E2E pending** — all routes are built and lint-clean; `npm run admin:seed` seeds the first SUPER_ADMIN. Subscriptions/Payments + Badges remain deferred. Until the E2E pass is complete and Render is redeployed, businesses still can't be approved on Render. Uploads live on a Render disk; without it they're ephemeral across redeploys.
 

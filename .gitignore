@@ -39,3 +39,8 @@ TODO.md
 /src/tests/
 /vitest.config.ts
 /public/api-test.html
+
+# local dev server logs/pid
+/.dev*.log
+/.dev*.err.log
+/.dev*.pid
