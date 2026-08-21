@@ -5,7 +5,7 @@
   "description": "OwnMyPin backend — digital identity & smart-address platform (Phase 1: Core Backend)",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NODE_ENV=production next build",
     "start": "next start",
     "postinstall": "npx prisma@6.19.3 generate",
     "lint": "next lint",
