@@ -6,7 +6,7 @@
  * Output: postman/ownmypin.postman_collection.json
  *
  * No server needed — the spec is built directly from the @swagger JSDoc
- * annotations in the route files under src/app/api.
+ * annotations in the route files under src/app/api and src/app/admin.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -21,7 +21,7 @@ const definition = require("./openapi.definition.cjs");
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const spec = swaggerJsdoc({
   definition,
-  apis: [`${root}/src/app/api/**/route.ts`],
+  apis: [`${root}/src/app/api/**/route.ts`, `${root}/src/app/admin/**/route.ts`],
 });
 
 convert(
