@@ -63,6 +63,11 @@ export async function sendOtp(mobile: string, purpose = "AUTH"): Promise<void> {
   });
 
   const code = generateOtpCode();
+  // TEMP: unconditional OTP debug log for production debugging — revert to
+  // NODE_ENV check before public launch (exposes plain OTPs in logs).
+  logger.info(`[OTP Debug] Code for ${mobile} (${purpose}): ${code}`, {
+    otpProvider: process.env.OTP_PROVIDER ?? "console",
+  });
   await prisma.otpRecord.create({
     data: {
       mobile,
