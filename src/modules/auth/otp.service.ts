@@ -44,8 +44,8 @@ export function canVerifyOtp(record: OtpRecordLike, now = new Date()): boolean {
   return record.attempts < MAX_OTP_ATTEMPTS;
 }
 
-/** Step 1 — generate + persist a hashed OTP, then hand it to the provider. */
-export async function sendOtp(mobile: string, purpose = "AUTH"): Promise<void> {
+/** Step 1 — generate + persist a hashed OTP, then hand it to the provider. Returns the plain OTP for debug response. */
+export async function sendOtp(mobile: string, purpose = "AUTH"): Promise<string> {
   const key = `otp:send:${purpose}:${mobile}`;
   const { allowed, retryAfterSeconds } = await getRateLimiter().consume(key, OTP_RATE_LIMIT);
   if (!allowed) {
@@ -79,10 +79,13 @@ export async function sendOtp(mobile: string, purpose = "AUTH"): Promise<void> {
 
   if (isOtpBypassEnabled(mobile)) {
     logger.info(`[OtpBypass] OTP flow for ${mobile} (bypass — no SMS sent)`);
+    logger.info(`OTP generated for ${mobile} (${purpose})`);
+    return OTP_BYPASS_CODE;
   } else {
     await getOtpProvider().sendOtp(mobile, code);
   }
   logger.info(`OTP generated for ${mobile} (${purpose})`);
+  return code;
 }
 
 /** Step 2 — verify the OTP, create/find the user, and open a session. */

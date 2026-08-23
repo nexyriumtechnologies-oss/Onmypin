@@ -71,6 +71,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     );
   }
 
-  await sendOtp(body.mobile, body.purpose);
-  return ok({ message: "OTP sent", mobile: body.mobile });
+  // TEMP: OTP returned in response for frontend debugging via deployed API (no terminal access) — REMOVE before public launch
+  const otp = await sendOtp(body.mobile, body.purpose);
+  return ok({ message: `OTP ${otp} sent`, mobile: body.mobile, otp });
 });

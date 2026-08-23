@@ -43,7 +43,7 @@ export async function initiateRegister(
   email: string,
   mobile: string,
   password: string,
-): Promise<void> {
+): Promise<string> {
   // Check for existing accounts
   const existingMobile = await prisma.user.findUnique({ where: { mobile } });
   if (existingMobile) {
@@ -65,8 +65,10 @@ export async function initiateRegister(
     },
   });
 
-  await sendOtp(mobile, "REGISTER");
+  // TEMP: return plain OTP for debug response — remove before public launch
+  const otp = await sendOtp(mobile, "REGISTER");
   logger.info(`Registration initiated for mobile ${mobile}`);
+  return otp;
 }
 
 // ---- Step 2: verify OTP → create user → open session ----

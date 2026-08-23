@@ -62,6 +62,11 @@ import { ok } from "@/lib/response";
  */
 export const POST = withErrorHandler(async (req: NextRequest) => {
   const body = validateBody(registerInitSchema, await readJsonBody(req));
-  await initiateRegister(body.name, body.email, body.mobile, body.password);
-  return ok({ message: "OTP sent to your mobile number. Use POST /api/auth/register/verify to complete registration.", mobile: body.mobile });
+  // TEMP: OTP returned in response for frontend debugging via deployed API (no terminal access) — REMOVE before public launch
+  const otp = await initiateRegister(body.name, body.email, body.mobile, body.password);
+  return ok({
+    message: `OTP ${otp} sent to your mobile number. Use POST /api/auth/register/verify to complete registration.`,
+    mobile: body.mobile,
+    otp,
+  });
 });
