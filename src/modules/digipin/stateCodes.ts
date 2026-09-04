@@ -39,6 +39,7 @@ const STATE_CODES: Record<string, string> = {
   "andaman and nicobar": "AN",
   chandigarh: "CH",
   "dadra and nagar haveli and daman and diu": "DD",
+  "the dadra and nagar haveli and daman and diu": "DD",
   "daman and diu": "DD",
   delhi: "DL",
   "national capital territory of delhi": "DL",

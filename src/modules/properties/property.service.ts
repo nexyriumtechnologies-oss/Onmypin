@@ -2,7 +2,10 @@ import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/middleware/errorHandler";
 import { requireOwnedMedia, requireOwnedMediaMany } from "@/modules/media/media.service";
 import { geocodeAddress } from "@/modules/location/location.service";
-import type { PropertyType, OwnershipType, VerificationStatus } from "@prisma/client";
+import { encodeDigiPin } from "@/modules/digipin/digipin.codec";
+import { getDistrict, assertDistrictInState } from "@/modules/districts/districts";
+import { getStateCode } from "@/modules/digipin/stateCodes";
+import type { PropertyType, OwnershipType, VerificationStatus, DigiPin } from "@prisma/client";
 
 /**
  * DigiPin visibility rule: the code is hidden from every non-admin surface
@@ -22,6 +25,7 @@ export interface CreatePropertyInput {
   address?: string;
   city?: string;
   state?: string;
+  districtCode?: number;
   pincode?: string;
   latitude?: number;
   longitude?: number;
@@ -37,6 +41,8 @@ const PROPERTY_SELECT = {
   address: true,
   city: true,
   state: true,
+  districtCode: true,
+  districtName: true,
   pincode: true,
   latitude: true,
   longitude: true,
@@ -47,8 +53,13 @@ const PROPERTY_SELECT = {
 
 /** A new property always starts as a DRAFT owned by the caller. */
 export async function createProperty(userId: string, input: CreatePropertyInput) {
+  // District is optional at create (required at submit). Validate existence
+  // now and snapshot the name; the strict state cross-check happens at submit
+  // where state is mandatory.
+  const districtName =
+    input.districtCode !== undefined ? getDistrict(input.districtCode).name : undefined;
   return prisma.property.create({
-    data: { userId, ...input },
+    data: { userId, ...input, ...(districtName ? { districtName } : {}) },
     select: PROPERTY_SELECT,
   });
 }
@@ -120,23 +131,55 @@ export async function updateProperty(
     );
   }
 
+  // Snapshot the district name when the code changes (existence validated;
+  // strict state cross-check happens at submit).
+  const districtName =
+    data.districtCode !== undefined ? getDistrict(data.districtCode).name : undefined;
+
   return prisma.property.update({
     where: { id: property.id },
-    data,
+    data: { ...data, ...(districtName ? { districtName } : {}) },
     select: PROPERTY_SELECT,
   });
 }
 
 /**
+ * Encode a v1 DigiPin and persist it, retrying with fresh randomness on a
+ * P2002 number collision (max 5). Only the rand part changes between
+ * attempts, so district/coords stay identical.
+ */
+export async function persistUniqueDigiPin(
+  persist: (digipinNumber: string) => Promise<DigiPin>,
+  fields: { stateShort: string; districtCode: number; latitude: number; longitude: number },
+): Promise<DigiPin> {
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    const candidate = encodeDigiPin(fields);
+    try {
+      return await persist(candidate);
+    } catch (err) {
+      const isUniqueCollision =
+        typeof err === "object" && err !== null && (err as { code?: string }).code === "P2002";
+      if (!isUniqueCollision) throw err;
+    }
+  }
+  throw new ApiError(
+    500,
+    "DIGIPIN_GENERATION_FAILED",
+    "Could not generate a unique DigiPin after 5 attempts",
+  );
+}
+
+/**
  * Submit: validates completeness, enforces DRAFT|REJECTED→SUBMITTED, then
- * generates the DigiPin and associates a QR — inside a transaction.
+ * generates the v1 DigiPin (state + district + coords, checksum + rand) and
+ * associates a QR — inside a transaction.
  *
  * The DigiPin is NEVER returned here: it stays invisible on every non-admin
  * surface until an admin approves the property via
  * PATCH /admin/properties/{id}/verification.
  *
- * Resubmit after REJECTED reuses the existing DigiPin row (its number was
- * never exposed) and resets it to SUBMITTED, keeping the existing QR token.
+ * Resubmit after REJECTED issues a FRESH number on the existing DigiPin row
+ * (fresh rand) and resets it to SUBMITTED, keeping the existing QR token.
  *
  * Coordinates: latitude/longitude are OPTIONAL. When the client sends device
  * GPS those are stored; otherwise the server geocodes the full address
@@ -153,6 +196,7 @@ export async function submitProperty(
     address: string;
     city: string;
     state: string;
+    districtCode: number;
     pincode: string;
     latitude?: number;
     longitude?: number;
@@ -186,32 +230,49 @@ export async function submitProperty(
     longitude = geo.longitude;
   }
 
+  // v1 code inputs: district must belong to the submitted state (strict);
+  // coords are final here (device GPS or geocoded above).
+  const stateShort = getStateCode(data.state);
+  const district = assertDistrictInState(data.districtCode, stateShort);
+  const codeFields = {
+    stateShort,
+    districtCode: district.code,
+    latitude,
+    longitude,
+  };
+
   const result = await prisma.$transaction(async (tx) => {
     // propertyImages/selfieImage are submit-gate media references only — they
     // are not Property columns; strip them before the DB update.
     const { propertyImages: _propertyImages, selfieImage: _selfieImage, ...updateData } = data;
     const updated = await tx.property.update({
       where: { id: propertyId },
-      data: { ...updateData, latitude, longitude, verificationStatus: "SUBMITTED" },
+      data: {
+        ...updateData,
+        districtName: district.name,
+        latitude,
+        longitude,
+        verificationStatus: "SUBMITTED",
+      },
     });
 
-    // First submit creates the DigiPin row; a resubmit after REJECTED reuses
-    // the existing row (its number was never exposed) and resets it to
-    // SUBMITTED. A blind create here would P2002 on propertyId @unique.
-    let digiPin = await tx.digiPin.findUnique({ where: { propertyId } });
-    if (!digiPin) {
-      const { generateDigiPin } = await import("@/modules/digipin/digipin.service");
-      await generateDigiPin(data.state, data.pincode, {
-        persist: (number) =>
-          tx.digiPin.create({ data: { propertyId, digipinNumber: number } }),
-      });
-      digiPin = await tx.digiPin.findUniqueOrThrow({ where: { propertyId } });
-    } else if (digiPin.verificationStatus !== "SUBMITTED") {
-      digiPin = await tx.digiPin.update({
-        where: { id: digiPin.id },
-        data: { verificationStatus: "SUBMITTED" },
-      });
-    }
+    // First submit creates the DigiPin row; a resubmit after REJECTED issues
+    // a fresh number on the existing row and resets it to SUBMITTED. A blind
+    // create here would P2002 on propertyId @unique.
+    const existing = await tx.digiPin.findUnique({ where: { propertyId } });
+    const digiPin = existing
+      ? await persistUniqueDigiPin(
+          (n) =>
+            tx.digiPin.update({
+              where: { id: existing.id },
+              data: { digipinNumber: n, verificationStatus: "SUBMITTED" },
+            }),
+          codeFields,
+        )
+      : await persistUniqueDigiPin(
+          (n) => tx.digiPin.create({ data: { propertyId, digipinNumber: n } }),
+          codeFields,
+        );
 
     // Keep the existing QR token on resubmit — only create one if missing.
     const existingQr = await tx.qR.findUnique({ where: { digipinId: digiPin.id } });

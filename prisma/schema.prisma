@@ -245,6 +245,8 @@ model Property {
   address            String?
   city               String?
   state              String?
+  districtCode       Int?
+  districtName       String?
   pincode            String?
   latitude           Decimal?
   longitude          Decimal?

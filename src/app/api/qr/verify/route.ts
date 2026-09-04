@@ -42,11 +42,12 @@ const verifyQrSchema = z
  *                     data:
  *                       type: object
  *                       properties:
- *                         digipinNumber: { type: string }
- *                         status: { type: string, enum: [ACTIVE, INACTIVE] }
- *                         verificationStatus: { type: string }
- *                         city: { type: string, nullable: true }
- *                         state: { type: string, nullable: true }
+  *                         digipinNumber: { type: string }
+  *                         status: { type: string, enum: [ACTIVE, INACTIVE] }
+  *                         verificationStatus: { type: string }
+  *                         city: { type: string, nullable: true }
+  *                         state: { type: string, nullable: true }
+  *                         districtName: { type: string, nullable: true }
  *       '400':
  *         description: Invalid payload
  *       '404':

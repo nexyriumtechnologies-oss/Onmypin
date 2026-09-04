@@ -73,6 +73,13 @@ export const digipinStatusSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE"]),
 });
 
+/** Legacy migration: assign an LGD district code to a property (existence + state-match checked in service). */
+export const assignDistrictSchema = z
+  .object({
+    districtCode: z.number().int().min(1),
+  })
+  .strict();
+
 export const userStatusSchema = z.object({
   accountStatus: z.enum(["ACTIVE", "DEACTIVATED"]),
 });

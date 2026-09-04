@@ -351,14 +351,15 @@ final res = await req.send();
 ## 5. Properties
 
 ### POST /api/properties — create a draft
-Requires Bearer. Only the first 3 fields are required; everything else comes later via PATCH.
+Requires Bearer. Only the first 3 fields are required; everything else comes later via PATCH. `districtCode` (LGD code, e.g. `315` = Kolkata) is optional here but **required at submit** — it is validated against the built-in LGD dataset (`400 INVALID_DISTRICT` if unknown).
 
 ```jsonc
 // Request
 {
   "ownerName": "Anuraj",
   "propertyType": "HOUSE",        // HOUSE | FLAT | OTHER
-  "ownershipType": "OWN"          // OWN | RENT | OTHER
+  "ownershipType": "OWN",         // OWN | RENT | OTHER
+  "districtCode": 315             // optional now, required at submit
 }
 
 // Response 201
@@ -372,6 +373,8 @@ Requires Bearer. Only the first 3 fields are required; everything else comes lat
     "address": null,
     "city": null,
     "state": null,
+    "districtCode": 315,
+    "districtName": "Kolkata",              // snapshot from the dataset
     "pincode": null,
     "latitude": null,
     "longitude": null,
@@ -409,7 +412,9 @@ Requires Bearer. At least one field. **Do NOT send `verificationStatus`** (400 `
 > **State names:** the submit gate maps **full state/UT names** (e.g. `"Uttar Pradesh"`, `"West Bengal"`, `"Delhi"`) to DigiPin codes. Short forms like `"UP"` fail submit with `400 INVALID_STATE`. Use a state dropdown in the UI.
 
 ### POST /api/properties/:id/submit — submit for verification
-Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE`. On success: property becomes SUBMITTED, a **DigiPin** and its **QR** are generated — but the DigiPin is **NOT returned**. It stays hidden on every non-admin surface until an admin approves the property (`PATCH /admin/properties/:id/verification` → `VERIFIED`). A resubmit after REJECTED reuses the same (never-exposed) DigiPin number.
+Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE` (this includes `districtCode`). On success: property becomes SUBMITTED, a **v1 DigiPin** and its **QR** are generated — but the DigiPin is **NOT returned**. It stays hidden on every non-admin surface until an admin approves the property (`PATCH /admin/properties/:id/verification` → `VERIFIED`). A resubmit after REJECTED issues a **fresh** number on the same row.
+
+**v1 DigiPin format (18 chars, open encoding + checksum):** `SS` (state shortform, e.g. `WB`) + `DDD` (zero-padded LGD district code, e.g. `315`) + 12 base32 chars (version + latitude + longitude at 1e-5° ≈ 1.1 m + 10-bit rand) + 1 checksum char. Example: `WB315K7Q29XMD49C2F9P` (displayed grouped `WB-315-K7Q29XMD49C2F-9-P`). Decoding yields state + district + grid-exact coords — server-side only; exact lat/lng are never exposed publicly. The district must belong to the submitted state (`400 DISTRICT_STATE_MISMATCH` otherwise).
 
 ```jsonc
 // Request
@@ -420,6 +425,7 @@ Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE
   "address": "14 Park Street, Ballygunge",
   "city": "Kolkata",
   "state": "West Bengal",
+  "districtCode": 315,                   // LGD code — required, must belong to state
   "pincode": "700016",
   "propertyImages": ["638713e0fa164069adba18a0e2d1fdab", "b1df20e6488a391041a9bddce91e0055"],  // ≥1 fileId, max 3
   "selfieImage": "59f25cfd0eae09bba0b376db476566b1"                                            // exactly one
@@ -533,11 +539,12 @@ Anyone can call this — it returns **no address, no personal data** (privacy-sa
 {
   "success": true,
   "data": {
-    "digipinNumber": "WB629801",
+    "digipinNumber": "WB315K7Q29XMD49C2F9P",
     "status": "ACTIVE",                  // ACTIVE | INACTIVE
     "verificationStatus": "VERIFIED",    // always VERIFIED or later — unapproved codes 404
     "city": "Kolkata",
-    "state": "West Bengal"
+    "state": "West Bengal",
+    "districtName": "Kolkata"            // approved only; exact lat/lng never exposed
   }
 }
 ```
@@ -766,6 +773,7 @@ Body: `fcmToken` (1-512), `platform` = `ANDROID | IOS | WEB`. Upserts by (user, 
 Media-only: `EMPTY_BODY` 400, `INVALID_CONTENT_TYPE` 400, `FILE_REQUIRED` 400, `EMPTY_FILE` 400, `INVALID_FILE_TYPE` 400, `INVALID_FILE_KEY` 400, `FILE_TOO_LARGE` 413, `MALFORMED_UPLOAD` 400.
 Ownership: `MEDIA_NOT_FOUND` 404, `PROPERTY_NOT_FOUND` 404, `DIGIPIN_NOT_FOUND` 404, `QR_NOT_FOUND` 404, `USER_NOT_FOUND` 404, `BUSINESS_NOT_FOUND` 404, `BUSINESS_IMAGE_NOT_FOUND` 404, `NOTIFICATION_NOT_FOUND` 404, `DEVICE_TOKEN_NOT_FOUND` 404.
 Approval: `PROPERTY_NOT_APPROVED` 403 (QR fetch on an unapproved property — owner only; strangers get the identical 404).
+DigiPin v1: `INVALID_DISTRICT` 400 (unknown LGD code), `DISTRICT_STATE_MISMATCH` 400 (district belongs to another state), `INVALID_DIGIPIN_FORMAT` 400, `DIGIPIN_CHECKSUM_MISMATCH` 400 (typo/tamper), `UNSUPPORTED_DIGIPIN_VERSION` 400, `DIGIPIN_OUT_OF_RANGE` 400 (coords outside India grid), `DIGIPIN_GENERATION_FAILED` 500, `DISTRICT_REQUIRED` / `STATE_REQUIRED` / `COORDINATES_REQUIRED` 400 (regenerate preconditions).
 Account: `ACCOUNT_DISABLED` 403 (deactivated/deleted), `ACCOUNT_DELETED` 403.
 Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fields), `INVALID_STATUS_TRANSITION` 400, `BUSINESS_IMAGE_LIMIT` 400 (max 5), `CATEGORY_INVALID` 400.
 
@@ -780,7 +788,7 @@ Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fi
    - step 1–3 (name/type/ownership): already at create
    - address step: `PATCH /api/properties/:id` (address/city/state/pincode) + `location/verify` for a map pin
    - photos step: upload to `property-images` (max 3, show replace-toast on 4th) and `selfie`
-    - review & submit: `submit` → show a **"pending admin approval"** state (the DigiPin is NOT in the response). After approval, read the code from `GET /api/properties/:id` (`digiPin` appears, `digipinStatus: "AVAILABLE"`) and fetch the QR via `GET /api/digipins/:id/qr` (needs the `digipinId` from the approved property detail).
+    - review & submit: send `districtCode` (LGD, must match `state`) + `submit` → show a **"pending admin approval"** state (the DigiPin is NOT in the response). After approval, read the 18-char code from `GET /api/properties/:id` (`digiPin` appears, `digipinStatus: "AVAILABLE"`) and fetch the QR via `GET /api/digipins/:id/qr` (needs the `digipinId` from the approved property detail).
 4. **Token upkeep** → on any 401, call `refresh`, update stored tokens, retry once; if refresh 401s, force re-login.
 
 ---
@@ -943,7 +951,7 @@ Returns full user profile including properties, businesses, notifications (last 
 Query: `page`, `pageSize`, `verificationStatus`, `city`, `state`, `search`, `sortBy`, `sortOrder`
 
 **`GET /admin/properties/:id`** — requires `property:read`
-Returns property + DigiPin (incl. QR) + owner (name/mobile/email) + media files (PROPERTY_IMAGE + SELFIE).
+Returns property + DigiPin (incl. QR) + owner (name/mobile/email) + media files (PROPERTY_IMAGE + SELFIE) + `digipinDecoded` (decoded v1 payload: state, district code/name, grid-exact lat/lng — `null` for legacy-format codes).
 
 **`PATCH /admin/properties/:id/verification`** — requires `property:verify`
 ```jsonc
@@ -964,6 +972,10 @@ Query: `page`, `pageSize`, `search`, `sortBy`, `sortOrder`
 ```jsonc
 { "status": "INACTIVE" }   // or "ACTIVE"
 ```
+
+**Legacy v1 migration (old `WB999901`-style codes have no district stored):**
+1. **`PATCH /admin/properties/:id/district`** — requires `property:verify`. Body `{ "districtCode": 315 }` (LGD code; must belong to the property's state unless the stored state text is unparseable). Snapshots `districtName`.
+2. **`POST /admin/digipins/:id/regenerate`** — requires `digipin:status`. Recomputes the v1 number **in place** (same `digipinId`, so printed QRs keep working). Needs district + state + coordinates on the property (`400 DISTRICT_REQUIRED` / `STATE_REQUIRED` / `COORDINATES_REQUIRED` otherwise).
 
 ### 12.8 Business Management
 

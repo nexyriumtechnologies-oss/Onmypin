@@ -18,6 +18,7 @@
     "prisma:migrate": "npx prisma@6.19.3 migrate dev",
     "prisma:deploy": "npx prisma@6.19.3 migrate deploy",
     "prisma:studio": "npx prisma@6.19.3 studio",
+    "districts:generate": "node scripts/generate-districts.mjs",
     "seed:categories": "node scripts/seed-business-categories.mjs",
     "admin:seed": "node scripts/seed-admin.mjs",
     "export:postman": "node scripts/export-postman.mjs"

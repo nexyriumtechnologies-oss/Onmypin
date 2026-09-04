@@ -7,6 +7,9 @@ export const ownershipTypeSchema = z.enum(["OWN", "RENT", "OTHER"]);
 const pincodeSchema = z.string().regex(/^\d{6}$/, "Pincode must be 6 digits");
 const latitudeSchema = z.number().min(-90).max(90);
 const longitudeSchema = z.number().min(-180).max(180);
+// LGD district code — existence/state-match validated against the dataset in
+// the service layer (codes are sparse: 1–796 with gaps, so range ≠ valid).
+const districtCodeSchema = z.number().int().min(1);
 
 /**
  * Registration-flow schemas (steps 1–10).
@@ -21,6 +24,7 @@ export const createPropertySchema = z
     address: z.string().min(5).max(500).optional(),
     city: z.string().min(2).max(100).optional(),
     state: z.string().min(2).max(100).optional(),
+    districtCode: districtCodeSchema.optional(),
     pincode: pincodeSchema.optional(),
     latitude: latitudeSchema.optional(),
     longitude: longitudeSchema.optional(),
@@ -35,6 +39,7 @@ export const patchPropertySchema = z
     address: z.string().min(5).max(500).optional(),
     city: z.string().min(2).max(100).optional(),
     state: z.string().min(2).max(100).optional(),
+    districtCode: districtCodeSchema.optional(),
     pincode: pincodeSchema.optional(),
     latitude: latitudeSchema.optional(),
     longitude: longitudeSchema.optional(),
@@ -51,6 +56,7 @@ export interface PropertySubmissionData {
   address: string;
   city: string;
   state: string;
+  districtCode: number;
   pincode: string;
   /** Optional device GPS — when absent the server geocodes the address. */
   latitude?: number;
@@ -69,6 +75,7 @@ export function assertCompleteProperty(input: Record<string, unknown>): Property
       address: z.string().min(5).max(500),
       city: z.string().min(2).max(100),
       state: z.string().min(2).max(100),
+      districtCode: districtCodeSchema,
       pincode: pincodeSchema,
       latitude: latitudeSchema.optional(),
       longitude: longitudeSchema.optional(),

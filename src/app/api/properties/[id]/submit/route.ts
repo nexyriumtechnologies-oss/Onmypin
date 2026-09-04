@@ -20,9 +20,12 @@ type Params = { params: Promise<{ id: string }> };
  *       must belong to the caller. `latitude`/`longitude` are OPTIONAL device
  *       GPS — when absent the server geocodes the full address automatically
   *       (LOCATION_PROVIDER=osm/mock); users never type coordinates. On success
-  *       the DigiPin is generated and a QR is created inside a transaction —
-  *       but the DigiPin number is NOT returned here. It stays hidden on every
-  *       non-admin surface until an admin approves the property.
+  *       the v1 DigiPin (state + LGD district + coordinates, checksum + rand)
+  *       is generated and a QR is created inside a transaction — but the DigiPin
+  *       number is NOT returned here. It stays hidden on every
+  *       non-admin surface until an admin approves the property. `districtCode`
+  *       is required and must belong to `state` (400 DISTRICT_STATE_MISMATCH
+  *       otherwise). Resubmit after REJECTED issues a fresh number.
  *     tags: [Properties]
  *     security:
  *       - bearerAuth: []
@@ -43,18 +46,20 @@ type Params = { params: Promise<{ id: string }> };
  *               - ownershipType
  *               - address
  *               - city
- *               - state
- *               - pincode
- *               - propertyImages
- *               - selfieImage
+  *               - state
+  *               - districtCode
+  *               - pincode
+  *               - propertyImages
+  *               - selfieImage
  *             properties:
  *               ownerName: { type: string, minLength: 1, maxLength: 120 }
  *               propertyType: { type: string, enum: [HOUSE, FLAT, OTHER] }
  *               ownershipType: { type: string, enum: [OWN, RENT, OTHER] }
  *               address: { type: string, minLength: 5, maxLength: 500 }
  *               city: { type: string, minLength: 2, maxLength: 100 }
- *               state: { type: string, minLength: 2, maxLength: 100 }
- *               pincode: { type: string, pattern: '^\d{6}$' }
+  *               state: { type: string, minLength: 2, maxLength: 100 }
+  *               districtCode: { type: integer, minimum: 1, description: LGD district code — must belong to state }
+  *               pincode: { type: string, pattern: '^\d{6}$' }
  *               latitude: { type: number, minimum: -90, maximum: 90, description: Optional device GPS latitude; server geocodes the address when absent }
  *               longitude: { type: number, minimum: -180, maximum: 180, description: Optional device GPS longitude; server geocodes the address when absent }
  *               propertyImages:

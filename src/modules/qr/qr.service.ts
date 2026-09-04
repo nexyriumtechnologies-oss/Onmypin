@@ -54,7 +54,7 @@ export async function verifyQrToken(token: string) {
 
   const digiPin = await prisma.digiPin.findUnique({
     where: { id: qr.digipinId },
-    include: { property: { select: { city: true, state: true } } },
+    include: { property: { select: { city: true, state: true, districtName: true } } },
   });
   if (!digiPin || digiPin.status !== "ACTIVE") {
     throw new ApiError(410, "DIGIPIN_INACTIVE", "This DigiPin is not active");
@@ -69,6 +69,7 @@ export async function verifyQrToken(token: string) {
     verificationStatus: digiPin.verificationStatus,
     city: digiPin.property.city ?? undefined,
     state: digiPin.property.state ?? undefined,
+    districtName: digiPin.property.districtName ?? undefined,
   };
 }
 

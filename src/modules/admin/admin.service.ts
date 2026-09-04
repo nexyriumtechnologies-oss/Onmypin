@@ -3,6 +3,10 @@ import { ApiError } from "@/middleware/errorHandler";
 import { recalculateTrustScore } from "@/modules/trust-score/trust-score.service";
 import { notifyUser, type NotificationType } from "@/modules/notifications/notifications.service";
 import { revokeAllUserSessions } from "@/modules/auth/session.service";
+import { persistUniqueDigiPin } from "@/modules/properties/property.service";
+import { getDistrict, assertDistrictInState } from "@/modules/districts/districts";
+import { getStateCode } from "@/modules/digipin/stateCodes";
+import { decodeDigiPin, isLegacyDigiPin, type DecodedDigiPin } from "@/modules/digipin/digipin.codec";
 import { Prisma } from "@prisma/client";
 import type { AccountStatus, VerificationStatus, BusinessVerificationStatus, SubscriptionStatus, TransactionStatus } from "@prisma/client";
 
@@ -271,7 +275,87 @@ export async function getAdminPropertyDetail(propertyId: string) {
     orderBy: { createdAt: "desc" },
   });
 
-  return { property, mediaFiles };
+  // Decoded payload for v1 codes (district + grid coords) to aid verification.
+  // Legacy codes and tampered rows yield null — never throw here.
+  let digipinDecoded: DecodedDigiPin | null = null;
+  if (property.digiPin && !isLegacyDigiPin(property.digiPin.digipinNumber)) {
+    try {
+      digipinDecoded = decodeDigiPin(property.digiPin.digipinNumber);
+    } catch {
+      digipinDecoded = null;
+    }
+  }
+
+  return { property, mediaFiles, digipinDecoded };
+}
+
+/**
+ * Legacy migration: assign an LGD district to a property whose DigiPin
+ * predates the v1 format (old rows have no district stored).
+ */
+export async function assignPropertyDistrict(propertyId: string, districtCode: number) {
+  const property = await prisma.property.findUnique({ where: { id: propertyId } });
+  if (!property) {
+    throw new ApiError(404, "PROPERTY_NOT_FOUND", "Property not found");
+  }
+  const district = getDistrict(districtCode);
+  // Cross-check against the stored state when it parses; legacy free-text
+  // states may not, in which case the admin assignment stands as-is.
+  if (property.state) {
+    try {
+      assertDistrictInState(districtCode, getStateCode(property.state));
+    } catch (err) {
+      if (!(err instanceof ApiError) || err.code !== "INVALID_STATE") throw err;
+    }
+  }
+  return prisma.property.update({
+    where: { id: propertyId },
+    data: { districtCode: district.code, districtName: district.name },
+  });
+}
+
+/**
+ * Legacy migration: recompute the v1 DigiPin number IN PLACE (same digipinId,
+ * so existing printed QRs keep scanning). Requires a district (assign first)
+ * and stored coordinates. Status is untouched.
+ */
+export async function regenerateDigiPin(digipinId: string) {
+  const digiPin = await prisma.digiPin.findUnique({
+    where: { id: digipinId },
+    include: { property: true },
+  });
+  if (!digiPin) {
+    throw new ApiError(404, "DIGIPIN_NOT_FOUND", "DigiPin not found");
+  }
+  const { property } = digiPin;
+  if (property.districtCode == null) {
+    throw new ApiError(
+      400,
+      "DISTRICT_REQUIRED",
+      "Assign a district to the property first (PATCH /admin/properties/{id}/district).",
+    );
+  }
+  if (!property.state) {
+    throw new ApiError(400, "STATE_REQUIRED", "Property has no state — cannot encode a DigiPin.");
+  }
+  if (property.latitude == null || property.longitude == null) {
+    throw new ApiError(
+      400,
+      "COORDINATES_REQUIRED",
+      "Property has no coordinates — cannot encode a DigiPin.",
+    );
+  }
+  const stateShort = getStateCode(property.state);
+  const district = assertDistrictInState(property.districtCode, stateShort);
+  return persistUniqueDigiPin(
+    (n) => prisma.digiPin.update({ where: { id: digiPin.id }, data: { digipinNumber: n } }),
+    {
+      stateShort,
+      districtCode: district.code,
+      latitude: property.latitude.toNumber(),
+      longitude: property.longitude.toNumber(),
+    },
+  );
 }
 
 export async function verifyAdminProperty(

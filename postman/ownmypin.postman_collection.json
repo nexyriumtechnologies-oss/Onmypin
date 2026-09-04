@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "eb767d4c-e1df-4f5b-b44a-ad366d8b9937",
+      "id": "b6013f9c-e72d-46f4-87c3-5b56abbd5a44",
       "name": "Auth",
       "description": {
         "content": "OTP login, token refresh, logout, current user",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "9ee5a355-ff9b-412e-819f-8ad24e2bd834",
+          "id": "6e04c45e-db28-40cb-a51b-f2ff76dc875e",
           "name": "Verify the OTP and receive tokens",
           "request": {
             "name": "Verify the OTP and receive tokens",
@@ -53,7 +53,7 @@
           },
           "response": [
             {
-              "id": "a88ddc25-50ea-47a5-ba5b-e5ed3d5ac34a",
+              "id": "c643ae3a-f857-4b41-bdfe-2242240e2af2",
               "name": "Tokens issued",
               "originalRequest": {
                 "url": {
@@ -98,7 +98,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "3ca3b184-a309-4245-9604-74d86dd0b4c9",
+              "id": "e8f1555a-cbf1-4271-b4d2-eb96fe4d1fd3",
               "name": "Invalid OTP, expired, attempts exhausted, or bad payload",
               "originalRequest": {
                 "url": {
@@ -137,7 +137,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "7641fed2-cd05-4f8d-befd-a041a00fae32",
+              "id": "611e866c-4202-4c0f-b7ca-28d80b15f9e9",
               "name": "Account deactivated/deleted",
               "originalRequest": {
                 "url": {
@@ -176,7 +176,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "fe592a3e-5eee-4a61-baf2-8752066160d9",
+              "id": "ce0d9744-616c-4740-8a28-97985c82cd9b",
               "name": "Rate limited",
               "originalRequest": {
                 "url": {
@@ -221,7 +221,7 @@
           }
         },
         {
-          "id": "505769cb-b5e4-412b-901c-f43fa9e34a48",
+          "id": "8ad231e5-70ec-46a6-8be8-c97cf847540c",
           "name": "Send a 6-digit OTP to a mobile number",
           "request": {
             "name": "Send a 6-digit OTP to a mobile number",
@@ -265,7 +265,7 @@
           },
           "response": [
             {
-              "id": "6745dc4d-cffc-483c-8c1c-9d75a0ae3e0b",
+              "id": "4ffa0f7e-1b46-4754-a983-9a29a2c70ea7",
               "name": "OTP generated and handed to the provider",
               "originalRequest": {
                 "url": {
@@ -310,7 +310,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "5eee4c5b-fb83-4853-a178-f6666e9627e0",
+              "id": "fc204a3d-d06c-46d5-a403-992c0aab39d5",
               "name": "Invalid mobile or unknown fields",
               "originalRequest": {
                 "url": {
@@ -349,7 +349,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "59e15239-a9b8-428a-8e1d-eea17ff0f1d0",
+              "id": "8a739352-fc21-4b5c-917f-a8df157d63f1",
               "name": "Rate limited (per-mobile or per-IP)",
               "originalRequest": {
                 "url": {
@@ -400,7 +400,7 @@
           }
         },
         {
-          "id": "861f284e-71fc-4a35-ab5c-60047bce6d3f",
+          "id": "3bc48d4a-4a6c-458c-997c-1318495b6a83",
           "name": "Initiate registration — sends OTP to mobile",
           "request": {
             "name": "Initiate registration — sends OTP to mobile",
@@ -444,7 +444,7 @@
           },
           "response": [
             {
-              "id": "83093ed2-b00f-44fd-b4ac-b0cb6f9ce473",
+              "id": "a7846e86-99b0-4f29-8796-fa8dc44efbd6",
               "name": "OTP sent to mobile — proceed to /api/auth/register/verify",
               "originalRequest": {
                 "url": {
@@ -489,7 +489,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "8d22d4b3-2627-46b7-bbed-225f150d1b9b",
+              "id": "4b18c34d-4424-4dbc-a281-a2e82804348e",
               "name": "Validation error (invalid email / weak password / bad mobile)",
               "originalRequest": {
                 "url": {
@@ -528,7 +528,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "257e1d47-a3c2-40ef-9399-b5bf7f173cad",
+              "id": "118c2b6e-b6b0-4041-adba-cf248c766048",
               "name": "Mobile already registered (MOBILE_TAKEN)",
               "originalRequest": {
                 "url": {
@@ -567,7 +567,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "9bd2edfc-9868-4e03-a5e9-4960581f5c6c",
+              "id": "20dec0ab-6de1-49f3-892d-c19a8987357a",
               "name": "Rate limited",
               "originalRequest": {
                 "url": {
@@ -612,7 +612,7 @@
           }
         },
         {
-          "id": "e1a8d3d7-bd4c-4d79-8956-506dfde5a93d",
+          "id": "5ab2b8b9-f9b9-45f7-84d1-45a8c54244d2",
           "name": "Complete registration by verifying the OTP",
           "request": {
             "name": "Complete registration by verifying the OTP",
@@ -657,7 +657,7 @@
           },
           "response": [
             {
-              "id": "70803f90-175b-4b96-b8ee-ea3fe4a66818",
+              "id": "5b0836f7-9c7d-401d-bbf4-f87e58623d7b",
               "name": "Account created — tokens issued",
               "originalRequest": {
                 "url": {
@@ -703,7 +703,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "19d1c3e6-5dbb-4d0f-bf32-5dfce1e8a3cc",
+              "id": "31ec4d4c-ea93-4be4-b0ab-78bb67343062",
               "name": "Invalid OTP / expired OTP / registration session expired",
               "originalRequest": {
                 "url": {
@@ -743,7 +743,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "c534d472-e68b-4b41-a796-2abcff1557d8",
+              "id": "5116df94-a190-46a3-b532-6445b2427122",
               "name": "Email or mobile taken by another account (race condition)",
               "originalRequest": {
                 "url": {
@@ -789,7 +789,7 @@
           }
         },
         {
-          "id": "936e52bf-870a-4eaf-9b4b-3bb5a146f3a6",
+          "id": "6d88765a-e4d4-4575-a3fe-379dbf353a52",
           "name": "Rotate the refresh token",
           "request": {
             "name": "Rotate the refresh token",
@@ -833,7 +833,7 @@
           },
           "response": [
             {
-              "id": "db949625-c109-4345-8d49-0f91bb69c0a0",
+              "id": "bf2fea49-446b-48b3-8994-e23b3074223b",
               "name": "New token pair",
               "originalRequest": {
                 "url": {
@@ -878,7 +878,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "a937b310-fe29-41b5-aa84-10c7d8a4127b",
+              "id": "5b1926b3-e3f1-4609-8447-e058440448a3",
               "name": "Invalid, expired, or reused refresh token (generic)",
               "originalRequest": {
                 "url": {
@@ -917,7 +917,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b46e0f13-4d94-4282-969b-a662bf44e4d3",
+              "id": "6ef4d614-ef07-40a0-9495-33f46b9b2cfa",
               "name": "Account not active",
               "originalRequest": {
                 "url": {
@@ -962,7 +962,7 @@
           }
         },
         {
-          "id": "b92287ac-183e-44ac-9f6a-c9ed58e35f34",
+          "id": "8983edd5-7b3e-46e8-aa11-205e1d89d5fe",
           "name": "Get the current user profile",
           "request": {
             "name": "Get the current user profile",
@@ -1001,7 +1001,7 @@
           },
           "response": [
             {
-              "id": "18df6556-60f9-4379-9664-2e2577f41b10",
+              "id": "3807756d-4a56-43c8-8559-8811badd8181",
               "name": "Current user",
               "originalRequest": {
                 "url": {
@@ -1041,12 +1041,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"ACTIVE\",\n    \"createdAt\": \"1986-03-18T16:28:58.581Z\",\n    \"updatedAt\": \"1952-03-18T15:53:36.474Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"DELETED\",\n    \"createdAt\": \"2000-05-17T16:18:27.014Z\",\n    \"updatedAt\": \"1985-06-01T01:51:08.961Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "e64ba8a3-dcfe-4748-a65e-14476a389dfb",
+              "id": "e0f54adf-c1bd-4ebc-b5c7-8f9e91f4fce3",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -1093,7 +1093,7 @@
           }
         },
         {
-          "id": "7141cbe9-a40f-471f-8148-8b09ae8aa81c",
+          "id": "ec293cd9-26e6-4f78-ae08-96c99aa8fc27",
           "name": "Log out (revoke the session)",
           "request": {
             "name": "Log out (revoke the session)",
@@ -1141,7 +1141,7 @@
           },
           "response": [
             {
-              "id": "ed894c27-d777-4341-964e-f5e197c34abb",
+              "id": "068f1994-3223-4bdc-899c-b77a686ab6cb",
               "name": "Logged out",
               "originalRequest": {
                 "url": {
@@ -1190,7 +1190,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "ba553d92-06d9-443d-8911-8fe4c42f3d9a",
+              "id": "5832306d-a4cd-429d-9cb0-5cb5905d4f80",
               "name": "Missing/invalid access token or refresh token",
               "originalRequest": {
                 "url": {
@@ -1245,7 +1245,7 @@
           }
         },
         {
-          "id": "e512d295-f6a0-4bf5-8aa8-5587b74553d9",
+          "id": "6687c2c6-dd8b-46f7-a328-8d64256d3303",
           "name": "Login with mobile and password",
           "request": {
             "name": "Login with mobile and password",
@@ -1289,7 +1289,7 @@
           },
           "response": [
             {
-              "id": "a10ad5b9-4374-4796-b5ce-7bb91712af77",
+              "id": "02339bfc-75ee-46ff-9e2b-42927b4b77ce",
               "name": "Tokens issued",
               "originalRequest": {
                 "url": {
@@ -1334,7 +1334,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "f2d15944-c6ed-48d7-8fc0-b87ef04c8c7f",
+              "id": "b946bb20-5696-474c-9e30-021d23a6bc76",
               "name": "Mobile or password is incorrect (INVALID_CREDENTIALS)",
               "originalRequest": {
                 "url": {
@@ -1373,7 +1373,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "444e04eb-c899-4058-a58b-e927bc922cfd",
+              "id": "335263af-4a99-485c-82f8-6c57622b577c",
               "name": "Account deactivated or deleted (ACCOUNT_DISABLED)",
               "originalRequest": {
                 "url": {
@@ -1421,7 +1421,7 @@
       "event": []
     },
     {
-      "id": "c87b8e0c-e266-49af-905e-89fd63c49d84",
+      "id": "6f1b15a6-93f2-4520-9763-11603095bf02",
       "name": "Users",
       "description": {
         "content": "Own-profile management (name, email, profile image, language)",
@@ -1429,7 +1429,7 @@
       },
       "item": [
         {
-          "id": "a71e9d93-37f5-4bef-8bcf-898577439edd",
+          "id": "384a6ae4-53f2-4f66-a824-7be8b8f49963",
           "name": "Get own profile",
           "request": {
             "name": "Get own profile",
@@ -1465,7 +1465,7 @@
           },
           "response": [
             {
-              "id": "ecca8f64-3b6b-498a-892d-f2faf6486a4a",
+              "id": "53f7df42-8804-4149-9815-5537512a70c1",
               "name": "Own profile",
               "originalRequest": {
                 "url": {
@@ -1505,12 +1505,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"ACTIVE\",\n    \"createdAt\": \"1986-03-18T16:28:58.581Z\",\n    \"updatedAt\": \"1952-03-18T15:53:36.474Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"DELETED\",\n    \"createdAt\": \"2000-05-17T16:18:27.014Z\",\n    \"updatedAt\": \"1985-06-01T01:51:08.961Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "326c4f45-afcb-4393-8b6e-ea2ef35cf0df",
+              "id": "535d0d0b-1b67-4ec6-9ff8-df5b30cc5897",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -1557,7 +1557,7 @@
           }
         },
         {
-          "id": "d2313c12-5273-4465-91a1-f8f3fecea4af",
+          "id": "8247cc55-300d-4ae8-8b3a-b8701ac98c87",
           "name": "Update own profile",
           "request": {
             "name": "Update own profile",
@@ -1609,7 +1609,7 @@
           },
           "response": [
             {
-              "id": "85b8b764-d087-45f2-ac46-87612c6022c5",
+              "id": "86941bce-f895-44b6-8233-ce73024bf4c2",
               "name": "Updated profile",
               "originalRequest": {
                 "url": {
@@ -1657,12 +1657,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"ACTIVE\",\n    \"createdAt\": \"1986-03-18T16:28:58.581Z\",\n    \"updatedAt\": \"1952-03-18T15:53:36.474Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"name\": \"string\",\n    \"mobile\": \"string\",\n    \"email\": \"string\",\n    \"profileImage\": \"string\",\n    \"language\": \"en\",\n    \"accountStatus\": \"DELETED\",\n    \"createdAt\": \"2000-05-17T16:18:27.014Z\",\n    \"updatedAt\": \"1985-06-01T01:51:08.961Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "3bd76aa4-e51c-4574-8ae3-903e2b6d6d81",
+              "id": "49b689c4-2cfa-4c1d-b568-abe3477fddf5",
               "name": "Invalid payload or unknown fields",
               "originalRequest": {
                 "url": {
@@ -1711,7 +1711,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "74e33de6-e370-4b38-8a30-aa34dce4e9c2",
+              "id": "02029b45-d366-4e38-be8d-7f83d5664553",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -1760,7 +1760,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "ad365923-d8b7-4c7f-9494-0aab6e91af45",
+              "id": "60c4b748-9234-4745-8aed-f216e2594843",
               "name": "Account deleted/deactivated",
               "originalRequest": {
                 "url": {
@@ -1815,7 +1815,7 @@
           }
         },
         {
-          "id": "7f56c268-da4f-4979-b052-64e6ea1d3ffa",
+          "id": "ceca1f00-b783-44e1-b1a4-038580a3789c",
           "name": "Soft-delete own account",
           "request": {
             "name": "Soft-delete own account",
@@ -1848,7 +1848,7 @@
           },
           "response": [
             {
-              "id": "8cc8b4c4-f832-4c70-95a2-63c52125dfd7",
+              "id": "12773f0f-8a84-439f-9489-8757e8344e58",
               "name": "Deleted",
               "originalRequest": {
                 "url": {
@@ -1889,7 +1889,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "be39df47-e292-47f6-80d0-6d37f4a63a33",
+              "id": "200779c0-6c97-409a-bb29-1b62c608fb15",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -1939,7 +1939,7 @@
       "event": []
     },
     {
-      "id": "d29ebfd2-46c4-4441-9b85-cc4beca646ee",
+      "id": "e81b8e62-2e2b-41b9-a6fe-01d970031ec1",
       "name": "Properties",
       "description": {
         "content": "Property draft → step-fill → submit",
@@ -1947,7 +1947,7 @@
       },
       "item": [
         {
-          "id": "a7afdf77-744c-4ae3-ac39-aedd2f2b5b9f",
+          "id": "8fc53128-e5ae-4b18-92fb-bbde077c4a2e",
           "name": "Create a property (DRAFT)",
           "request": {
             "name": "Create a property (DRAFT)",
@@ -1984,7 +1984,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+              "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1994,7 +1994,7 @@
           },
           "response": [
             {
-              "id": "a130c180-95b1-4d7a-a243-acf3fc8b7fc5",
+              "id": "71b388e8-6bee-4143-af08-07625ac7bcf6",
               "name": "Draft created",
               "originalRequest": {
                 "url": {
@@ -2021,7 +2021,7 @@
                 "method": "POST",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2042,7 +2042,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b95bc14b-1b6a-4745-b801-ea92f504a345",
+              "id": "05efe801-1b58-4bea-a701-e48d29d8f3ab",
               "name": "Invalid payload",
               "originalRequest": {
                 "url": {
@@ -2069,7 +2069,7 @@
                 "method": "POST",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2090,7 +2090,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "01b88328-b83c-4f47-a219-6a00c7d891dc",
+              "id": "810eaaed-213e-4530-b10a-41fe5c7074cd",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -2117,7 +2117,7 @@
                 "method": "POST",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2144,7 +2144,7 @@
           }
         },
         {
-          "id": "0b389ee2-a4c9-4498-b6a6-7112b56f3409",
+          "id": "2fb3f311-3132-4ff8-9e14-ddad1071270e",
           "name": "List own properties",
           "request": {
             "name": "List own properties",
@@ -2173,7 +2173,7 @@
           },
           "response": [
             {
-              "id": "dbb10d4e-1690-410d-afea-b7f602f56924",
+              "id": "cbe1e246-9bd0-4f52-a468-647efeaa62b7",
               "name": "Own properties, newest first",
               "originalRequest": {
                 "url": {
@@ -2213,7 +2213,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "71e129bd-848c-4bb6-a0ec-e33f6fb2c6d7",
+              "id": "94d92b37-dd52-48a5-8481-64390c95b036",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -2259,7 +2259,7 @@
           }
         },
         {
-          "id": "2cd50f52-2ae0-4fff-bbc5-269f23ec4e7a",
+          "id": "19b2dbfc-a1ef-47a5-b3e4-de4c75bd2476",
           "name": "Get own property",
           "request": {
             "name": "Get own property",
@@ -2300,7 +2300,7 @@
           },
           "response": [
             {
-              "id": "914d15a5-707b-4768-9c2a-d89fcd6027df",
+              "id": "b8ea1dcf-9d34-433e-956d-10c0f4e15266",
               "name": "Property",
               "originalRequest": {
                 "url": {
@@ -2349,7 +2349,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "0ee8a27c-29cd-44b5-82c1-4cbbb7f62fcb",
+              "id": "4ce1887e-a629-4431-9369-fca2bce6e440",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -2398,7 +2398,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "323b9d83-f79a-4f14-b82d-90d2b9c18053",
+              "id": "91e7a8c3-d020-4f56-a084-3befa9ce2cae",
               "name": "Not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -2453,7 +2453,7 @@
           }
         },
         {
-          "id": "0ba34c3c-f5dc-437d-8551-2b7ea43accf2",
+          "id": "14f47e11-dcf8-45cf-92b6-149d126893d7",
           "name": "Fill in property steps (progressive draft completion)",
           "request": {
             "name": "Fill in property steps (progressive draft completion)",
@@ -2499,7 +2499,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+              "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2509,7 +2509,7 @@
           },
           "response": [
             {
-              "id": "91c85b18-3bdd-4d21-8e21-c76f9a02f7a5",
+              "id": "d62e919d-74bc-477d-802c-6b4a9e53e340",
               "name": "Updated property",
               "originalRequest": {
                 "url": {
@@ -2545,7 +2545,7 @@
                 "method": "PATCH",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2566,7 +2566,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "2a462f86-9d3c-4eee-bf74-53c47abec001",
+              "id": "d5cccde8-88d5-4f4c-8429-2b1306ff064a",
               "name": "Invalid payload / empty body",
               "originalRequest": {
                 "url": {
@@ -2602,7 +2602,7 @@
                 "method": "PATCH",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2623,7 +2623,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "385124a0-eefd-43f3-89ec-1e43538dc5b9",
+              "id": "dc00c03e-65b8-41e4-a33e-c6d69a58e7d2",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -2659,7 +2659,7 @@
                 "method": "PATCH",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2680,7 +2680,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "662b74f2-ecf8-4f91-a35a-d1c690e91006",
+              "id": "a1e2d1b6-accc-4ecb-a289-a9fc71d8a2db",
               "name": "Not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -2716,7 +2716,7 @@
                 "method": "PATCH",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2743,12 +2743,12 @@
           }
         },
         {
-          "id": "8372758c-e9d1-486d-9783-d615f14683aa",
+          "id": "8c4dd426-37e5-4cef-9f35-990168768b09",
           "name": "Submit a property for verification",
           "request": {
             "name": "Submit a property for verification",
             "description": {
-              "content": "Full completeness gate (400 PROPERTY_INCOMPLETE otherwise). All steps plus `propertyImages` (at least one fileId from POST /api/media/property-images — pool holds up to 3) and `selfieImage` (one fileId from POST /api/media/selfie) are required. Media files must belong to the caller. `latitude`/`longitude` are OPTIONAL device GPS — when absent the server geocodes the full address automatically (LOCATION_PROVIDER=osm/mock); users never type coordinates. On success the DigiPin is generated and a QR is created inside a transaction — but the DigiPin number is NOT returned here. It stays hidden on every non-admin surface until an admin approves the property.",
+              "content": "Full completeness gate (400 PROPERTY_INCOMPLETE otherwise). All steps plus `propertyImages` (at least one fileId from POST /api/media/property-images — pool holds up to 3) and `selfieImage` (one fileId from POST /api/media/selfie) are required. Media files must belong to the caller. `latitude`/`longitude` are OPTIONAL device GPS — when absent the server geocodes the full address automatically (LOCATION_PROVIDER=osm/mock); users never type coordinates. On success the v1 DigiPin (state + LGD district + coordinates, checksum + rand) is generated and a QR is created inside a transaction — but the DigiPin number is NOT returned here. It stays hidden on every non-admin surface until an admin approves the property. `districtCode` is required and must belong to `state` (400 DISTRICT_STATE_MISMATCH otherwise). Resubmit after REJECTED issues a fresh number.",
               "type": "text/plain"
             },
             "url": {
@@ -2794,7 +2794,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+              "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2804,7 +2804,7 @@
           },
           "response": [
             {
-              "id": "5ef03980-cb58-4ede-9785-f0e366c978d3",
+              "id": "13cb217b-0d94-4872-8a52-f60c652270db",
               "name": "Submitted — pending admin approval (DigiPin hidden until approved)",
               "originalRequest": {
                 "url": {
@@ -2845,7 +2845,7 @@
                 "method": "POST",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2866,7 +2866,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "694e538c-3d75-488b-8895-85399f40ca8f",
+              "id": "2816d9f0-7c22-46d9-b95d-6bda47175e24",
               "name": "Incomplete property, invalid media, or bad transition",
               "originalRequest": {
                 "url": {
@@ -2903,7 +2903,7 @@
                 "method": "POST",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2924,7 +2924,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "267cc4b4-7141-4382-95b8-08010f1bd47f",
+              "id": "87bfbe4c-cd58-4570-b0f7-6480f1de5a1b",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -2961,7 +2961,7 @@
                 "method": "POST",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2982,7 +2982,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "96e7677a-9a1d-4489-8e6e-cacbed1a0f7d",
+              "id": "00e6edb0-3081-4afc-a0a5-ad07c5e2df45",
               "name": "Property not found",
               "originalRequest": {
                 "url": {
@@ -3019,7 +3019,7 @@
                 "method": "POST",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3040,7 +3040,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "5ff0618d-9279-4be6-b1a9-ced07e7a6821",
+              "id": "ac21f7bc-c905-4b3d-b8ff-28f71ff31da0",
               "name": "Location geocoding failed (no GPS sent and the address could not be resolved)",
               "originalRequest": {
                 "url": {
@@ -3077,7 +3077,7 @@
                 "method": "POST",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
+                  "raw": "{\n  \"ownerName\": \"<string>\",\n  \"propertyType\": \"<string>\",\n  \"ownershipType\": \"<string>\",\n  \"address\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"districtCode\": \"<integer>\",\n  \"pincode\": \"<string>\",\n  \"propertyImages\": [\n    \"<string>\"\n  ],\n  \"selfieImage\": \"<string>\",\n  \"latitude\": \"<number>\",\n  \"longitude\": \"<number>\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3107,7 +3107,7 @@
       "event": []
     },
     {
-      "id": "695eb653-c26f-46ca-9007-8b27b2223741",
+      "id": "33d2b767-6dc0-4ea0-90bb-58f14a9e3f74",
       "name": "DigiPin",
       "description": {
         "content": "Generated on property submit",
@@ -3117,7 +3117,7 @@
       "event": []
     },
     {
-      "id": "bdb03a2f-05c7-4b91-a43b-1975d2bda388",
+      "id": "bbc3bc77-7525-4d03-81e5-98afb56fc622",
       "name": "QR",
       "description": {
         "content": "QR tokens for DigiPins and public verification",
@@ -3125,7 +3125,7 @@
       },
       "item": [
         {
-          "id": "2abee0d3-2d27-45cc-a579-fa2ae8b708a0",
+          "id": "6b9ffd40-1117-455e-90e7-70f0bd027fab",
           "name": "Verify a QR token (public, no auth)",
           "request": {
             "name": "Verify a QR token (public, no auth)",
@@ -3169,7 +3169,7 @@
           },
           "response": [
             {
-              "id": "50ffd99a-b56e-49b9-94b2-0dfe06bb7152",
+              "id": "08053939-1434-4c2f-9266-70cac87d4a60",
               "name": "Verified",
               "originalRequest": {
                 "url": {
@@ -3209,12 +3209,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"digipinNumber\": \"string\",\n    \"status\": \"INACTIVE\",\n    \"verificationStatus\": \"string\",\n    \"city\": \"string\",\n    \"state\": \"string\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"digipinNumber\": \"string\",\n    \"status\": \"INACTIVE\",\n    \"verificationStatus\": \"string\",\n    \"city\": \"string\",\n    \"state\": \"string\",\n    \"districtName\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "81785a10-2df5-4a3f-874c-206a2de984ad",
+              "id": "00dd1bed-2a5b-4fb1-b12e-b9c3bc15a250",
               "name": "Invalid payload",
               "originalRequest": {
                 "url": {
@@ -3253,7 +3253,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "a6bdfd8a-884b-46a1-a807-5f6f1775dbb3",
+              "id": "2d058cf8-ddea-49c2-b9cb-2e1c1acb96bd",
               "name": "QR code is invalid or disabled",
               "originalRequest": {
                 "url": {
@@ -3292,7 +3292,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "47ebd1fd-8cca-4090-9e74-28c2d2baacf2",
+              "id": "b6a7cecc-dcc6-4ec4-96e0-bac0d69b625f",
               "name": "DigiPin is not active",
               "originalRequest": {
                 "url": {
@@ -3337,7 +3337,7 @@
           }
         },
         {
-          "id": "1eaafd7b-5f3e-4432-9890-4976b0f979d8",
+          "id": "13772c87-d2a1-4dcc-8a9d-caef13e4e60f",
           "name": "Get (or create) the QR for a DigiPin",
           "request": {
             "name": "Get (or create) the QR for a DigiPin",
@@ -3385,7 +3385,7 @@
           },
           "response": [
             {
-              "id": "2a299050-f4a6-442f-901c-a249970cddcc",
+              "id": "8fc4c6aa-3d22-496f-af67-ff62eb8d4544",
               "name": "QR data",
               "originalRequest": {
                 "url": {
@@ -3434,12 +3434,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"qrData\": \"https://digipin.app/q/<token>\",\n    \"qrStatus\": \"DISABLED\",\n    \"token\": \"string\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"qrData\": \"https://digipin.app/q/<token>\",\n    \"qrStatus\": \"ACTIVE\",\n    \"token\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "cb4e42a1-f0f7-4a74-afdd-bfdd0bea473c",
+              "id": "6eb16c54-e4a7-4c2d-9d4e-91501d456c27",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -3489,7 +3489,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "91ae69c8-dcdb-4196-9316-ea7bd775026f",
+              "id": "a89d5c12-a466-4f53-b92e-922b41a09941",
               "name": "Property not approved yet (PROPERTY_NOT_APPROVED)",
               "originalRequest": {
                 "url": {
@@ -3539,7 +3539,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "8204adbb-59f4-4e0a-aaab-ea1c6338624f",
+              "id": "61204a0d-2a7e-4184-9fd7-36554c50408c",
               "name": "DigiPin not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -3598,7 +3598,7 @@
       "event": []
     },
     {
-      "id": "9a327684-7a0c-4f3b-a086-7ae03926cdd6",
+      "id": "7f676962-f781-46a3-b7ce-feb77b38224a",
       "name": "Location",
       "description": {
         "content": "Address geocoding + GPS cross-check (Nominatim osm / mock provider)",
@@ -3606,7 +3606,7 @@
       },
       "item": [
         {
-          "id": "82819b36-6308-4a83-834e-4e7fd10a9513",
+          "id": "8a9f6a4b-4b7c-4b85-8c4c-0b0a2a436c46",
           "name": "Nearby properties and/or businesses within a radius",
           "request": {
             "name": "Nearby properties and/or businesses within a radius",
@@ -3670,7 +3670,7 @@
           },
           "response": [
             {
-              "id": "d9c71f39-5468-41c9-9cd2-5bed49bd50b9",
+              "id": "0461d407-8910-4178-ac4d-e4faa1d55379",
               "name": "Nearby results",
               "originalRequest": {
                 "url": {
@@ -3727,12 +3727,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"kind\": \"business\",\n        \"distanceMeters\": 9080\n      },\n      {\n        \"kind\": \"property\",\n        \"distanceMeters\": 1896\n      }\n    ],\n    \"total\": 3357,\n    \"page\": 6073,\n    \"pageSize\": 1426\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"kind\": \"property\",\n        \"distanceMeters\": 6888\n      },\n      {\n        \"kind\": \"business\",\n        \"distanceMeters\": 4131\n      }\n    ],\n    \"total\": 3299,\n    \"page\": 7014,\n    \"pageSize\": 1525\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "48d93af2-f22c-4827-85c6-0e458158213d",
+              "id": "ef3bff5b-ebc7-4c03-a230-d513738d69c1",
               "name": "Invalid or missing query params",
               "originalRequest": {
                 "url": {
@@ -3794,7 +3794,7 @@
           }
         },
         {
-          "id": "de616fdf-74c7-4220-a8dc-6c838beb457e",
+          "id": "2cd11f02-826b-41e1-9b0d-244dc0957b01",
           "name": "Verify an address (geocodes it; cross-checks device GPS if sent)",
           "request": {
             "name": "Verify an address (geocodes it; cross-checks device GPS if sent)",
@@ -3838,7 +3838,7 @@
           },
           "response": [
             {
-              "id": "d9812e93-f3d9-4599-8227-a23f94901264",
+              "id": "b67670de-d863-4afb-9241-ba6a80b7a2ac",
               "name": "Geocoding + (optional) GPS cross-check result",
               "originalRequest": {
                 "url": {
@@ -3878,12 +3878,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"latitude\": 5668.126055450515,\n    \"longitude\": 1515.5202169031834,\n    \"formattedAddress\": \"string\",\n    \"verified\": true,\n    \"source\": \"osm\",\n    \"gps\": {\n      \"latitude\": 1525.6119471943873,\n      \"longitude\": 6482.760785301171\n    },\n    \"distanceMeters\": 6281.863600831499\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"latitude\": 6329.714167974165,\n    \"longitude\": 8773.762117668533,\n    \"formattedAddress\": \"string\",\n    \"verified\": true,\n    \"source\": \"mock\",\n    \"gps\": {\n      \"latitude\": 6563.863283867228,\n      \"longitude\": 1972.1175045439886\n    },\n    \"distanceMeters\": 7583.1104488641095\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "97a3b279-5e46-4e83-9179-96f737b36afb",
+              "id": "74c7d0a7-181a-4f7f-acde-18f13ebbfe81",
               "name": "Invalid payload",
               "originalRequest": {
                 "url": {
@@ -3922,7 +3922,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b867e662-6c51-4a00-9498-e056837bb452",
+              "id": "36333c18-986b-4fbc-8615-63b0fe850e55",
               "name": "Geocoder failure (no match or upstream error)",
               "originalRequest": {
                 "url": {
@@ -3967,7 +3967,7 @@
           }
         },
         {
-          "id": "d6f95cf2-95ed-42c5-a752-2885d0322077",
+          "id": "c65d7e91-d730-491f-99ef-0d14ba1a2f99",
           "name": "Reverse-geocode a GPS point to a place name",
           "request": {
             "name": "Reverse-geocode a GPS point to a place name",
@@ -4011,7 +4011,7 @@
           },
           "response": [
             {
-              "id": "b66dcd60-0e6f-4e14-a22a-3e03991979c9",
+              "id": "237ad0fa-2d9e-4206-89ae-6041fb533495",
               "name": "Place name for the coordinates",
               "originalRequest": {
                 "url": {
@@ -4056,7 +4056,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "2f1c6196-5e8b-4096-a329-6c82e3de30a7",
+              "id": "9a3d2b83-92f6-4b08-8d72-2068a9dcd34e",
               "name": "Invalid payload",
               "originalRequest": {
                 "url": {
@@ -4095,7 +4095,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "282b2389-6027-4102-a225-fe9354387840",
+              "id": "dd9147f0-2dec-4a93-8d56-1885835fc601",
               "name": "Reverse geocoding failed",
               "originalRequest": {
                 "url": {
@@ -4143,7 +4143,7 @@
       "event": []
     },
     {
-      "id": "c8555d79-53c0-4935-8bcc-fb8b2efd538f",
+      "id": "0f4817d1-5f14-448d-9776-8fcefebdb321",
       "name": "Media",
       "description": {
         "content": "Image upload / delete and fileId attach",
@@ -4151,7 +4151,7 @@
       },
       "item": [
         {
-          "id": "68ff4e74-5267-4509-8eb1-e73bb6f24b0a",
+          "id": "b60d1bf9-663c-461a-a279-9d0ce64b192d",
           "name": "Delete an uploaded file",
           "request": {
             "name": "Delete an uploaded file",
@@ -4192,7 +4192,7 @@
           },
           "response": [
             {
-              "id": "f755ee8c-2e95-4fbb-a2a8-d4c2eb9eff77",
+              "id": "ae33c29a-30fa-42a8-9ef9-b34647f7cfd3",
               "name": "Deleted",
               "originalRequest": {
                 "url": {
@@ -4241,7 +4241,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "19b3a1f0-7ec1-40f1-95b1-b70bb5dc7d1d",
+              "id": "b041a74c-a366-4092-bba2-a8eb54a2889e",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -4290,7 +4290,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "fd8d0ebd-7bb9-4bd4-8954-863ae457097c",
+              "id": "ffbf2451-7192-4897-8bf6-46333bb60460",
               "name": "File not found (or owned by another user)",
               "originalRequest": {
                 "url": {
@@ -4345,7 +4345,7 @@
           }
         },
         {
-          "id": "acabc3a7-ef6f-4634-a04c-5f09716dff81",
+          "id": "6296c2bf-362f-433b-ba29-6aaa5a671069",
           "name": "Upload your selfie (replaces any previous one)",
           "request": {
             "name": "Upload your selfie (replaces any previous one)",
@@ -4398,7 +4398,7 @@
           },
           "response": [
             {
-              "id": "f1e034f1-272d-4803-a3d3-a314531ee589",
+              "id": "20c5261c-b08c-4471-a644-824b5eb99988",
               "name": "Uploaded — this fileId is the user's current selfie",
               "originalRequest": {
                 "url": {
@@ -4451,12 +4451,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"SELFIE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 749,\n    \"createdAt\": \"2020-06-14T14:52:12.414Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"SELFIE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 7754,\n    \"createdAt\": \"2009-03-09T21:37:54.068Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "f84210c6-cabd-4c4f-9a74-fa59e29eba86",
+              "id": "9be371c8-9467-4dcc-91b2-223026ef6bec",
               "name": "Missing file, invalid file type, or file too large",
               "originalRequest": {
                 "url": {
@@ -4510,7 +4510,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b21aca2d-ee11-42b3-abcc-c44c1ca72304",
+              "id": "ed13a516-dd4b-476a-b1ce-14d8b6066763",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -4570,7 +4570,7 @@
           }
         },
         {
-          "id": "a6b80b66-2a54-498b-9cc2-98e758cc6f24",
+          "id": "8c74f020-9224-4c50-84cf-992b978ab921",
           "name": "Upload a property image (pool capped at 3)",
           "request": {
             "name": "Upload a property image (pool capped at 3)",
@@ -4623,7 +4623,7 @@
           },
           "response": [
             {
-              "id": "53231824-4497-4438-997b-61d0746918d9",
+              "id": "b6efc8ec-5a32-4ea1-bdfc-bd0a3cd01cd7",
               "name": "Uploaded — pool count is now 1..3",
               "originalRequest": {
                 "url": {
@@ -4675,12 +4675,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"PROPERTY_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 6101,\n    \"createdAt\": \"1996-04-09T20:57:50.355Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"PROPERTY_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 3116,\n    \"createdAt\": \"1972-02-11T19:27:09.490Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "8c7a5d1f-42be-407b-9309-24fe0c075a60",
+              "id": "c40c5406-d3ca-4d6e-95cb-751bae4601fc",
               "name": "Missing file, invalid file type, or file too large",
               "originalRequest": {
                 "url": {
@@ -4733,7 +4733,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "03a7f0b3-9520-400b-826e-c91f11afd249",
+              "id": "6c9b3c48-f2cd-4535-ad08-1fb084a03163",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -4792,7 +4792,7 @@
           }
         },
         {
-          "id": "c3853370-c661-417c-a7cd-ad02d37f3c41",
+          "id": "cd41f33e-d677-4a50-a91c-a777f9bc3eb6",
           "name": "Upload your profile image (replaces any previous one)",
           "request": {
             "name": "Upload your profile image (replaces any previous one)",
@@ -4845,7 +4845,7 @@
           },
           "response": [
             {
-              "id": "13f46b59-8d77-418c-a1f5-dc875737e524",
+              "id": "ea64f031-bf7d-4d62-8bf8-7af15fdcbff1",
               "name": "Uploaded — this fileId is the user's current profile image",
               "originalRequest": {
                 "url": {
@@ -4897,12 +4897,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"PROFILE_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 3143,\n    \"createdAt\": \"1985-09-24T15:28:13.039Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"PROFILE_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 7225,\n    \"createdAt\": \"2005-09-05T10:26:04.930Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "c66d8260-349a-4eb7-bd61-b9ff26fe6a74",
+              "id": "daaa185d-28f6-4481-a1be-c0d5179d4391",
               "name": "Missing file, invalid file type, or file too large",
               "originalRequest": {
                 "url": {
@@ -4955,7 +4955,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "4dc481dc-faa9-4cee-a57b-f108683f35ae",
+              "id": "900437bb-b2ee-4db1-95fb-7777254394b8",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -5017,7 +5017,7 @@
       "event": []
     },
     {
-      "id": "65fbcb98-6ea3-4ce6-a46d-6c5a55691957",
+      "id": "52666af6-1f0b-4566-ade9-2e7caa08ad39",
       "name": "Search",
       "description": {
         "content": "Unified search, nearby search, search history",
@@ -5025,7 +5025,7 @@
       },
       "item": [
         {
-          "id": "ca1c3264-d759-47a6-a9b0-2b6b9eece818",
+          "id": "f8b4032b-0cce-4e78-9be0-24c33111a376",
           "name": "Unified search across DigiPin number, address, and business name",
           "request": {
             "name": "Unified search across DigiPin number, address, and business name",
@@ -5077,7 +5077,7 @@
           },
           "response": [
             {
-              "id": "b76eb687-a731-4908-a4dc-13d8451af7c6",
+              "id": "9f72722a-2f18-4fdc-a540-5018bcdb5e92",
               "name": "Search results",
               "originalRequest": {
                 "url": {
@@ -5125,12 +5125,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"total\": 53,\n    \"page\": 6707,\n    \"pageSize\": 2354\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"total\": 4287,\n    \"page\": 3379,\n    \"pageSize\": 8918\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "38c29326-3c11-44d4-9ae2-5763e1167c70",
+              "id": "d126e88c-849c-4aaa-b286-543dbd2b1822",
               "name": "Missing q or invalid params",
               "originalRequest": {
                 "url": {
@@ -5183,7 +5183,7 @@
           }
         },
         {
-          "id": "97a0e7cb-22d6-4556-9dc6-27aaa0d10ce7",
+          "id": "35496d09-7561-48d8-82f9-f4cdc4d2af3b",
           "name": "Nearby search combining properties + businesses",
           "request": {
             "name": "Nearby search combining properties + businesses",
@@ -5236,7 +5236,7 @@
           },
           "response": [
             {
-              "id": "90e06dae-0998-4e29-b092-0458b30717bc",
+              "id": "faec1e6b-b651-424c-a806-ec9c3f3c1e6d",
               "name": "Nearby combined results",
               "originalRequest": {
                 "url": {
@@ -5288,7 +5288,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "9f5a9ff7-ebe4-4790-9303-026dbe604249",
+              "id": "f412af7c-5983-49e1-a101-a348a937f725",
               "name": "Invalid or missing query params",
               "originalRequest": {
                 "url": {
@@ -5346,7 +5346,7 @@
           }
         },
         {
-          "id": "7bb99998-ce68-4f94-8ab2-8a764b18c2c1",
+          "id": "d8ab8574-b344-46c5-9bfb-3a5715fd4a8c",
           "name": "The authenticated user's recent searches (paginated)",
           "request": {
             "name": "The authenticated user's recent searches (paginated)",
@@ -5396,7 +5396,7 @@
           },
           "response": [
             {
-              "id": "66920d44-9a8c-426e-ac2f-eecc52120679",
+              "id": "fb1f0f66-8184-46be-ad16-7bf4ec6498ad",
               "name": "Search history",
               "originalRequest": {
                 "url": {
@@ -5445,12 +5445,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"string\",\n        \"query\": \"string\",\n        \"type\": \"string\",\n        \"createdAt\": \"1948-06-06T06:17:22.364Z\"\n      },\n      {\n        \"id\": \"string\",\n        \"query\": \"string\",\n        \"type\": \"string\",\n        \"createdAt\": \"1992-08-15T14:34:19.800Z\"\n      }\n    ],\n    \"total\": 8036,\n    \"page\": 3645,\n    \"pageSize\": 7751\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"string\",\n        \"query\": \"string\",\n        \"type\": \"string\",\n        \"createdAt\": \"1981-06-27T15:49:45.831Z\"\n      },\n      {\n        \"id\": \"string\",\n        \"query\": \"string\",\n        \"type\": \"string\",\n        \"createdAt\": \"1998-09-03T05:17:32.977Z\"\n      }\n    ],\n    \"total\": 682,\n    \"page\": 9496,\n    \"pageSize\": 2650\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "e00d195f-3615-426f-8f4d-5627e687ff49",
+              "id": "b9b31ca5-6060-4702-8d7b-f496234b2478",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -5506,7 +5506,7 @@
           }
         },
         {
-          "id": "f54912e7-b641-4479-8a19-ad58de53a7bb",
+          "id": "a026c631-8034-4746-97f5-0868ecb4b1f3",
           "name": "Record a search term against the current user",
           "request": {
             "name": "Record a search term against the current user",
@@ -5558,7 +5558,7 @@
           },
           "response": [
             {
-              "id": "f2aac54e-76f0-489e-a9b0-3cd0acd2563c",
+              "id": "92758a48-6023-4de3-b2c2-3a88c2a90c7e",
               "name": "Recorded",
               "originalRequest": {
                 "url": {
@@ -5606,12 +5606,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"query\": \"string\",\n    \"type\": \"string\",\n    \"createdAt\": \"1951-08-23T11:40:39.192Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"query\": \"string\",\n    \"type\": \"string\",\n    \"createdAt\": \"1994-04-17T16:11:53.681Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "74d7d9aa-0e8a-4b5d-9e0a-7fdf1dc69117",
+              "id": "1f39e9c8-7a9e-466c-acd7-4dcac5a99b46",
               "name": "Invalid payload",
               "originalRequest": {
                 "url": {
@@ -5660,7 +5660,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "84df3028-4dcd-4842-ab16-929e09caf76c",
+              "id": "f3c69e14-cd26-47aa-8158-ef5118e762fc",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -5718,7 +5718,7 @@
       "event": []
     },
     {
-      "id": "769c166b-ee8e-43b0-a9a7-426d09cf507f",
+      "id": "94b4d3fe-4b09-410b-8bb4-eed2837f5bc8",
       "name": "Business",
       "description": {
         "content": "Business profiles, categories, business images, verification requests",
@@ -5726,7 +5726,7 @@
       },
       "item": [
         {
-          "id": "cf629a28-dcaf-4483-8065-60be9a72f9f6",
+          "id": "96f1ebb2-4db9-4c30-a297-b3d158a7d677",
           "name": "Upload a business logo (single slot)",
           "request": {
             "name": "Upload a business logo (single slot)",
@@ -5785,7 +5785,7 @@
           },
           "response": [
             {
-              "id": "b17eec6c-566d-4376-8bbc-aba457d5e1a5",
+              "id": "34e1a526-7491-40b5-af98-fa74bb4a87ab",
               "name": "Uploaded and set as logo",
               "originalRequest": {
                 "url": {
@@ -5847,12 +5847,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"BUSINESS_LOGO\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 9544,\n    \"createdAt\": \"1950-06-26T18:06:10.248Z\",\n    \"businessId\": \"string\",\n    \"logoFileId\": \"string\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"BUSINESS_LOGO\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 9482,\n    \"createdAt\": \"2023-03-14T07:35:26.956Z\",\n    \"businessId\": \"string\",\n    \"logoFileId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "8ff65a01-469a-4b06-a570-41033480cbd3",
+              "id": "6f888646-533d-493e-966f-024849987762",
               "name": "Missing/invalid file or businessId",
               "originalRequest": {
                 "url": {
@@ -5915,7 +5915,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "6eec7a75-a425-4500-afe0-58fe5a5e13b9",
+              "id": "eb20a9a6-730a-4fb0-ac09-2ba1d48c412b",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -5978,7 +5978,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "dfa21956-b0f2-4449-ad73-317b763d8c5c",
+              "id": "177b02df-d6d1-4f58-a2d5-cb9d6c41c013",
               "name": "Business not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -6047,7 +6047,7 @@
           }
         },
         {
-          "id": "630b187b-ffc9-48aa-8282-0eb1d8b7d160",
+          "id": "b96dae21-129b-46bd-9505-3f0e6c353ed4",
           "name": "Upload a business image",
           "request": {
             "name": "Upload a business image",
@@ -6106,7 +6106,7 @@
           },
           "response": [
             {
-              "id": "f00a93ab-692d-462f-8b50-dea8885322c6",
+              "id": "31514df8-4da8-43fd-9056-9ba337ff53ea",
               "name": "Uploaded and attached",
               "originalRequest": {
                 "url": {
@@ -6167,12 +6167,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"BUSINESS_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 3736,\n    \"createdAt\": \"2020-02-07T05:49:58.666Z\",\n    \"businessImageId\": \"string\",\n    \"order\": 6218\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"purpose\": \"BUSINESS_IMAGE\",\n    \"url\": \"string\",\n    \"mimeType\": \"string\",\n    \"sizeBytes\": 7998,\n    \"createdAt\": \"1985-08-09T23:00:46.324Z\",\n    \"businessImageId\": \"string\",\n    \"order\": 5309\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "5e03e5e0-d6e4-4d3c-bb77-9b487983d21c",
+              "id": "c4ffe636-8c48-4fb1-a847-6a3381f99f4b",
               "name": "Missing/invalid file or businessId, or image limit reached",
               "originalRequest": {
                 "url": {
@@ -6234,7 +6234,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "2bfb0466-edb6-45e9-acac-1096c7a17396",
+              "id": "ffdebdac-4c07-4e57-ba5e-df46feb11136",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -6296,7 +6296,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "76cd4f98-79a4-4379-a868-22569a9c7895",
+              "id": "a9e4c577-8fe5-4cbb-a63e-05003cd832b7",
               "name": "Business not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -6364,7 +6364,7 @@
           }
         },
         {
-          "id": "fa0b90df-1f04-447b-b6bc-ae799e5fe4b8",
+          "id": "c9de2bc3-713b-461e-a9fc-b740c755edf4",
           "name": "Delete one business image",
           "request": {
             "name": "Delete one business image",
@@ -6406,7 +6406,7 @@
           },
           "response": [
             {
-              "id": "8f0c36d3-093e-4c5f-b8e2-22a185b9eb01",
+              "id": "6e6ac342-6bab-4e98-8a7a-2c0c345e6ca0",
               "name": "Deleted",
               "originalRequest": {
                 "url": {
@@ -6456,7 +6456,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b7e34bab-74ea-4496-92eb-41189b2fc628",
+              "id": "550bd592-397b-41fd-9182-d685f928bf1d",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -6506,7 +6506,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "d1115c73-b925-46cb-bffe-d59343e5bc5b",
+              "id": "62804026-39b0-4c11-ba3e-b939e64fe9a1",
               "name": "Image not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -6562,7 +6562,7 @@
           }
         },
         {
-          "id": "af0bd425-e384-4c5c-b262-74b27852d956",
+          "id": "7d5a5a0a-e539-4e6c-8fea-5a5633eacb19",
           "name": "Active business categories (form builder)",
           "request": {
             "name": "Active business categories (form builder)",
@@ -6592,7 +6592,7 @@
           },
           "response": [
             {
-              "id": "f9d49692-bd04-4017-8863-a3939720324b",
+              "id": "b8e1428c-f625-4948-8d09-edb384791763",
               "name": "Category tree",
               "originalRequest": {
                 "url": {
@@ -6623,7 +6623,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"order\": 2776,\n      \"subcategories\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 864\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 4280\n        }\n      ]\n    },\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"order\": 9352,\n      \"subcategories\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 5747\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 2005\n        }\n      ]\n    }\n  ]\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"order\": 1370,\n      \"subcategories\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 4630\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 915\n        }\n      ]\n    },\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"order\": 3068,\n      \"subcategories\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 6371\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"order\": 9020\n        }\n      ]\n    }\n  ]\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -6634,7 +6634,7 @@
           }
         },
         {
-          "id": "5e5b26b3-efe7-465e-84f1-8a6f85338380",
+          "id": "26149cc0-84ed-46c6-81f1-7df7a839af29",
           "name": "Create a business (starts PENDING)",
           "request": {
             "name": "Create a business (starts PENDING)",
@@ -6681,7 +6681,7 @@
           },
           "response": [
             {
-              "id": "4a9a1bdc-1677-4229-8eed-b3203495ce04",
+              "id": "fe5bae4e-aaeb-4a6f-acf3-59625c7968ab",
               "name": "Business created (PENDING)",
               "originalRequest": {
                 "url": {
@@ -6729,7 +6729,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "9542a8c0-971f-46a4-b8c1-35b62096a61e",
+              "id": "6bc7fd91-7ceb-49d5-b361-543e4018bbd8",
               "name": "Invalid payload or unknown category",
               "originalRequest": {
                 "url": {
@@ -6777,7 +6777,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "f1321f91-27b8-4625-a06b-0906dcd2feae",
+              "id": "b285b427-7a0d-4122-97c3-1935f375db85",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -6831,7 +6831,7 @@
           }
         },
         {
-          "id": "c778007e-ab56-41c7-8f4f-a69403103588",
+          "id": "604f25b4-80e7-4737-88ab-284a619a2a9b",
           "name": "Own businesses OR public directory",
           "request": {
             "name": "Own businesses OR public directory",
@@ -6906,7 +6906,7 @@
           },
           "response": [
             {
-              "id": "a562b2bd-1816-4d05-980c-cb72c0fab29f",
+              "id": "6a09c753-a382-47ba-b628-47d8a0dac016",
               "name": "Businesses",
               "originalRequest": {
                 "url": {
@@ -6977,7 +6977,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "5c30b984-c1cd-4b70-9ef2-72516863184c",
+              "id": "20993252-18b1-4374-a312-671698a8d578",
               "name": "Missing token when mine=true",
               "originalRequest": {
                 "url": {
@@ -7054,7 +7054,7 @@
           }
         },
         {
-          "id": "3b95205b-37d7-43ad-8276-9e68aac7981b",
+          "id": "de3d47a9-56ad-4bc3-a4d2-8d44f49e0355",
           "name": "Business detail (public-safe)",
           "request": {
             "name": "Business detail (public-safe)",
@@ -7087,7 +7087,7 @@
           },
           "response": [
             {
-              "id": "4dc8075b-81c3-4ded-81c1-777357ce500b",
+              "id": "86dcd6cb-e3b5-4c55-b280-e3c906ce4623",
               "name": "Business detail",
               "originalRequest": {
                 "url": {
@@ -7126,7 +7126,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "6d99efbf-7b33-46e6-82ba-81797a1e5eb9",
+              "id": "5d4697fa-c045-4ccc-a050-057629b10b9b",
               "name": "Not found / not yet verified (unless owner)",
               "originalRequest": {
                 "url": {
@@ -7171,7 +7171,7 @@
           }
         },
         {
-          "id": "e38f5941-a0f9-42db-b732-75ffe6b29a85",
+          "id": "773fb302-cdad-476a-9b40-bd05a9af8c95",
           "name": "Update own business",
           "request": {
             "name": "Update own business",
@@ -7227,7 +7227,7 @@
           },
           "response": [
             {
-              "id": "9f9b60eb-9a59-4501-84f8-f1c42575cae8",
+              "id": "102768a0-576d-4b26-b83a-7544f92e2a19",
               "name": "Updated business (full owner view)",
               "originalRequest": {
                 "url": {
@@ -7284,7 +7284,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "b1b9f020-9a8c-4b1f-a240-9096a3667c29",
+              "id": "86d380fe-26de-4444-8718-1209b983edb3",
               "name": "Invalid payload / forbidden field",
               "originalRequest": {
                 "url": {
@@ -7341,7 +7341,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "95488724-d96d-465d-a264-3c5ba8e80f14",
+              "id": "d671553a-afd8-43fa-ab01-dcb965933fa1",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -7398,7 +7398,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "2975a13c-0043-4501-a036-2c101c2cf84f",
+              "id": "8b02bc80-f061-4512-b5bb-66cce42ca5e3",
               "name": "Not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -7461,7 +7461,7 @@
           }
         },
         {
-          "id": "e1643c21-a8db-4bca-ba6e-6a84b02cfe34",
+          "id": "dc8f8f7b-f9a7-4659-87db-49c0c2d1762d",
           "name": "Request business verification",
           "request": {
             "name": "Request business verification",
@@ -7509,7 +7509,7 @@
           },
           "response": [
             {
-              "id": "40eb394b-e04a-41dc-9efe-7e41cb0d22e7",
+              "id": "0c948d73-e89f-4812-9948-2c809aabc46e",
               "name": "Moved to UNDER_REVIEW",
               "originalRequest": {
                 "url": {
@@ -7558,12 +7558,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"id\": \"string\",\n  \"verificationStatus\": \"UNDER_REVIEW\",\n  \"updatedAt\": \"1985-06-20T10:00:57.057Z\"\n}",
+              "body": "{\n  \"id\": \"string\",\n  \"verificationStatus\": \"UNDER_REVIEW\",\n  \"updatedAt\": \"2004-05-16T09:09:17.960Z\"\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "bf152b6f-3972-4be6-bb8c-6e00136fbd6b",
+              "id": "48f15afa-8d0b-4052-9058-445f10672792",
               "name": "Incomplete business or wrong status",
               "originalRequest": {
                 "url": {
@@ -7613,7 +7613,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "89bfc037-8b8e-464c-947a-46aae3de8509",
+              "id": "d1ffe24f-68a4-4cb8-976a-74e0035de6b2",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -7663,7 +7663,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "492cd72a-d59e-44d5-8265-d21b25aae3e2",
+              "id": "ba820452-acd0-43b8-b4f3-b3469c028c82",
               "name": "Not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -7722,7 +7722,7 @@
       "event": []
     },
     {
-      "id": "a21ab4e4-112e-4e82-aa53-2a91725ebd45",
+      "id": "0ecfbccd-4875-4a46-a549-c620133172a8",
       "name": "Trust Score",
       "description": {
         "content": "Server-derived user trust score + factor breakdown",
@@ -7730,7 +7730,7 @@
       },
       "item": [
         {
-          "id": "324fed32-b020-4937-a523-afd7a8627070",
+          "id": "d7b5b268-4638-4c35-814e-e27688e5c98f",
           "name": "Get own trust score and factor breakdown",
           "request": {
             "name": "Get own trust score and factor breakdown",
@@ -7770,7 +7770,7 @@
           },
           "response": [
             {
-              "id": "fb8062ff-a1e8-41d8-901d-50543c369a4c",
+              "id": "1f9d04d6-f8b4-4f88-912a-59fb93714b7c",
               "name": "Own trust score breakdown",
               "originalRequest": {
                 "url": {
@@ -7811,12 +7811,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"score\": 98,\n    \"maxScore\": 100,\n    \"updatedAt\": \"1978-06-21T23:25:14.387Z\",\n    \"factors\": [\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 7250,\n        \"units\": 4578,\n        \"details\": \"string\",\n        \"applied\": true\n      },\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 9281,\n        \"units\": 2024,\n        \"details\": \"string\",\n        \"applied\": true\n      }\n    ],\n    \"penalties\": [\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 5256,\n        \"units\": 6509,\n        \"applied\": false\n      },\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 900,\n        \"units\": 9770,\n        \"applied\": false\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"score\": 37,\n    \"maxScore\": 100,\n    \"updatedAt\": \"2000-02-16T19:00:31.747Z\",\n    \"factors\": [\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 1385,\n        \"units\": 787,\n        \"details\": \"string\",\n        \"applied\": true\n      },\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 9341,\n        \"units\": 8016,\n        \"details\": \"string\",\n        \"applied\": false\n      }\n    ],\n    \"penalties\": [\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 4917,\n        \"units\": 2953,\n        \"applied\": false\n      },\n      {\n        \"code\": \"string\",\n        \"label\": \"string\",\n        \"points\": 2975,\n        \"units\": 1856,\n        \"applied\": true\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "e935f618-cec5-47dc-adc9-fae3fbdcc048",
+              "id": "d6948286-733a-451d-baa2-a2349c5a70aa",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -7867,7 +7867,7 @@
       "event": []
     },
     {
-      "id": "d565c99a-839b-43ee-89b1-8bec153319f6",
+      "id": "5f3f4b1f-cf21-4909-9bde-f8584549e059",
       "name": "Notifications",
       "description": {
         "content": "In-app notifications + device-token (push) registration",
@@ -7875,7 +7875,7 @@
       },
       "item": [
         {
-          "id": "3b3d6e84-61ca-4d87-aec4-e9432d25ada8",
+          "id": "1e8d5e25-3099-4d41-96d5-579b5bd10518",
           "name": "List the caller's in-app notifications (paginated)",
           "request": {
             "name": "List the caller's in-app notifications (paginated)",
@@ -7929,7 +7929,7 @@
           },
           "response": [
             {
-              "id": "cccc2699-f36d-4389-b5ef-e3a67a7fed1b",
+              "id": "229bf813-e127-4cd5-a731-559977e0b8b3",
               "name": "Paginated notifications",
               "originalRequest": {
                 "url": {
@@ -7981,12 +7981,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"string\",\n        \"title\": \"string\",\n        \"message\": \"string\",\n        \"type\": \"SUBSCRIPTION\",\n        \"readStatus\": false,\n        \"createdAt\": \"1955-02-04T03:31:25.444Z\"\n      },\n      {\n        \"id\": \"string\",\n        \"title\": \"string\",\n        \"message\": \"string\",\n        \"type\": \"PROPERTY_VERIFICATION\",\n        \"readStatus\": false,\n        \"createdAt\": \"2022-11-21T09:01:43.501Z\"\n      }\n    ],\n    \"total\": 3277,\n    \"unread\": 5693,\n    \"page\": 5112,\n    \"pageSize\": 6460\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"string\",\n        \"title\": \"string\",\n        \"message\": \"string\",\n        \"type\": \"ADMIN\",\n        \"readStatus\": false,\n        \"createdAt\": \"1947-01-11T22:58:13.057Z\"\n      },\n      {\n        \"id\": \"string\",\n        \"title\": \"string\",\n        \"message\": \"string\",\n        \"type\": \"BUSINESS_VERIFICATION\",\n        \"readStatus\": true,\n        \"createdAt\": \"1961-11-07T06:09:15.297Z\"\n      }\n    ],\n    \"total\": 87,\n    \"unread\": 8713,\n    \"page\": 1427,\n    \"pageSize\": 6227\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "3e000870-0244-46e1-b2a5-835e254836b3",
+              "id": "a933dd35-a22c-4ec6-be57-d364e83a0d8e",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -8045,7 +8045,7 @@
           }
         },
         {
-          "id": "5b439fd0-bc88-4092-a6cd-79f02ba77dde",
+          "id": "97bf7f02-89b5-47c5-9728-2365556a59a9",
           "name": "Mark one notification as read",
           "request": {
             "name": "Mark one notification as read",
@@ -8093,7 +8093,7 @@
           },
           "response": [
             {
-              "id": "00548c96-c96c-4665-8165-b99917b2b9c5",
+              "id": "68a30661-75f0-4468-9483-d723ff1c1c24",
               "name": "Updated notification",
               "originalRequest": {
                 "url": {
@@ -8142,12 +8142,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"title\": \"string\",\n    \"message\": \"string\",\n    \"type\": \"PROPERTY_VERIFICATION\",\n    \"readStatus\": false,\n    \"createdAt\": \"1946-10-26T19:46:28.822Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"title\": \"string\",\n    \"message\": \"string\",\n    \"type\": \"BUSINESS_VERIFICATION\",\n    \"readStatus\": false,\n    \"createdAt\": \"2024-03-12T19:48:47.308Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "1ba3d6f8-062f-454a-bf9e-5bb71f3a9b0e",
+              "id": "37765808-f853-435b-9296-a80a9a05dd0e",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -8197,7 +8197,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "93680fd1-b4db-4d30-ad4a-7bfa4f5cce15",
+              "id": "53821880-4ff4-429e-8cae-efa40ca1ddcc",
               "name": "Notification not found (or owned by someone else)",
               "originalRequest": {
                 "url": {
@@ -8253,7 +8253,7 @@
           }
         },
         {
-          "id": "8787694e-c5bf-4a45-8799-eb17f2b466a0",
+          "id": "1d392356-57a9-4c55-ada4-aabaab815141",
           "name": "Mark all of the caller's notifications as read",
           "request": {
             "name": "Mark all of the caller's notifications as read",
@@ -8292,7 +8292,7 @@
           },
           "response": [
             {
-              "id": "ca23528f-0369-4123-90f9-ab18f90bcc41",
+              "id": "0310afe3-efbd-4189-9855-a88631cb58c2",
               "name": "Updated",
               "originalRequest": {
                 "url": {
@@ -8332,12 +8332,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"updatedCount\": 3497\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"updatedCount\": 6031\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "8c76ee9d-6675-4a62-87ad-d72aa7f80202",
+              "id": "0efb4f48-b53b-4ef5-87d1-4a9f0c594944",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -8384,7 +8384,7 @@
           }
         },
         {
-          "id": "50fbcd19-fcfa-49d9-9bc3-8becfdc658ae",
+          "id": "de34a99d-5734-4c73-827a-29c7fcb0bfeb",
           "name": "Register a push token for the caller",
           "request": {
             "name": "Register a push token for the caller",
@@ -8436,7 +8436,7 @@
           },
           "response": [
             {
-              "id": "a6f6cf81-3ef7-4b21-b2af-cb41c454aa1e",
+              "id": "0fd741fd-243c-4add-b7db-1bc72c091c1c",
               "name": "Registered",
               "originalRequest": {
                 "url": {
@@ -8484,12 +8484,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"fcmToken\": \"string\",\n    \"platform\": \"string\",\n    \"createdAt\": \"1952-08-04T14:34:31.596Z\"\n  }\n}",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"string\",\n    \"fcmToken\": \"string\",\n    \"platform\": \"string\",\n    \"createdAt\": \"1950-10-11T14:10:58.361Z\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "ca1ba73d-789a-456b-8d60-75854208d571",
+              "id": "462a8db7-679e-4cab-9861-ffa1dc873bb6",
               "name": "Invalid payload",
               "originalRequest": {
                 "url": {
@@ -8538,7 +8538,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "a16de394-0ee5-4f8a-b8ad-5630cae4c202",
+              "id": "91fc2de9-cb88-4efd-8a04-8d2230e3db4b",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -8593,7 +8593,7 @@
           }
         },
         {
-          "id": "2c68fff9-f2c1-40cf-bf7e-14c19430c6ae",
+          "id": "fe72e666-4083-4f8c-8743-bfc5868033d7",
           "name": "Remove a push token for the caller (unregister)",
           "request": {
             "name": "Remove a push token for the caller (unregister)",
@@ -8633,7 +8633,7 @@
           },
           "response": [
             {
-              "id": "fe8fb88c-9690-4349-8f1a-47c952845bcf",
+              "id": "480d2fc8-3c82-4c41-bba4-d4b6c8b88201",
               "name": "Removed",
               "originalRequest": {
                 "url": {
@@ -8679,7 +8679,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "dc4b192d-5030-4bbf-b1bd-6bd02ea08fe6",
+              "id": "2671de4b-1655-4dc8-a798-b5a03e48484f",
               "name": "Missing or invalid access token",
               "originalRequest": {
                 "url": {
@@ -8725,7 +8725,7 @@
               "_postman_previewlanguage": "text"
             },
             {
-              "id": "636d7511-4a07-4c4c-9805-601c599d0fe6",
+              "id": "78455716-f8f9-481d-8061-ee11fde6e2b3",
               "name": "Token not registered for this user",
               "originalRequest": {
                 "url": {
@@ -8780,7 +8780,7 @@
       "event": []
     },
     {
-      "id": "05ad5062-da1d-4e12-b3d6-d77ac16b6994",
+      "id": "1c3d4662-8b42-436a-bd85-5dc2d1b04188",
       "name": "Subscriptions",
       "description": {
         "content": "Plans, purchase, verify, cancel, entitlements",
@@ -8790,7 +8790,7 @@
       "event": []
     },
     {
-      "id": "6f5252d1-bff7-451c-bd84-a7d77a17d761",
+      "id": "2444a4ba-b123-43a7-b6a8-01c57a8a86c9",
       "name": "Payments",
       "description": {
         "content": "Payment provider (mock/razorpay), webhook",
@@ -8800,7 +8800,7 @@
       "event": []
     },
     {
-      "id": "b0d0cde9-8641-4baf-bb27-6caccdd22b62",
+      "id": "442c7c71-9dc7-43b9-a75d-dc482b34d9d7",
       "name": "Admin",
       "description": {
         "content": "Admin auth (separate JWT), dashboard, user/property/business/category/plan/notification management",
@@ -8808,7 +8808,7 @@
       },
       "item": [
         {
-          "id": "b7d664b2-c0ec-47ba-ba9d-37dd4fdf21f8",
+          "id": "9941ddaa-600e-4893-8fe5-2beefa3b2541",
           "name": "List users",
           "request": {
             "name": "List users",
@@ -8848,7 +8848,7 @@
           },
           "response": [
             {
-              "id": "2045b474-d2bc-41d3-9fc8-26e5f93892a8",
+              "id": "9bc58b21-eb25-458b-8442-bdc0c502aa22",
               "name": "Paginated list",
               "originalRequest": {
                 "url": {
@@ -8903,7 +8903,7 @@
           }
         },
         {
-          "id": "0b091d05-8a73-4b19-b923-2588cb50d57d",
+          "id": "9835e468-27d8-47b9-8c3e-a35fea37dea7",
           "name": "Get user details",
           "request": {
             "name": "Get user details",
@@ -8941,7 +8941,7 @@
           },
           "response": [
             {
-              "id": "7e004a6c-e0bf-4f2b-8e37-0be7c6bca39c",
+              "id": "61a38334-e100-4bed-ae77-7539e301f555",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -8996,7 +8996,7 @@
           }
         },
         {
-          "id": "d1661866-b345-4b60-990d-31def1f1655e",
+          "id": "b49e9e58-0925-4f25-8872-9b5c627ac25b",
           "name": "Change user status",
           "request": {
             "name": "Change user status",
@@ -9050,7 +9050,7 @@
           },
           "response": [
             {
-              "id": "6a7415bd-5831-486f-a70c-8b2aa46de6a3",
+              "id": "006f630d-4334-4d4e-8150-53daad5fcd93",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -9114,7 +9114,7 @@
           }
         },
         {
-          "id": "32e88145-bed5-4f6b-86a2-b937bb863ffe",
+          "id": "3bc93eac-c87c-4d4a-849d-9e2adc236b1f",
           "name": "List transactions",
           "request": {
             "name": "List transactions",
@@ -9154,7 +9154,7 @@
           },
           "response": [
             {
-              "id": "560bfec7-4bce-4f86-b3dd-9e35016371fc",
+              "id": "0acf6513-c7a8-43dc-8e01-95c91bd9c38e",
               "name": "Paginated list",
               "originalRequest": {
                 "url": {
@@ -9209,7 +9209,7 @@
           }
         },
         {
-          "id": "9fe7797b-48a7-4078-98f8-7b2f05bb4de8",
+          "id": "c4777a11-cab2-409b-809a-7e320bbd51e8",
           "name": "List subscriptions",
           "request": {
             "name": "List subscriptions",
@@ -9249,7 +9249,7 @@
           },
           "response": [
             {
-              "id": "fc460eb5-01be-411a-b54e-087fe9d5561f",
+              "id": "0fca4f31-7889-4412-b773-7b21f09e6429",
               "name": "Paginated list",
               "originalRequest": {
                 "url": {
@@ -9304,7 +9304,7 @@
           }
         },
         {
-          "id": "0c6a063c-0d3f-47bf-a05a-5c82c427890c",
+          "id": "b75ebabc-3906-4842-a8ae-e6f73645d82f",
           "name": "List plans",
           "request": {
             "name": "List plans",
@@ -9333,7 +9333,7 @@
           },
           "response": [
             {
-              "id": "18ecf44c-f456-4c66-8bcb-ed2ff0a8fdfd",
+              "id": "4af72ef1-26b4-4e20-8109-2f43533bfdb4",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -9379,7 +9379,7 @@
           }
         },
         {
-          "id": "19bc3d4a-7f17-4bb7-8df0-3f1623a0d11a",
+          "id": "b7023ccc-4fa0-4efa-8207-ad80285e54ed",
           "name": "Update plan",
           "request": {
             "name": "Update plan",
@@ -9432,7 +9432,7 @@
           },
           "response": [
             {
-              "id": "81ad8b66-c359-43fe-acc1-ba3580d9a97d",
+              "id": "eb20e81e-cb8a-4b53-90cb-043d581e796f",
               "name": "Updated",
               "originalRequest": {
                 "url": {
@@ -9495,7 +9495,7 @@
           }
         },
         {
-          "id": "eb9092ff-a322-4c9d-aca2-39b42df117dc",
+          "id": "170ebd54-afea-48f8-9e74-107abbd8d235",
           "name": "List properties",
           "request": {
             "name": "List properties",
@@ -9535,7 +9535,7 @@
           },
           "response": [
             {
-              "id": "bc3fa037-9502-4d90-9a6a-3f5661d8d85d",
+              "id": "5ea0f779-b334-44e5-ac4e-a90be2df7534",
               "name": "Paginated list",
               "originalRequest": {
                 "url": {
@@ -9590,7 +9590,7 @@
           }
         },
         {
-          "id": "c969827d-7967-413e-96fb-c5e31c284406",
+          "id": "f57e9448-05c7-4958-a4db-d810fee9e08c",
           "name": "Get property details",
           "request": {
             "name": "Get property details",
@@ -9628,7 +9628,7 @@
           },
           "response": [
             {
-              "id": "eecffca2-4530-4126-9306-0f05febce065",
+              "id": "ddfb700c-b3f4-4d7f-80af-ac681daf77bd",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -9683,7 +9683,7 @@
           }
         },
         {
-          "id": "e089b042-cc0d-4c31-9243-83c794b6448b",
+          "id": "7fcb22c7-eb88-4987-a45f-2d9d2f95d57b",
           "name": "Verify or reject property",
           "request": {
             "name": "Verify or reject property",
@@ -9737,7 +9737,7 @@
           },
           "response": [
             {
-              "id": "995858a6-ae81-464a-a4d1-99a2258520ca",
+              "id": "5e50babe-c1b2-4f8e-a832-9a0f74698928",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -9801,7 +9801,244 @@
           }
         },
         {
-          "id": "1f7d9a97-49dc-4bf9-9b21-7113c80c77dd",
+          "id": "8cf79e28-8a74-464a-b912-84f7b4bd0d40",
+          "name": "Assign an LGD district to a property (legacy migration)",
+          "request": {
+            "name": "Assign an LGD district to a property (legacy migration)",
+            "description": {
+              "content": "Sets districtCode/districtName for properties whose DigiPin predates the v1 format. The code must exist in the LGD dataset; when the stored state parses, the district must belong to it. Follow with POST /admin/digipins/{id}/regenerate to recompute the v1 number.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "admin",
+                "properties",
+                ":id",
+                "district"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"districtCode\": \"<integer>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "9a0d436d-16a4-4e18-acbb-a136ffce8b62",
+              "name": "District assigned",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "admin",
+                    "properties",
+                    ":id",
+                    "district"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"districtCode\": 460\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1e96f193-8d26-468b-ad00-8a48480a91e7",
+              "name": "Unknown district code or district/state mismatch",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "admin",
+                    "properties",
+                    ":id",
+                    "district"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"districtCode\": 460\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c2dcb540-5947-465f-9ae5-bcaddd8013d6",
+              "name": "Property not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "admin",
+                    "properties",
+                    ":id",
+                    "district"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"districtCode\": 460\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "6fa95055-d78b-42f6-85e6-1f9acaf3ee3e",
           "name": "List broadcast history",
           "request": {
             "name": "List broadcast history",
@@ -9841,7 +10078,7 @@
           },
           "response": [
             {
-              "id": "ad7bf161-99c2-49b1-924c-a91d8d331aa2",
+              "id": "74fa5a8d-9250-44b9-9815-b1eb846415f1",
               "name": "Paginated list",
               "originalRequest": {
                 "url": {
@@ -9896,7 +10133,7 @@
           }
         },
         {
-          "id": "c387a74d-1d2e-4dad-9c9d-c07bcb1ba86c",
+          "id": "baecdc71-a730-411c-9ce5-57f797336258",
           "name": "Broadcast notification",
           "request": {
             "name": "Broadcast notification",
@@ -9941,7 +10178,7 @@
           },
           "response": [
             {
-              "id": "f46c2dd1-6bc1-4b42-98bb-c071da82ffaf",
+              "id": "b9958aed-139b-4ee4-9011-6d3e0f7b36d2",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -9996,7 +10233,7 @@
           }
         },
         {
-          "id": "83a328ca-c0cc-48f0-8311-6fab9ba79daa",
+          "id": "8c2bad1f-db10-48ef-b69d-82b9bf7ee57d",
           "name": "List digipins",
           "request": {
             "name": "List digipins",
@@ -10036,7 +10273,7 @@
           },
           "response": [
             {
-              "id": "b7312aa9-4c5b-43c3-bee3-345bd5410bda",
+              "id": "aad766df-8401-4b10-bea6-936f833c42e9",
               "name": "Paginated list",
               "originalRequest": {
                 "url": {
@@ -10091,7 +10328,7 @@
           }
         },
         {
-          "id": "4777f1e6-7bb7-4446-8ba3-98faf711be67",
+          "id": "79867a2a-2ade-4477-b9a7-b6222a96894e",
           "name": "Change digipin status",
           "request": {
             "name": "Change digipin status",
@@ -10145,7 +10382,7 @@
           },
           "response": [
             {
-              "id": "01cfe9f5-de51-46d0-9f73-4c805a3bf054",
+              "id": "916f7eb4-56ae-4e2f-b3ca-44961875aa1c",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -10209,7 +10446,205 @@
           }
         },
         {
-          "id": "1bcaf93c-a9f9-4a5e-b07b-510bee3bfcec",
+          "id": "a80ccbe4-daab-400c-988d-992bd337d4b4",
+          "name": "Recompute the v1 DigiPin number in place (legacy migration)",
+          "request": {
+            "name": "Recompute the v1 DigiPin number in place (legacy migration)",
+            "description": {
+              "content": "Encodes state + district + coordinates into the v1 format and replaces digipinNumber on the existing row — the digipinId is unchanged, so already-printed QRs keep scanning. Requires a district on the property (PATCH /admin/properties/{id}/district first) plus stored state and coordinates. Status is untouched.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "admin",
+                "digipins",
+                ":id",
+                "regenerate"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "0cc5946d-b6e5-465a-8b21-e9b9fdc80ad8",
+              "name": "DigiPin regenerated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "admin",
+                    "digipins",
+                    ":id",
+                    "regenerate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "a6dff7b3-593a-4bea-9646-185f7c476ffb",
+              "name": "Missing district/state/coordinates on the property",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "admin",
+                    "digipins",
+                    ":id",
+                    "regenerate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "0b8f1346-3088-4166-bea7-4290858db91a",
+              "name": "DigiPin not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "admin",
+                    "digipins",
+                    ":id",
+                    "regenerate"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "fa8c8bf8-1504-4d77-a9e2-5d35be14ac61",
           "name": "Dashboard stats",
           "request": {
             "name": "Dashboard stats",
@@ -10238,7 +10673,7 @@
           },
           "response": [
             {
-              "id": "6feb57da-c760-441d-8452-5a82b98e4eab",
+              "id": "90c596b6-8df5-43ab-a0c2-dc8399e128ce",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -10284,7 +10719,7 @@
           }
         },
         {
-          "id": "33e7eff2-3a9a-47e4-be22-e13cf836750a",
+          "id": "fc0d0a2b-f121-469b-86fc-f87353fb00e2",
           "name": "List categories",
           "request": {
             "name": "List categories",
@@ -10313,7 +10748,7 @@
           },
           "response": [
             {
-              "id": "529d0e9e-f8ca-4849-ba30-d1e912c7a127",
+              "id": "883b9b37-bc30-44d8-8f18-5c9e34dd50d7",
               "name": "List of categories",
               "originalRequest": {
                 "url": {
@@ -10359,7 +10794,7 @@
           }
         },
         {
-          "id": "3a8c3d19-10c7-4004-9df1-24ce4bdd56e4",
+          "id": "6740e5d1-e885-4990-883c-5c3d4bcebc6e",
           "name": "Update category",
           "request": {
             "name": "Update category",
@@ -10412,7 +10847,7 @@
           },
           "response": [
             {
-              "id": "0f506ef8-6020-4079-80de-5d0b56b72fca",
+              "id": "d8bacc7f-0ed5-488c-8bac-09f3249b134f",
               "name": "Updated",
               "originalRequest": {
                 "url": {
@@ -10475,7 +10910,7 @@
           }
         },
         {
-          "id": "1663ba3e-684b-4f3c-9537-ccf5382266f9",
+          "id": "b9c038a8-faf2-45e6-9e5b-6610eb1e16cb",
           "name": "List businesses",
           "request": {
             "name": "List businesses",
@@ -10515,7 +10950,7 @@
           },
           "response": [
             {
-              "id": "77dbdbc3-88d5-4e33-b9c8-fcbdf4827bc0",
+              "id": "2d9f674c-f082-4c19-ae6c-d93ea05dc02d",
               "name": "Paginated list",
               "originalRequest": {
                 "url": {
@@ -10570,7 +11005,7 @@
           }
         },
         {
-          "id": "5e90c245-f567-4416-bb78-7027be0b12ac",
+          "id": "b2e901ab-8cef-475c-9c0e-a259a52350b7",
           "name": "Get business details",
           "request": {
             "name": "Get business details",
@@ -10608,7 +11043,7 @@
           },
           "response": [
             {
-              "id": "3a62a8b2-f898-421a-a67b-b1cf682be6c5",
+              "id": "53d54bc5-0103-4b9a-9722-d740c2ef052e",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -10663,7 +11098,7 @@
           }
         },
         {
-          "id": "4e660d56-1cf6-4818-bb52-fa71fa551573",
+          "id": "480466e9-b375-47c6-92df-ebf18e344b4a",
           "name": "Verify or reject business",
           "request": {
             "name": "Verify or reject business",
@@ -10717,7 +11152,7 @@
           },
           "response": [
             {
-              "id": "bc8e5e47-3674-4e40-bac3-1a415d0be122",
+              "id": "2a942d95-9ce9-4c43-bf3b-cfdbc318b1a8",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -10781,7 +11216,7 @@
           }
         },
         {
-          "id": "60f32418-5b56-445c-ba75-3eb2ace3d696",
+          "id": "8a1bacf9-6b36-4ace-a718-169d9a4444ee",
           "name": "Refresh admin tokens",
           "request": {
             "name": "Refresh admin tokens",
@@ -10818,7 +11253,7 @@
           },
           "response": [
             {
-              "id": "13153e1d-e715-47c4-8275-013dec25e61f",
+              "id": "f303f986-c906-4e8b-a3f9-9aa9e813e117",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -10863,7 +11298,7 @@
           }
         },
         {
-          "id": "f107346b-1015-4a14-9fdf-6370eaea7eb6",
+          "id": "4e90e5b6-0ec4-4347-b8ff-45369984da4d",
           "name": "Get current admin",
           "request": {
             "name": "Get current admin",
@@ -10893,7 +11328,7 @@
           },
           "response": [
             {
-              "id": "5b055902-8ffd-46bc-8a3c-6dab56ef918e",
+              "id": "b1b4eb43-baa3-4574-a6e5-be9f39ae8da4",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -10940,7 +11375,7 @@
           }
         },
         {
-          "id": "95b3611d-50cc-46f2-994d-eead0992147b",
+          "id": "07fb1e7b-5517-4acf-b8eb-f7d255366647",
           "name": "Admin logout",
           "request": {
             "name": "Admin logout",
@@ -10985,7 +11420,7 @@
           },
           "response": [
             {
-              "id": "12a4361a-50b5-42ef-ba97-4f1e626fd2e1",
+              "id": "dfdfdc11-05cb-48ff-a9db-d2ecfad2c085",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -11040,7 +11475,7 @@
           }
         },
         {
-          "id": "e93d17a5-c58e-43a8-8695-aed3731d61fb",
+          "id": "38d9eb05-686e-498e-992f-f1d53760386c",
           "name": "Admin login",
           "request": {
             "name": "Admin login",
@@ -11077,7 +11512,7 @@
           },
           "response": [
             {
-              "id": "4b93a5b6-ea7a-4e31-8e40-e8eb5f105061",
+              "id": "79441e1c-7723-4c63-9aa5-edfad596ead0",
               "name": "Success",
               "originalRequest": {
                 "url": {
@@ -11122,7 +11557,7 @@
           }
         },
         {
-          "id": "1f4b5495-1a23-4fec-97d4-a36c28aea1e8",
+          "id": "c73ff151-bfee-44ce-b800-cfa8202e6258",
           "name": "List admins",
           "request": {
             "name": "List admins",
@@ -11162,7 +11597,7 @@
           },
           "response": [
             {
-              "id": "d066906e-35ff-491b-912a-f1b4b136d947",
+              "id": "f36cd375-9d82-46fa-8759-6d7fb9bff8bc",
               "name": "Paginated list of admins",
               "originalRequest": {
                 "url": {
@@ -11217,7 +11652,7 @@
           }
         },
         {
-          "id": "03245269-db0d-4247-ba36-e81e460a3038",
+          "id": "5c752814-d86d-4543-a015-1b9c6af10646",
           "name": "Update admin",
           "request": {
             "name": "Update admin",
@@ -11270,7 +11705,7 @@
           },
           "response": [
             {
-              "id": "52491ac6-6557-465c-bc1f-542ba8be9528",
+              "id": "09b452b5-bed8-4d52-bc09-75394503a07a",
               "name": "Updated",
               "originalRequest": {
                 "url": {
@@ -11345,7 +11780,7 @@
     }
   ],
   "info": {
-    "_postman_id": "372fe800-9dab-4e0a-8243-d1356ed50275",
+    "_postman_id": "748aa0b5-67fa-4fa1-8b81-0d29fbb1bbd8",
     "name": "OwnMyPin API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {

@@ -55,8 +55,9 @@ type Params = { params: Promise<{ id: string }> };
  *               ownershipType: { type: string, enum: [OWN, RENT, OTHER] }
  *               address: { type: string, minLength: 5, maxLength: 500 }
  *               city: { type: string, minLength: 2, maxLength: 100 }
- *               state: { type: string, minLength: 2, maxLength: 100 }
- *               pincode: { type: string, pattern: '^\d{6}$' }
+  *               state: { type: string, minLength: 2, maxLength: 100 }
+  *               districtCode: { type: integer, minimum: 1, description: LGD district code }
+  *               pincode: { type: string, pattern: '^\d{6}$' }
  *               latitude: { type: number, minimum: -90, maximum: 90 }
  *               longitude: { type: number, minimum: -180, maximum: 180 }
  *     responses:

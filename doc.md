@@ -26,7 +26,7 @@ MySQL provider, `cuid()` PKs, `createdAt`/`updatedAt` everywhere applicable. Mod
 - **Session** — userId, deviceInfo, createdAt, expiresAt
 - **RefreshToken** — userId, tokenHash (unique), expiresAt, revoked, revokedAt
 - **DeviceToken** — userId, fcmToken, platform enum
-- **Property** — ownerName, propertyType/ownershipType enums, address, city, state, pincode, lat/lng (Decimal), verificationStatus enum (DRAFT…INACTIVE)
+- **Property** — ownerName, propertyType/ownershipType enums, address, city, state, districtCode (Int?, LGD) + districtName (snapshot), pincode, lat/lng (Decimal), verificationStatus enum (DRAFT…INACTIVE)
 - **DigiPin** — propertyId (unique), digipinNumber (`@@unique`), status, verificationStatus
 - **QR** — digipinId (unique), qrData, qrStatus, customization (Json?)
 
@@ -76,23 +76,27 @@ Cross-cutting rules:
 ## 6. Properties & registration flow (module: properties)
 
 - `POST /api/properties` — creates a DRAFT (steps 1–3 required).
-- `PATCH /api/properties/:id` — progressive step fill (address, city/state/pincode, lat/lng). Zod per field (6-digit pincode, lat −90…90, lng −180…180). **PATCH can never change verificationStatus.**
+- `PATCH /api/properties/:id` — progressive step fill (address, city/state/districtCode/pincode, lat/lng). Zod per field (6-digit pincode, lat −90…90, lng −180…180). **PATCH can never change verificationStatus.**
 - `GET /api/properties`, `GET /api/properties/:id` — own records only.
 - `POST /api/properties/:id/submit` — full completeness gate (400 PROPERTY_INCOMPLETE otherwise), status transition enforced server-side via `ALLOWED_TRANSITIONS` map (DRAFT|REJECTED→SUBMITTED). Inside a transaction: update property → generate DigiPin (retry-on-P2002) → create QR → return `{property, message}` — the DigiPin number is **NOT returned** (hidden until admin approval). Resubmit after REJECTED reuses the existing DigiPin row (same number, reset to SUBMITTED) and keeps the existing QR token.
 - **DigiPin approval gate (2026-09-04):** the code is invisible on every non-admin surface until `PATCH /admin/properties/{id}/verification {APPROVE}` sets VERIFIED. `GET /api/properties/:id` returns `digiPin: null` + `digipinStatus: PENDING_APPROVAL` + plain-language `digipinMessage` while pending (`AVAILABLE` after); public search/nearby only match VERIFIED-or-later properties with ACTIVE DigiPin; QR verify returns generic 404 for unapproved codes; QR issuance returns 403 `PROPERTY_NOT_APPROVED` to the owner (strangers still get 404).
 
 ## 7. DigiPin generation (module: digipin)
 
-- Format: `[2-letter state code][4-digit crypto-random][last 2 pincode digits]` → e.g. `WB472801`.
-- State table: all 28 states + 8 UTs with aliases (`src/modules/digipin/stateCodes.ts`); unknown state → 400.
-- `crypto.randomInt(1000, 10000)` for the 4-digit part.
-- **Uniqueness via DB constraint, not pre-check**: `generateDigiPin(state, pincode, { persist, maxRetries })` catches Prisma P2002 and retries (default 5); exhaustion → `DIGIPIN_GENERATION_FAILED`. Caller injects `persist` (a `prisma.digiPin.create` closure), which also makes it unit-testable without a DB.
+**v1 format (2026-09-04+, 18 chars)** — the code IS the payload (open encoding + checksum), e.g. `WB315K7Q29XMD49C2F9P` (displayed `WB-315-K7Q29XMD49C2F-9-P`):
+- `SS` state shortform (existing `stateCodes.ts` map) + `DDD` zero-padded LGD district code + 12 Crockford-base32 chars (`version:4 + lat:22 + lng:22 + rand:10`) + 1 checksum char (FNV-1a mod 32).
+- Coords quantized to 1e-5° (~1.1 m, phone-GPS noise floor), India box lat 6–38 / lng 68–98; decode is grid-exact. State is derived from district (each district belongs to one state).
+- District dataset: `data/india_districts_lgd.csv` (784 LGD codes) → `npm run districts:generate` → `src/modules/districts/districts.generated.ts` (+ `districts.ts` helpers `getDistrict`/`assertDistrictInState`). Codes are globally unique; names repeat across states so code is canonical.
+- Codec: `src/modules/digipin/digipin.codec.ts` (`encodeDigiPin`/`decodeDigiPin`/`formatDigiPin`/`isLegacyDigiPin`). Decode is server-side only — exact lat/lng never leave publicly (QR-verify exposes `districtName` max, like city/state).
+- **Why v1:** the old `[state][4 random digits][pincode suffix]` had only ~9,000 slots per (state × pincode-suffix) bucket → birthday collisions at ~112 properties/bucket, unscalable. v1's 10-bit rand + `@@unique` retry has no population-scaling failure mode (deterministic coords + fresh rand per issuance).
+- **Uniqueness via DB constraint, not pre-check**: `persistUniqueDigiPin(persist, fields)` catches Prisma P2002 and retries with fresh rand (default 5); exhaustion → `DIGIPIN_GENERATION_FAILED`.
+- **Legacy codes** (`WB999901`-style, `^[A-Z]{2}\d{6}$`) keep working under the same approval gates; migration = `PATCH /admin/properties/{id}/district` (assign LGD code) → `POST /admin/digipins/{id}/regenerate` (recompute in place, same `digipinId` so QRs keep scanning). Old rows can't auto-migrate (no district stored).
 - Server-side only — no client path can construct a DigiPin.
 
 ## 8. QR (module: qr, stub-level)
 
 - `GET /api/digipins/:id/qr` — create/retrieve a QR whose payload is an **opaque token** (`https://digipin.app/q/<32 hex>`), never personal data. Gated on admin approval: 403 `PROPERTY_NOT_APPROVED` for the owner while pending (strangers get 404).
-- `POST /api/qr/verify` — resolves the token server-side, returns only authorized info: digipinNumber, status, verificationStatus, city, state. Only for approved properties — unapproved codes give the same generic 404 as a bogus token.
+- `POST /api/qr/verify` — resolves the token server-side, returns only authorized info: digipinNumber, status, verificationStatus, city, state, districtName. Only for approved properties — unapproved codes give the same generic 404 as a bogus token.
 
 ## 9. Location (module: location — hybrid GPS + geocoding, live)
 
