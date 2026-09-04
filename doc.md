@@ -78,7 +78,8 @@ Cross-cutting rules:
 - `POST /api/properties` — creates a DRAFT (steps 1–3 required).
 - `PATCH /api/properties/:id` — progressive step fill (address, city/state/pincode, lat/lng). Zod per field (6-digit pincode, lat −90…90, lng −180…180). **PATCH can never change verificationStatus.**
 - `GET /api/properties`, `GET /api/properties/:id` — own records only.
-- `POST /api/properties/:id/submit` — full completeness gate (400 PROPERTY_INCOMPLETE otherwise), status transition enforced server-side via `ALLOWED_TRANSITIONS` map (DRAFT→SUBMITTED only). Inside a transaction: update property → generate DigiPin (retry-on-P2002) → create QR → return digipinNumber.
+- `POST /api/properties/:id/submit` — full completeness gate (400 PROPERTY_INCOMPLETE otherwise), status transition enforced server-side via `ALLOWED_TRANSITIONS` map (DRAFT|REJECTED→SUBMITTED). Inside a transaction: update property → generate DigiPin (retry-on-P2002) → create QR → return `{property, message}` — the DigiPin number is **NOT returned** (hidden until admin approval). Resubmit after REJECTED reuses the existing DigiPin row (same number, reset to SUBMITTED) and keeps the existing QR token.
+- **DigiPin approval gate (2026-09-04):** the code is invisible on every non-admin surface until `PATCH /admin/properties/{id}/verification {APPROVE}` sets VERIFIED. `GET /api/properties/:id` returns `digiPin: null` + `digipinStatus: PENDING_APPROVAL` + plain-language `digipinMessage` while pending (`AVAILABLE` after); public search/nearby only match VERIFIED-or-later properties with ACTIVE DigiPin; QR verify returns generic 404 for unapproved codes; QR issuance returns 403 `PROPERTY_NOT_APPROVED` to the owner (strangers still get 404).
 
 ## 7. DigiPin generation (module: digipin)
 
@@ -90,8 +91,8 @@ Cross-cutting rules:
 
 ## 8. QR (module: qr, stub-level)
 
-- `GET /api/digipins/:id/qr` — create/retrieve a QR whose payload is an **opaque token** (`https://digipin.app/q/<32 hex>`), never personal data.
-- `POST /api/qr/verify` — resolves the token server-side, returns only authorized info: digipinNumber, status, verificationStatus, city, state.
+- `GET /api/digipins/:id/qr` — create/retrieve a QR whose payload is an **opaque token** (`https://digipin.app/q/<32 hex>`), never personal data. Gated on admin approval: 403 `PROPERTY_NOT_APPROVED` for the owner while pending (strangers get 404).
+- `POST /api/qr/verify` — resolves the token server-side, returns only authorized info: digipinNumber, status, verificationStatus, city, state. Only for approved properties — unapproved codes give the same generic 404 as a bogus token.
 
 ## 9. Location (module: location — hybrid GPS + geocoding, live)
 
@@ -402,14 +403,14 @@ Implemented, unit-tested (9 search tests + 8 authorization-audit tests, 40/40 to
 - `src/modules/search/search.service.ts` — `searchAll`, `searchNearby`, `propertyWhere`/`businessWhere`, `recordSearch`/`listSearchHistory`, public projections.
 - `src/lib/queryParams.ts` — `parseQueryParams`: URL query string → Zod `.strict()` validation (same 400 `VALIDATION_ERROR` shape as bodies).
 - Routes: `src/app/api/search/route.ts`, `src/app/api/search/nearby/route.ts`, `src/app/api/search/history/route.ts`, `src/app/api/locations/nearby/route.ts`.
-- `src/tests/search.test.ts` — privacy projections (no PII leak), where-clause builders, DigiPin-required gating.
+- `src/tests/search.test.ts` — privacy projections (no PII leak), where-clause builders, DigiPin-required gating, approval gating (unapproved rows project to null; where-clauses carry the VERIFIED-or-later + ACTIVE-DigiPin filter).
 - `src/tests/authorization.test.ts` — **authorization audit suite** (user-addendum): PUBLIC routes never 401; USER routes 401 on missing/garbage token, 200/201 with a valid signed user JWT (prisma mocked); plus fs-based hard-boundary guards — no `/api/admin/*` routes yet, no non-admin verification-approval route, no trust-score/badges routes, no payments webhook until their modules add them WITH their own auth tests.
 - `src/middleware/errorHandler.ts` — `validateBody` re-typed to `z.output<S>` (fixes optional-field leakage from `.default()` schemas).
 
 ### 22.2 Behavior notes
 - **Pagination:** `{ items, total, page, pageSize }`, default 20 / max 100. `searchAll` fills the page from properties first, then businesses; `total` = property + business counts.
 - **Nearby:** fetches candidate rows using stored coords only, computes `distanceMeters` in-app (reuses `distanceMeters` from the location module), filters to radius, sorts by distance, then paginates. No geocoder at query time.
-- **Privacy:** `projectPropertySearch` returns `null` for rows without a DigiPin; the property projection carries only `digipinId`/`digipinNumber`/`city`/`state`/`verificationStatus`/`latitude`/`longitude`. Business public projection: name/category/city/state + status + coords (contact info is Module 2's detail view, verification-gated).
+- **Privacy:** `projectPropertySearch` returns `null` for rows without a DigiPin AND for unapproved rows (SUBMITTED/UNDER_REVIEW/REJECTED/DRAFT) even with one; the property projection carries only `digipinId`/`digipinNumber`/`city`/`state`/`verificationStatus`/`latitude`/`longitude`. `propertyWhere`/`searchNearby` filter to VERIFIED-or-later + ACTIVE DigiPin (mirrors the business VERIFIED+ACTIVE gate). Business public projection: name/category/city/state + status + coords (contact info is Module 2's detail view, verification-gated).
 - **History:** `POST` records a term (prunes to the last 50 per user); `GET` lists newest-first, paginated.
 - **Bug found in E2E:** Prisma rejects `{ digiPin: { isNot: null, digipinNumber: { contains } } }` (can't mix relation filter with field filter) — nested `{ digiPin: { digipinNumber: { contains } } }` already implies existence. Fixed in `propertyWhere`.
 - **Verified live:** `GET /api/search?q=UP` → 3 results; `?type=digipin` WB → WB105516/WB855216; nearby at 25.31,82.97 → both Varanasi properties at distance 0; validation 400s (missing `q`, `pageSize>100`); history requires Bearer (401 without), record→201, list→200.

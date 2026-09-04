@@ -10,10 +10,11 @@ type Params = { params: Promise<{ id: string }> };
  * @swagger
  * /api/digipins/{id}/qr:
  *   get:
- *     summary: Get (or create) the QR for a DigiPin
- *     description: Returns an opaque token the client renders as a QR image.
- *       Only the owner of the property can fetch it — foreign/missing ids give
- *       an identical 404.
+  *     summary: Get (or create) the QR for a DigiPin
+  *     description: Returns an opaque token the client renders as a QR image.
+  *       Only the owner of the property can fetch it — foreign/missing ids give
+  *       an identical 404. Only available after admin approval; the owner gets
+  *       a 403 PROPERTY_NOT_APPROVED ("not approved yet") while pending.
  *     tags: [QR]
  *     security:
  *       - bearerAuth: []
@@ -39,10 +40,12 @@ type Params = { params: Promise<{ id: string }> };
  *                         qrData: { type: string, example: "https://digipin.app/q/<token>" }
  *                         qrStatus: { type: string, enum: [ACTIVE, DISABLED] }
  *                         token: { type: string }
- *       '401':
- *         description: Missing or invalid access token
- *       '404':
- *         description: DigiPin not found (or owned by someone else)
+  *       '401':
+  *         description: Missing or invalid access token
+  *       '403':
+  *         description: Property not approved yet (PROPERTY_NOT_APPROVED)
+  *       '404':
+  *         description: DigiPin not found (or owned by someone else)
  */
 export const GET = withErrorHandler(async (req: NextRequest, { params }: Params) => {
   const { userId } = requireAuth(req);

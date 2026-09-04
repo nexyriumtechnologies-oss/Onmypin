@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { distanceMeters } from "@/modules/location/location.service";
+import { APPROVED_VERIFICATION_STATUSES } from "@/modules/properties/property.service";
 
 export interface PagedResult<T> {
   items: T[];
@@ -78,7 +79,10 @@ export function projectPropertySearch(row: {
   longitude: { toNumber(): number } | number | null;
   digiPin: { id: string; digipinNumber: string } | null;
 }): PropertySearchItem | null {
-  if (!row.digiPin) return null; // only submitted properties are searchable
+  // Defense in depth: queries already filter to approved properties, but
+  // never project a code for an unapproved row even if one slips through.
+  if (!row.digiPin) return null; // only approved properties are searchable
+  if (!APPROVED_VERIFICATION_STATUSES.includes(row.verificationStatus as (typeof APPROVED_VERIFICATION_STATUSES)[number])) return null;
   return {
     kind: "property",
     id: row.id,
@@ -180,15 +184,27 @@ export async function searchAll(input: {
   return { items, total: propertyTotal + businessTotal, page, pageSize };
 }
 
-/** Prisma filter for the property side of a search. */
+/**
+ * Prisma filter for the property side of a search.
+ * Public search only shows APPROVED properties (VERIFIED or later) with an
+ * ACTIVE DigiPin — mirrors the business VERIFIED+ACTIVE gate. Unapproved
+ * properties are invisible here even to their owner.
+ */
 export function propertyWhere(q: string, type: SearchType): object {
+  const approvalGate = {
+    verificationStatus: { in: APPROVED_VERIFICATION_STATUSES },
+    digiPin: { status: "ACTIVE" },
+  };
   if (type === "digipin") {
-    // Nested relation filter implies the DigiPin exists.
-    return { digiPin: { digipinNumber: { contains: q } } };
+    // Nested relation filters imply the DigiPin exists.
+    return {
+      ...approvalGate,
+      digiPin: { digipinNumber: { contains: q }, status: "ACTIVE" },
+    };
   }
   if (type === "address") {
     return {
-      digiPin: { isNot: null },
+      ...approvalGate,
       OR: [
         { address: { contains: q } },
         { city: { contains: q } },
@@ -199,9 +215,9 @@ export function propertyWhere(q: string, type: SearchType): object {
   }
   // type === "all" — DigiPin number OR any address field
   return {
-    digiPin: { isNot: null },
+    verificationStatus: { in: APPROVED_VERIFICATION_STATUSES },
     OR: [
-      { digiPin: { digipinNumber: { contains: q } } },
+      { digiPin: { digipinNumber: { contains: q }, status: "ACTIVE" } },
       { address: { contains: q } },
       { city: { contains: q } },
       { state: { contains: q } },
@@ -227,7 +243,7 @@ export type NearbyResultItem = SearchResultItem & { distanceMeters: number };
 
 /**
  * Nearby search over STORED coordinates (haversine) — no geocoder call at
- * query time. Combines submitted properties + verified businesses within the
+ * query time. Combines approved properties + verified businesses within the
  * radius, sorted by distance, paginated.
  */
 export async function searchNearby(input: {
@@ -246,7 +262,10 @@ export async function searchNearby(input: {
   const [propertyRows, businessRows] = await Promise.all([
     wantProperties
       ? prisma.property.findMany({
-          where: { digiPin: { isNot: null } },
+          where: {
+            verificationStatus: { in: APPROVED_VERIFICATION_STATUSES },
+            digiPin: { status: "ACTIVE" },
+          },
           select: propertySearchSelect,
         })
       : Promise.resolve([]),

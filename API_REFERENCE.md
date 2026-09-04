@@ -388,6 +388,8 @@ Requires Bearer. Newest first. Same property shape as above (array in `data`).
 ### GET /api/properties/:id — one property
 Requires Bearer. Foreign/missing id → identical `404 PROPERTY_NOT_FOUND` (no existence leak).
 
+**DigiPin visibility:** the embedded `digiPin` is `null` until an admin approves the property — the response instead carries `"digipinStatus": "PENDING_APPROVAL"` + a plain-language `digipinMessage` ("Your property is not approved yet…"). After approval it returns `"digipinStatus": "AVAILABLE"` with the `digiPin` object.
+
 ### PATCH /api/properties/:id — fill steps progressively
 Requires Bearer. At least one field. **Do NOT send `verificationStatus`** (400 `INVALID_STATUS_TRANSITION`).
 
@@ -407,7 +409,7 @@ Requires Bearer. At least one field. **Do NOT send `verificationStatus`** (400 `
 > **State names:** the submit gate maps **full state/UT names** (e.g. `"Uttar Pradesh"`, `"West Bengal"`, `"Delhi"`) to DigiPin codes. Short forms like `"UP"` fail submit with `400 INVALID_STATE`. Use a state dropdown in the UI.
 
 ### POST /api/properties/:id/submit — submit for verification
-Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE`. On success: property becomes SUBMITTED, a **DigiPin** and its **QR** are generated.
+Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE`. On success: property becomes SUBMITTED, a **DigiPin** and its **QR** are generated — but the DigiPin is **NOT returned**. It stays hidden on every non-admin surface until an admin approves the property (`PATCH /admin/properties/:id/verification` → `VERIFIED`). A resubmit after REJECTED reuses the same (never-exposed) DigiPin number.
 
 ```jsonc
 // Request
@@ -429,8 +431,7 @@ Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE
   "success": true,
   "data": {
     "property": { "id": "cmsl...", "verificationStatus": "SUBMITTED" },
-    "digipinNumber": "WB629801",     // SAVE THIS — there is no list-DigiPin endpoint yet
-    "digipinId": "cmtq..."           // DigiPin row id — use it in GET /api/digipins/:id/qr
+    "message": "Property submitted. Your DigiPin will be visible after admin approval."
   }
 }
 ```
@@ -505,7 +506,7 @@ Public. Use to auto-fill the address field from the device GPS chip (no user typ
 ## 7. DigiPin & QR
 
 ### GET /api/digipins/:id/qr — get the QR for a DigiPin
-Requires Bearer. `:id` is the **DigiPin row id** (the `digipinId` returned by submit — persist it), not the 8-char number.
+Requires Bearer. `:id` is the **DigiPin row id** (visible on the approved property detail — it is no longer returned by submit), not the 8-char number. Only available **after admin approval** — the owner gets `403 PROPERTY_NOT_APPROVED` ("Your property is not approved yet…") while pending.
 
 ```jsonc
 // Response 200
@@ -519,10 +520,10 @@ Requires Bearer. `:id` is the **DigiPin row id** (the `digipinId` returned by su
 }
 ```
 
-`404 DIGIPIN_NOT_FOUND` for foreign/missing ids.
+`404 DIGIPIN_NOT_FOUND` for foreign/missing ids. `403 PROPERTY_NOT_APPROVED` while the property is unapproved.
 
 ### POST /api/qr/verify — verify a scanned QR (public, no auth)
-Anyone can call this — it returns **no address, no personal data** (privacy-safe for scanning by anyone).
+Anyone can call this — it returns **no address, no personal data** (privacy-safe for scanning by anyone). Only works for **admin-approved** properties — scanning a code for an unapproved property returns the same generic `404 QR_NOT_FOUND` as a bogus token (no existence probing).
 
 ```jsonc
 // Request — the BARE hex token (extract after /q/ from qrData)
@@ -534,7 +535,7 @@ Anyone can call this — it returns **no address, no personal data** (privacy-sa
   "data": {
     "digipinNumber": "WB629801",
     "status": "ACTIVE",                  // ACTIVE | INACTIVE
-    "verificationStatus": "SUBMITTED",
+    "verificationStatus": "VERIFIED",    // always VERIFIED or later — unapproved codes 404
     "city": "Kolkata",
     "state": "West Bengal"
   }
@@ -553,7 +554,7 @@ Anyone can call this — it returns **no address, no personal data** (privacy-sa
 
 All search endpoints are **public** (no auth) except history, which requires Bearer.
 
-**Privacy rule (hard):** search results are *public projections* — for properties only the **DigiPin number + city/state** (never the full address, owner name, selfie, or media); businesses show **name/category/city/state** and only **VERIFIED + ACTIVE** businesses appear.
+**Privacy rule (hard):** search results are *public projections* — for properties only the **DigiPin number + city/state** (never the full address, owner name, selfie, or media); businesses show **name/category/city/state** and only **VERIFIED + ACTIVE** businesses appear. Only **admin-approved properties** (`VERIFIED` or later, `ACTIVE` DigiPin) are searchable — unapproved properties are invisible here even to their owner.
 
 **Pagination (all search/list endpoints):** `page` (1-based) + `pageSize` (1–100, default 20) → `{ items, total, page, pageSize }`.
 
@@ -568,7 +569,7 @@ Query params: `q` (required, 1–200 chars), `type` (`digipin` | `address` | `bu
   "data": {
     "items": [
       { "kind": "property", "id": "cmsl...", "digipinId": "cmsl...", "digipinNumber": "WB105516",
-        "city": "Kolkata", "state": "West Bengal", "verificationStatus": "SUBMITTED",
+        "city": "Kolkata", "state": "West Bengal", "verificationStatus": "VERIFIED",
         "latitude": 22.5493, "longitude": 88.3566 },
       { "kind": "business", "id": "cmsl...", "name": "Cafe Kolkata", "categoryName": "Cafe",
         "city": "Kolkata", "state": "West Bengal", "verificationStatus": "VERIFIED",
@@ -580,7 +581,7 @@ Query params: `q` (required, 1–200 chars), `type` (`digipin` | `address` | `bu
 ```
 
 - `type=digipin` matches the DigiPin number only; `type=address` matches address/city/state/pincode; `type=all` matches number **OR** address fields (properties first, then businesses).
-- Only submitted properties (rows with a DigiPin) are searchable.
+- Only admin-approved properties (VERIFIED/ACTIVE/INACTIVE + ACTIVE DigiPin) are searchable.
 - `400 VALIDATION_ERROR` if `q` is missing or `pageSize > 100`.
 
 ### GET /api/search/nearby — combined nearby (properties + businesses)
@@ -764,6 +765,7 @@ Body: `fcmToken` (1-512), `platform` = `ANDROID | IOS | WEB`. Upserts by (user, 
 
 Media-only: `EMPTY_BODY` 400, `INVALID_CONTENT_TYPE` 400, `FILE_REQUIRED` 400, `EMPTY_FILE` 400, `INVALID_FILE_TYPE` 400, `INVALID_FILE_KEY` 400, `FILE_TOO_LARGE` 413, `MALFORMED_UPLOAD` 400.
 Ownership: `MEDIA_NOT_FOUND` 404, `PROPERTY_NOT_FOUND` 404, `DIGIPIN_NOT_FOUND` 404, `QR_NOT_FOUND` 404, `USER_NOT_FOUND` 404, `BUSINESS_NOT_FOUND` 404, `BUSINESS_IMAGE_NOT_FOUND` 404, `NOTIFICATION_NOT_FOUND` 404, `DEVICE_TOKEN_NOT_FOUND` 404.
+Approval: `PROPERTY_NOT_APPROVED` 403 (QR fetch on an unapproved property — owner only; strangers get the identical 404).
 Account: `ACCOUNT_DISABLED` 403 (deactivated/deleted), `ACCOUNT_DELETED` 403.
 Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fields), `INVALID_STATUS_TRANSITION` 400, `BUSINESS_IMAGE_LIMIT` 400 (max 5), `CATEGORY_INVALID` 400.
 
@@ -778,7 +780,7 @@ Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fi
    - step 1–3 (name/type/ownership): already at create
    - address step: `PATCH /api/properties/:id` (address/city/state/pincode) + `location/verify` for a map pin
    - photos step: upload to `property-images` (max 3, show replace-toast on 4th) and `selfie`
-   - review & submit: `submit` → show the **DigiPin** prominently + fetch QR via `GET /api/digipins/:id/qr` (requires digipin id — store it from the submit response).
+    - review & submit: `submit` → show a **"pending admin approval"** state (the DigiPin is NOT in the response). After approval, read the code from `GET /api/properties/:id` (`digiPin` appears, `digipinStatus: "AVAILABLE"`) and fetch the QR via `GET /api/digipins/:id/qr` (needs the `digipinId` from the approved property detail).
 4. **Token upkeep** → on any 401, call `refresh`, update stored tokens, retry once; if refresh 401s, force re-login.
 
 ---

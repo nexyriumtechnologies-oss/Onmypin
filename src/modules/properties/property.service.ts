@@ -2,7 +2,18 @@ import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/middleware/errorHandler";
 import { requireOwnedMedia, requireOwnedMediaMany } from "@/modules/media/media.service";
 import { geocodeAddress } from "@/modules/location/location.service";
-import type { PropertyType, OwnershipType } from "@prisma/client";
+import type { PropertyType, OwnershipType, VerificationStatus } from "@prisma/client";
+
+/**
+ * DigiPin visibility rule: the code is hidden from every non-admin surface
+ * until an admin approves the property (VERIFIED). ACTIVE/INACTIVE only ever
+ * follow VERIFIED, so they stay visible too.
+ */
+export const APPROVED_VERIFICATION_STATUSES: VerificationStatus[] = [
+  "VERIFIED",
+  "ACTIVE",
+  "INACTIVE",
+];
 
 export interface CreatePropertyInput {
   ownerName: string;
@@ -65,7 +76,17 @@ async function getOwnedProperty(userId: string, propertyId: string) {
 export async function getProperty(userId: string, propertyId: string) {
   const property = await getOwnedProperty(userId, propertyId);
   const { userId: _ownerId, ...rest } = property;
-  return rest;
+  // DigiPin stays hidden until an admin approves the property — but tell the
+  // owner plainly why instead of silently returning null.
+  if (!APPROVED_VERIFICATION_STATUSES.includes(rest.verificationStatus)) {
+    return {
+      ...rest,
+      digiPin: null,
+      digipinStatus: "PENDING_APPROVAL",
+      digipinMessage: "Your property is not approved yet. The DigiPin will appear here after admin approval.",
+    };
+  }
+  return { ...rest, digipinStatus: "AVAILABLE" };
 }
 
 /** Status transitions — the client can never jump states server-side. */
@@ -107,8 +128,15 @@ export async function updateProperty(
 }
 
 /**
- * Submit: validates completeness, enforces DRAFT→SUBMITTED, then generates
- * the DigiPin and associates a QR — inside a transaction.
+ * Submit: validates completeness, enforces DRAFT|REJECTED→SUBMITTED, then
+ * generates the DigiPin and associates a QR — inside a transaction.
+ *
+ * The DigiPin is NEVER returned here: it stays invisible on every non-admin
+ * surface until an admin approves the property via
+ * PATCH /admin/properties/{id}/verification.
+ *
+ * Resubmit after REJECTED reuses the existing DigiPin row (its number was
+ * never exposed) and resets it to SUBMITTED, keeping the existing QR token.
  *
  * Coordinates: latitude/longitude are OPTIONAL. When the client sends device
  * GPS those are stored; otherwise the server geocodes the full address
@@ -167,28 +195,42 @@ export async function submitProperty(
       data: { ...updateData, latitude, longitude, verificationStatus: "SUBMITTED" },
     });
 
-    const { generateDigiPin } = await import("@/modules/digipin/digipin.service");
-    const digipinNumber = await generateDigiPin(data.state, data.pincode, {
-      persist: (number) =>
-        tx.digiPin.create({ data: { propertyId, digipinNumber: number } }),
-    });
+    // First submit creates the DigiPin row; a resubmit after REJECTED reuses
+    // the existing row (its number was never exposed) and resets it to
+    // SUBMITTED. A blind create here would P2002 on propertyId @unique.
+    let digiPin = await tx.digiPin.findUnique({ where: { propertyId } });
+    if (!digiPin) {
+      const { generateDigiPin } = await import("@/modules/digipin/digipin.service");
+      await generateDigiPin(data.state, data.pincode, {
+        persist: (number) =>
+          tx.digiPin.create({ data: { propertyId, digipinNumber: number } }),
+      });
+      digiPin = await tx.digiPin.findUniqueOrThrow({ where: { propertyId } });
+    } else if (digiPin.verificationStatus !== "SUBMITTED") {
+      digiPin = await tx.digiPin.update({
+        where: { id: digiPin.id },
+        data: { verificationStatus: "SUBMITTED" },
+      });
+    }
 
-    const digiPin = await tx.digiPin.findUniqueOrThrow({ where: { propertyId } });
+    // Keep the existing QR token on resubmit — only create one if missing.
+    const existingQr = await tx.qR.findUnique({ where: { digipinId: digiPin.id } });
+    if (!existingQr) {
+      const qrToken = (await import("@/lib/crypto")).generateOpaqueToken(16);
+      await tx.qR.create({
+        data: { digipinId: digiPin.id, qrData: `https://digipin.app/q/${qrToken}` },
+      });
+    }
 
-    const qrToken = (await import("@/lib/crypto")).generateOpaqueToken(16);
-    await tx.qR.create({
-      data: { digipinId: digiPin.id, qrData: `https://digipin.app/q/${qrToken}` },
-    });
-
-    return { updated, digipinNumber, digipinId: digiPin.id };
+    return { updated };
   });
 
+  // DigiPin deliberately omitted — hidden until admin approval.
   return {
     property: {
       id: result.updated.id,
       verificationStatus: result.updated.verificationStatus,
     },
-    digipinNumber: result.digipinNumber,
-    digipinId: result.digipinId,
+    message: "Property submitted. Your DigiPin will be visible after admin approval.",
   };
 }

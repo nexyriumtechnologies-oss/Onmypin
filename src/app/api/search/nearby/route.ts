@@ -10,10 +10,11 @@ import { searchNearby } from "@/modules/search/search.service";
  * /api/search/nearby:
  *   get:
  *     summary: Nearby search combining properties + businesses
- *     description: >-
- *       Combines submitted properties and VERIFIED businesses within the radius,
- *       sorted by distance, paginated. Stored-coordinate haversine — no geocoder
- *       call at query time.
+  *     description: >-
+  *       Combines approved properties (VERIFIED or later, ACTIVE DigiPin) and
+  *       VERIFIED businesses within the radius,
+  *       sorted by distance, paginated. Stored-coordinate haversine — no geocoder
+  *       call at query time.
  *     tags: [Search]
  *     parameters:
  *       - name: lat

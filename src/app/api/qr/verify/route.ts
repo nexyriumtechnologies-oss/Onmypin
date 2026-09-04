@@ -14,10 +14,11 @@ const verifyQrSchema = z
  * @swagger
  * /api/qr/verify:
  *   post:
- *     summary: Verify a QR token (public, no auth)
- *     description: Resolves the opaque QR token server-side and returns only
- *       authorized info — DigiPin number, statuses, city/state. Never exact
- *       address or personal data.
+  *     summary: Verify a QR token (public, no auth)
+  *     description: Resolves the opaque QR token server-side and returns only
+  *       authorized info — DigiPin number, statuses, city/state. Never exact
+  *       address or personal data. Only works for admin-approved properties;
+  *       tokens for unapproved properties give an identical 404.
  *     tags: [QR]
  *     requestBody:
  *       required: true

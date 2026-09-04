@@ -10,11 +10,13 @@ import { searchAll } from "@/modules/search/search.service";
  * /api/search:
  *   get:
  *     summary: Unified search across DigiPin number, address, and business name
- *     description: >-
- *       Text (case-insensitive contains) over stored fields. `type` filters the
- *       surface: digipin | address | business | all. Privacy-safe projections —
- *       DigiPin number + city/state for properties, name/category/city/state for
- *       businesses (verified only); never full address, owner name, or media.
+  *     description: >-
+  *       Text (case-insensitive contains) over stored fields. `type` filters the
+  *       surface: digipin | address | business | all. Privacy-safe projections —
+  *       DigiPin number + city/state for properties, name/category/city/state for
+  *       businesses; never full address, owner name, or media. Only
+  *       admin-approved properties (VERIFIED or later, ACTIVE DigiPin) and
+  *       VERIFIED+ACTIVE businesses are searchable.
  *     tags: [Search]
  *     parameters:
  *       - name: q

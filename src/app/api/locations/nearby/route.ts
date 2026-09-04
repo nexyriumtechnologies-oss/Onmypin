@@ -10,11 +10,12 @@ import { searchNearby } from "@/modules/search/search.service";
  * /api/locations/nearby:
  *   get:
  *     summary: Nearby properties and/or businesses within a radius
- *     description: >-
- *       Radius search over STORED coordinates (haversine) — no geocoder call at
- *       query time. Returns submitted properties (DigiPin public projection) and
- *       VERIFIED businesses, sorted by distance, paginated. Privacy-safe: never
- *       the full address, owner name, or media.
+  *     description: >-
+  *       Radius search over STORED coordinates (haversine) — no geocoder call at
+  *       query time. Returns approved properties (DigiPin public projection —
+  *       VERIFIED or later with ACTIVE DigiPin) and VERIFIED businesses, sorted
+  *       by distance, paginated. Privacy-safe: never
+  *       the full address, owner name, or media.
  *     tags: [Location]
  *     parameters:
  *       - name: lat

@@ -11,9 +11,11 @@ type Params = { params: Promise<{ id: string }> };
  * @swagger
  * /api/properties/{id}:
  *   get:
- *     summary: Get own property
- *     description: Only the owner can read it — foreign/missing ids return an
- *       identical 404 (no existence leak).
+  *     summary: Get own property
+  *     description: Only the owner can read it — foreign/missing ids return an
+  *       identical 404 (no existence leak). The embedded digiPin is null until
+  *       an admin approves the property (digipinStatus PENDING_APPROVAL with an
+  *       explanatory digipinMessage); the number is revealed after approval.
  *     tags: [Properties]
  *     security:
  *       - bearerAuth: []

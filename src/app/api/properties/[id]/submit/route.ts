@@ -19,8 +19,10 @@ type Params = { params: Promise<{ id: string }> };
  *       (one fileId from POST /api/media/selfie) are required. Media files
  *       must belong to the caller. `latitude`/`longitude` are OPTIONAL device
  *       GPS — when absent the server geocodes the full address automatically
- *       (LOCATION_PROVIDER=osm/mock); users never type coordinates. On success
- *       the DigiPin is generated and a QR is created inside a transaction.
+  *       (LOCATION_PROVIDER=osm/mock); users never type coordinates. On success
+  *       the DigiPin is generated and a QR is created inside a transaction —
+  *       but the DigiPin number is NOT returned here. It stays hidden on every
+  *       non-admin surface until an admin approves the property.
  *     tags: [Properties]
  *     security:
  *       - bearerAuth: []
@@ -63,25 +65,24 @@ type Params = { params: Promise<{ id: string }> };
  *                 type: string
  *                 description: MediaFile id (SELFIE)
  *     responses:
- *       '200':
- *         description: Submitted — DigiPin generated
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/SuccessEnvelope'
- *                 - type: object
- *                   properties:
- *                     data:
- *                       type: object
- *                       properties:
- *                         property:
- *                           type: object
- *                           properties:
- *                             id: { type: string }
- *                             verificationStatus: { type: string, enum: [SUBMITTED] }
- *                         digipinNumber: { type: string, example: WB472801 }
- *                         digipinId: { type: string, description: DigiPin row id — use it in GET /api/digipins/:id/qr }
+  *       '200':
+  *         description: Submitted — pending admin approval (DigiPin hidden until approved)
+  *         content:
+  *           application/json:
+  *             schema:
+  *               allOf:
+  *                 - $ref: '#/components/schemas/SuccessEnvelope'
+  *                 - type: object
+  *                   properties:
+  *                     data:
+  *                       type: object
+  *                       properties:
+  *                         property:
+  *                           type: object
+  *                           properties:
+  *                             id: { type: string }
+  *                             verificationStatus: { type: string, enum: [SUBMITTED] }
+  *                         message: { type: string, example: "Property submitted. Your DigiPin will be visible after admin approval." }
  *       '400':
  *         description: Incomplete property, invalid media, or bad transition
  *       '401':
