@@ -733,5 +733,5 @@ Blog/news-style CMS per the DSE backend-API spec (v1.0 MVP): admins author/publi
 ### 29.4 Verification (2026-09-08)
 
 - `tsc` clean; suite **155/155 across 12 files** (was 132 — new `dse.test.ts` ~30: slug/sanitize/validation/lifecycle/audit/soft-delete/public-gate/category-guard; 2 real bugs caught pre-merge: underscore handling in `slugifyTitle`, over-broad guard regex matching `featured/pinned`).
-- Live E2E on local MySQL: seed categories → admin create (DRAFT, slug auto) → public list empty → publish → public card + slug detail → unpublish → 404 → archive → admin-list filter → category-delete blocked (IN_USE) → docs/Postman regen. Test rows cleaned afterwards.
+- Live E2E on **`onmypin.onrender.com`** (code was already deployed — Render build auto-applied the migration + category seed): **33/34 green** across seed check, DRAFT create (slug auto, XSS stripped), public invisibility, publish, card/detail, republish-400, unpublish-404, archive round-trip, feature/pin feeds, slug stability, validation negatives, category `IN_USE` block, 401 no-token + 401 user-JWT (real OTP login), soft delete → feed empty. Rate limit proven with a 130-parallel burst in 9s → 128×200 + 2×429 (120/min/IP). Probe content + 10 audit rows hard-deleted from prod afterwards; 0 residues remain.
 
