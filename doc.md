@@ -735,3 +735,21 @@ Blog/news-style CMS per the DSE backend-API spec (v1.0 MVP): admins author/publi
 - `tsc` clean; suite **155/155 across 12 files** (was 132 — new `dse.test.ts` ~30: slug/sanitize/validation/lifecycle/audit/soft-delete/public-gate/category-guard; 2 real bugs caught pre-merge: underscore handling in `slugifyTitle`, over-broad guard regex matching `featured/pinned`).
 - Live E2E on **`onmypin.onrender.com`** (code was already deployed — Render build auto-applied the migration + category seed): **33/34 green** across seed check, DRAFT create (slug auto, XSS stripped), public invisibility, publish, card/detail, republish-400, unpublish-404, archive round-trip, feature/pin feeds, slug stability, validation negatives, category `IN_USE` block, 401 no-token + 401 user-JWT (real OTP login), soft delete → feed empty. Rate limit proven with a 130-parallel burst in 9s → 128×200 + 2×429 (120/min/IP). Probe content + 10 audit rows hard-deleted from prod afterwards; 0 residues remain.
 
+---
+
+## 30. QR payload — raw DigiPin number (2026-09-08, client-driven)
+
+Client complaint: scanning a QR with a generic camera showed a "weird link" (`https://digipin.app/q/<token>` — a hardcoded, dead domain) instead of the DigiPin. Only the Flutter app could resolve it (extract token → `POST /api/qr/verify`).
+
+### 30.1 Change
+
+- New `src/modules/qr/qr.payload.ts` (zero deps): `buildQrData(number)` returns the number itself; `normalizeQrInput()` accepts a raw number, a legacy bare token, or a full legacy URL; `LEGACY_QR_URL_PREFIX` kept for lookup only.
+- `qr.service.ts`: new QR rows store `qrData = digipinNumber`; `verifyQrToken` dual-matches (`qrData = key OR qrData = legacyPrefix+key`) so already-printed legacy codes keep verifying. Approval gate unchanged (unapproved → generic 404).
+- `property.service.ts` submit: QR row created with the number via the shared helper (also kills the second hardcoded copy of the dead prefix + the now-unused opaque-token generation).
+- Flutter contract (see `API_REFERENCE.md §7`): render `qrData` as the QR image; the scanned payload **is** the number — no extraction step. `POST /api/qr/verify` stays for status/city/state enrichment and still accepts legacy tokens.
+
+### 30.2 Verification
+
+- New `src/tests/qr.test.ts` (7: payload identity, normalize variants, create-stores-number, legacy-row token strip, 403/404 gating, dual-match lookup, 410 inactive) → suite **162/162**, `tsc` clean (also fixed latent `noUncheckedIndexedAccess` errors in `dse.test.ts` mock indexing that vitest never surfaced).
+- Live re-test on `onmypin.onrender.com` after deploy: fake property → submit → approve → assert `qrData === digipinNumber` → generic-scan payload is the number → verify with number → 200 → hard-delete all test rows.
+

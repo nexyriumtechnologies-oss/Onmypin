@@ -13,12 +13,13 @@ const verifyQrSchema = z
 /**
  * @swagger
  * /api/qr/verify:
- *   post:
-  *     summary: Verify a QR token (public, no auth)
-  *     description: Resolves the opaque QR token server-side and returns only
-  *       authorized info — DigiPin number, statuses, city/state. Never exact
-  *       address or personal data. Only works for admin-approved properties;
-  *       tokens for unapproved properties give an identical 404.
+  *   post:
+  *     summary: Verify a scanned QR payload (public, no auth)
+  *     description: Resolves the scanned payload server-side and returns only
+  *       authorized info — DigiPin number, statuses, city/state. Accepts a raw
+  *       DigiPin number (new QRs), a legacy bare token, or a full legacy URL.
+  *       Never exact address or personal data. Only works for admin-approved
+  *       properties; payloads for unapproved properties give an identical 404.
  *     tags: [QR]
  *     requestBody:
  *       required: true
@@ -27,8 +28,8 @@ const verifyQrSchema = z
  *           schema:
  *             type: object
  *             required: [token]
- *             properties:
- *               token: { type: string }
+  *             properties:
+  *               token: { type: string, description: 'Scanned payload: raw DigiPin number, legacy bare token, or full legacy URL' }
  *     responses:
  *       '200':
  *         description: Verified

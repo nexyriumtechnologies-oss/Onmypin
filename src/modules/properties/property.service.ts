@@ -5,6 +5,7 @@ import { geocodeAddress } from "@/modules/location/location.service";
 import { encodeDigiPin } from "@/modules/digipin/digipin.codec";
 import { getDistrict, assertDistrictInState } from "@/modules/districts/districts";
 import { getStateCode } from "@/modules/digipin/stateCodes";
+import { buildQrData } from "@/modules/qr/qr.payload";
 import type { PropertyType, OwnershipType, VerificationStatus, DigiPin } from "@prisma/client";
 
 /**
@@ -274,12 +275,12 @@ export async function submitProperty(
           codeFields,
         );
 
-    // Keep the existing QR token on resubmit — only create one if missing.
+    // Keep the existing QR on resubmit — only create one if missing. The
+    // payload is the DigiPin number itself (plain text, see qr.payload.ts).
     const existingQr = await tx.qR.findUnique({ where: { digipinId: digiPin.id } });
     if (!existingQr) {
-      const qrToken = (await import("@/lib/crypto")).generateOpaqueToken(16);
       await tx.qR.create({
-        data: { digipinId: digiPin.id, qrData: `https://digipin.app/q/${qrToken}` },
+        data: { digipinId: digiPin.id, qrData: buildQrData(digiPin.digipinNumber) },
       });
     }
 

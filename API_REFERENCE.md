@@ -519,11 +519,13 @@ Requires Bearer. `:id` is the **DigiPin row id** (visible on the approved proper
 {
   "success": true,
   "data": {
-    "qrData": "https://digipin.app/q/a3f2c1e9...",  // render this as the QR image
-    "qrStatus": "ACTIVE",                           // ACTIVE | DISABLED
-    "token": "a3f2c1e9..."                          // the bare token
+    "qrData": "WB3150P9VB5Y44XFP6",  // the DigiPin number itself — render this as the QR image
+    "qrStatus": "ACTIVE",             // ACTIVE | DISABLED
+    "token": "WB3150P9VB5Y44XFP6"    // lookup key: the number for new QRs, the bare token for legacy URL QRs
   }
 }
+// Any generic camera scan of the QR shows the DigiPin number directly.
+// Legacy QRs (opaque https://digipin.app/q/<token> URLs) keep working.
 ```
 
 `404 DIGIPIN_NOT_FOUND` for foreign/missing ids. `403 PROPERTY_NOT_APPROVED` while the property is unapproved.
@@ -532,8 +534,9 @@ Requires Bearer. `:id` is the **DigiPin row id** (visible on the approved proper
 Anyone can call this — it returns **no address, no personal data** (privacy-safe for scanning by anyone). Only works for **admin-approved** properties — scanning a code for an unapproved property returns the same generic `404 QR_NOT_FOUND` as a bogus token (no existence probing).
 
 ```jsonc
-// Request — the BARE hex token (extract after /q/ from qrData)
-{ "token": "a3f2c1e9..." }
+// Request — the scanned payload: raw DigiPin number (new QRs),
+// legacy bare token, or full legacy URL (all accepted)
+{ "token": "WB3150P9VB5Y44XFP6" }
 
 // Response 200
 {
