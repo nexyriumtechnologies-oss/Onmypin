@@ -751,5 +751,5 @@ Client complaint: scanning a QR with a generic camera showed a "weird link" (`ht
 ### 30.2 Verification
 
 - New `src/tests/qr.test.ts` (7: payload identity, normalize variants, create-stores-number, legacy-row token strip, 403/404 gating, dual-match lookup, 410 inactive) → suite **162/162**, `tsc` clean (also fixed latent `noUncheckedIndexedAccess` errors in `dse.test.ts` mock indexing that vitest never surfaced).
-- Live re-test on `onmypin.onrender.com` after deploy: fake property → submit → approve → assert `qrData === digipinNumber` → generic-scan payload is the number → verify with number → 200 → hard-delete all test rows.
+- Live re-test on `onmypin.onrender.com` (2026-09-08): **14/14 green** — submit stored `qrData = "WB3150P9VB5Y44XQP9"` (raw number); QR 403 + verify-number 404 while SUBMITTED; after approve, QR 200 with `qrData === digipinNumber` (no URL) and verify-with-number 200. All test rows hard-deleted, trustScore restored 25 → 0.
 
