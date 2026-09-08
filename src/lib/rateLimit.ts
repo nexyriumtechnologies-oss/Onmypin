@@ -57,6 +57,8 @@ export const memoryRateLimiter = new InMemoryRateLimiter();
 export const OTP_RATE_LIMIT = { limit: 3, windowMs: 10 * 60 * 1000 } as const;
 /** IP-layer cap — coarser than the per-mobile limit, stops host-wide abuse. */
 export const OTP_IP_RATE_LIMIT = { limit: 15, windowMs: 10 * 60 * 1000 } as const;
+/** Public DSE feed cap — generous read budget per IP, stops scraping. */
+export const DSE_PUBLIC_RATE_LIMIT = { limit: 120, windowMs: 60 * 1000 } as const;
 
 /**
  * Best-effort client IP: trust x-forwarded-for (first hop) when the app is

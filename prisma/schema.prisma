@@ -116,6 +116,40 @@ enum AdminRole {
   FINANCE_ADMIN
 }
 
+enum DseContentType {
+  NEWS
+  GOVERNMENT_UPDATE
+  PUBLIC_INFORMATION
+  ANNOUNCEMENT
+  AWARENESS
+  EDUCATIONAL_ARTICLE
+}
+
+enum DseContentStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+  ARCHIVED
+}
+
+enum DseMediaType {
+  IMAGE
+}
+
+enum DseAuditAction {
+  CREATED
+  UPDATED
+  PUBLISHED
+  UNPUBLISHED
+  ARCHIVED
+  UNARCHIVED
+  DELETED
+  FEATURED
+  UNFEATURED
+  PINNED
+  UNPINNED
+}
+
 // ---------------------------------------------------------------- models
 
 model User {
@@ -498,4 +532,95 @@ model Broadcast {
 
   @@index([createdAt])
   @@map("broadcasts")
+}
+
+model DseCategory {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  icon        String?
+  imageUrl    String?
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  contents DseContent[]
+
+  @@index([isActive, sortOrder])
+  @@map("dse_categories")
+}
+
+model DseContent {
+  id               String           @id @default(cuid())
+  title            String           @db.VarChar(200)
+  slug             String           @unique
+  shortDescription String?          @db.VarChar(500)
+  description      String           @db.Text
+  contentType      DseContentType
+  categoryId       String
+  thumbnailUrl     String?
+  coverImageUrl    String?
+  externalUrl      String?
+  authorName       String?
+  sourceName       String?
+  sourceUrl        String?
+  status           DseContentStatus @default(DRAFT)
+  isFeatured       Boolean          @default(false)
+  isPinned         Boolean          @default(false)
+  publishedAt      DateTime?
+  createdBy        String
+  updatedBy        String
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  deletedAt        DateTime?
+
+  category  DseCategory   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  media     DseMedia[]
+  auditLogs DseAuditLog[]
+
+  @@index([status, publishedAt])
+  @@index([status, contentType, publishedAt])
+  @@index([status, categoryId, publishedAt])
+  @@index([isFeatured])
+  @@index([isPinned])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("dse_contents")
+}
+
+model DseMedia {
+  id        String       @id @default(cuid())
+  contentId String
+  mediaType DseMediaType @default(IMAGE)
+  url       String
+  fileName  String?
+  mimeType  String?
+  fileSize  Int?
+  sortOrder Int          @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  content DseContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId])
+  @@map("dse_media")
+}
+
+model DseAuditLog {
+  id        String         @id @default(cuid())
+  contentId String
+  adminId   String
+  action    DseAuditAction
+  oldStatus String?
+  newStatus String?
+  createdAt DateTime       @default(now())
+
+  content DseContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId])
+  @@index([adminId])
+  @@map("dse_audit_logs")
 }

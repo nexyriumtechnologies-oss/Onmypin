@@ -776,6 +776,7 @@ Approval: `PROPERTY_NOT_APPROVED` 403 (QR fetch on an unapproved property — ow
 DigiPin v1: `INVALID_DISTRICT` 400 (unknown LGD code), `DISTRICT_STATE_MISMATCH` 400 (district belongs to another state), `INVALID_DIGIPIN_FORMAT` 400, `DIGIPIN_CHECKSUM_MISMATCH` 400 (typo/tamper), `UNSUPPORTED_DIGIPIN_VERSION` 400, `DIGIPIN_OUT_OF_RANGE` 400 (coords outside India grid), `DIGIPIN_GENERATION_FAILED` 500, `DISTRICT_REQUIRED` / `STATE_REQUIRED` / `COORDINATES_REQUIRED` 400 (regenerate preconditions).
 Account: `ACCOUNT_DISABLED` 403 (deactivated/deleted), `ACCOUNT_DELETED` 403.
 Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fields), `INVALID_STATUS_TRANSITION` 400, `BUSINESS_IMAGE_LIMIT` 400 (max 5), `CATEGORY_INVALID` 400.
+DSE: `DSE_CONTENT_NOT_FOUND` 404, `DSE_CATEGORY_NOT_FOUND` 404, `DSE_CATEGORY_INACTIVE` 400, `DSE_CATEGORY_IN_USE` 400, `DSE_ALREADY_PUBLISHED` / `DSE_NOT_PUBLISHED` / `DSE_ALREADY_ARCHIVED` / `DSE_NOT_ARCHIVED` 400.
 
 ---
 
@@ -799,7 +800,7 @@ Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fi
 - Login mobile for existing account: `8090780908` (name "Anuraj", ACTIVE).
 - **OTP in dev:** real SMS active (`OTP_BYPASS_ENABLED=false`) via the approved DLT template — register an account and the OTP arrives on the entered mobile. For offline testing only, flip bypass on for `8090780908` → fixed code `123456` (no SMS sent; server does NOT log the code).
 - Live DigiPins in dev DB: `UP499807` (SUBMITTED), `UP725207` (SUBMITTED), `WB105516` (SUBMITTED), `WB855216` (SUBMITTED), `UP617510` (SUBMITTED).
-- Swagger spec: `GET /api/openapi.json` (version 0.5.0) · Swagger UI: `/api/docs` · Postman collection: `postman/ownmypin.postman_collection.json`.
+- Swagger spec: `GET /api/openapi.json` (version 0.7.0) · Swagger UI: `/api/docs` · Postman collection: `postman/ownmypin.postman_collection.json`.
 
 ---
 
@@ -839,9 +840,9 @@ Deployed to **Render** today for Flutter-frontend testing. Blueprint: `render.ya
 | Role | Who |
 |---|---|
 | `SUPER_ADMIN` | Full access to everything |
-| `ADMIN` | Users, dashboard, digipins, businesses (read), broadcast — no verification or finance |
+| `ADMIN` | Users, dashboard, digipins, businesses (read), DSE content, broadcast — no verification or finance |
 | `VERIFICATION_ADMIN` | View + approve/reject properties and businesses only |
-| `CONTENT_ADMIN` | Categories CRUD + broadcast only |
+| `CONTENT_ADMIN` | DSE content + categories CRUD + broadcast only |
 | `FINANCE_ADMIN` | Plans CRUD + subscriptions/transactions view only |
 
 ### 12.3 Auth Routes
@@ -1073,3 +1074,80 @@ Query: `page`, `pageSize` — returns paginated **Broadcast** records (the admin
 | `INVALID_STATUS_TRANSITION` | 400 | e.g. approving an already-VERIFIED item |
 | `USER_ID_REQUIRED` | 400 | Broadcast target=USER without userId |
 | `RATE_LIMITED` | 429 | Login rate limit hit (includes `retryAfterSeconds`) |
+
+---
+
+## 15. DSE / Public Information CMS
+
+> Blog/news-style CMS. Admins author content from the Admin Panel; the mobile app reads **only PUBLISHED** rows via the public feed. New capability `content:manage` (SUPER_ADMIN, ADMIN, CONTENT_ADMIN).
+
+**Content types:** `NEWS` | `GOVERNMENT_UPDATE` | `PUBLIC_INFORMATION` | `ANNOUNCEMENT` | `AWARENESS` | `EDUCATIONAL_ARTICLE`
+**Statuses:** `DRAFT` → `PUBLISHED` ⇄ `UNPUBLISHED`, plus `ARCHIVED` (retained for admin, never public). Deletes are soft (`deletedAt`) — rows are never hard-removed.
+
+### 15.1 Public feed (mobile — no auth, rate-limited 120 req/min/IP → 429 `RATE_LIMITED`)
+
+**`GET /api/dse/content`** — paginated cards, latest first by default.
+Query: `page`, `pageSize`, `search` (title/short/body/category name), `categoryId`, `contentType`, `featured` (`true|false`), `pinned` (`true|false`), `sort` (`latest|oldest`).
+```jsonc
+// Response 200
+{ "success": true,
+  "data": { "items": [ {
+      "id": "...", "title": "New Government Scheme Announced",
+      "slug": "new-government-scheme-announced",
+      "shortDescription": "Short description...",
+      "contentType": "GOVERNMENT_UPDATE",
+      "thumbnailUrl": "https://...", "publishedAt": "2026-09-08T10:00:00Z",
+      "isFeatured": false, "isPinned": false,
+      "category": { "id": "...", "name": "Government Schemes", "slug": "government-schemes" }
+  } ], "total": 120, "page": 1, "pageSize": 20 } }
+```
+
+**`GET /api/dse/content/:slug`** — full article (`description` HTML, `coverImageUrl`, `externalUrl`, `authorName`, `sourceName`, `sourceUrl`, `media[]`, trimmed `category`). DRAFT / UNPUBLISHED / ARCHIVED / deleted / missing all return the identical `404 DSE_CONTENT_NOT_FOUND` (no existence leak).
+
+**`GET /api/dse/categories`** — active categories only (`id`, `name`, `slug`, `description`, `icon`, `imageUrl`), in `sortOrder`.
+
+**`GET /api/dse/featured`** · **`GET /api/dse/pinned`** — published + flagged cards, newest first. Query: `page`, `pageSize`.
+
+### 15.2 Admin content (requires `content:manage`)
+
+**`POST /admin/dse/content`** — create as `DRAFT` (default) or directly `PUBLISHED` (`publishedAt` stamped).
+```jsonc
+// Request (title 5–200 chars, description required, categoryId must be active)
+{ "title": "New Government Scheme Announced",
+  "shortDescription": "The government has announced a new welfare scheme.",
+  "description": "<p>Full article content...</p>",
+  "contentType": "GOVERNMENT_UPDATE", "categoryId": "<dseCategoryId>",
+  "thumbnailUrl": "https://...", "coverImageUrl": "https://...",
+  "sourceName": "Government of India", "sourceUrl": "https://...",
+  "isFeatured": false, "isPinned": false, "status": "DRAFT",
+  "images": [ { "url": "https://...", "fileName": "x.jpg", "mimeType": "image/jpeg", "fileSize": 12345 } ] }
+// Slug auto-generated from title ("-2", "-3", … on collision) and stable afterwards.
+// HTML body is sanitized server-side (script/iframe/event-handlers stripped; empty-after-sanitize → 400).
+// 404 DSE_CATEGORY_NOT_FOUND · 400 DSE_CATEGORY_INACTIVE
+```
+
+**`GET /admin/dse/content`** — all statuses (soft-deleted excluded). Filters: `status`, `contentType`, `categoryId`, `isFeatured`/`isPinned` (`true|false`), `search`, `fromDate`/`toDate` (ISO), `sortBy` (`createdAt|updatedAt|publishedAt|title`), `sortOrder`. Response `{ contents, total, page, pageSize, totalPages }`.
+
+**`GET /admin/dse/content/:id`** — full detail (body, category, media, status, source, `createdBy`/`updatedBy`).
+
+**`PATCH /admin/dse/content/:id`** — partial update (title/body/category/flags/urls; `images` replaces the media set, `[]` clears). `status` is rejected here — lifecycle moves only through the endpoints below. Renames keep the slug.
+
+**`DELETE /admin/dse/content/:id`** — soft delete (`{ id, deleted: true }`).
+
+**Lifecycle** (each writes a `dse_audit_logs` row with admin + old/new status):
+```jsonc
+POST /admin/dse/content/:id/publish    // DRAFT|UNPUBLISHED → PUBLISHED (publishedAt=now) · 400 DSE_ALREADY_PUBLISHED
+POST /admin/dse/content/:id/unpublish  // PUBLISHED → UNPUBLISHED · 400 DSE_NOT_PUBLISHED
+POST /admin/dse/content/:id/archive    // any live → ARCHIVED · 400 DSE_ALREADY_ARCHIVED
+POST /admin/dse/content/:id/unarchive  // ARCHIVED → DRAFT · 400 DSE_NOT_ARCHIVED
+POST /admin/dse/content/:id/feature    // isFeatured=true      (+ UNFEATURED twin)
+POST /admin/dse/content/:id/pin        // isPinned=true        (+ UNPIN twin)
+```
+
+### 15.3 Admin categories (requires `content:manage`)
+
+**`POST /admin/dse/categories`** — `{ "name": "Public Safety", "description": "...", "icon": "...", "imageUrl": "https://...", "sortOrder": 4 }` (slug auto-generated, starts active) → 201.
+**`GET /admin/dse/categories`** — all non-deleted incl. inactive (`{ items, total }`).
+**`GET /admin/dse/categories/:id`** · **`PATCH`** (partial; renames keep slug; `isActive` toggles visibility) · **`DELETE`** (soft; blocked with `400 DSE_CATEGORY_IN_USE` while live content references it).
+
+**Seed:** `npm run seed:dse-categories` — idempotent starter set (Government Schemes, Education, Employment, Agriculture, Public Safety, Awareness, General); also runs in the Render build.

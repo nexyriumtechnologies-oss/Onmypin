@@ -20,6 +20,7 @@
     "prisma:studio": "npx prisma@6.19.3 studio",
     "districts:generate": "node scripts/generate-districts.mjs",
     "seed:categories": "node scripts/seed-business-categories.mjs",
+    "seed:dse-categories": "node scripts/seed-dse-categories.mjs",
     "admin:seed": "node scripts/seed-admin.mjs",
     "export:postman": "node scripts/export-postman.mjs"
   },
@@ -28,11 +29,12 @@
     "busboy": "^1.6.0",
     "jsonwebtoken": "^9.0.2",
     "next": "^15.3.0",
+    "prisma": "^6.19.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "sanitize-html": "^2.17.7",
     "swagger-jsdoc": "^6.3.0",
-    "zod": "^3.24.2",
-    "prisma": "^6.19.3"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
@@ -41,6 +43,7 @@
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "@types/sanitize-html": "^2.16.1",
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.3.0",
     "eslint-config-prettier": "^10.1.1",

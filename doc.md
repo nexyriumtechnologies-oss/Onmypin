@@ -693,4 +693,45 @@ Provider replaces `{#var#}` in `yourbulksms.otp.provider.ts`. Verified live (202
 
 
 
+---
+
+## 29. DSE / Public Information CMS (2026-09-08)
+
+Blog/news-style CMS per the DSE backend-API spec (v1.0 MVP): admins author/publish content, the mobile app reads only `PUBLISHED` rows. Greenfield module — no prior DSE code existed.
+
+### 29.1 Schema (migration `20260908114326_dse_cms`)
+
+- `DseCategory` → `dse_categories`: `name`, `slug @unique`, `description?`, `icon?`, `imageUrl?`, `isActive` (boolean, codebase convention — the spec's Active/Inactive enum maps to this), `sortOrder`, `deletedAt?` (soft delete — the one place this codebase uses a real `deletedAt`; pre-existing models use status flags instead).
+- `DseContent` → `dse_contents`: `title @db.VarChar(200)`, `slug @unique`, `shortDescription? @db.VarChar(500)`, `description @db.Text` (sanitized HTML), `contentType` enum (6 spec values), `categoryId → Restrict`, URL/source fields, `status` enum (`DRAFT/PUBLISHED/UNPUBLISHED/ARCHIVED`) default `DRAFT`, `isFeatured/isPinned`, `publishedAt?`, `createdBy/updatedBy` (admin ids), `deletedAt?`.
+- `DseMedia` → `dse_media`: `contentId → Cascade`, `mediaType` enum (`IMAGE` only, extensible), `url/fileName?/mimeType?/fileSize?/sortOrder`. No dedicated upload endpoint for MVP — admin uploads via existing `/api/media/*` and pastes the URL (spec's `thumbnailUrl/coverImageUrl` + optional `images[]` on create/update).
+- `DseAuditLog` → `dse_audit_logs`: every state-changing admin action (`CREATED/UPDATED/PUBLISHED/UNPUBLISHED/ARCHIVED/UNARCHIVED/DELETED/FEATURED/UNFEATURED/PINNED/UNPINNED`) with `adminId` + old/new status.
+- IDs are `cuid()` (codebase standard, not the spec's UUID — same string shape for Flutter). Indexes per spec §15: `(status,publishedAt)`, `(status,contentType,publishedAt)`, `(status,categoryId,publishedAt)` + single-column.
+- Deliberate deviations from the PDF (all user-approved): admin paths are `/admin/dse/*` (not `/api/admin/dse/*` — this repo's admin tree has no `/api` prefix); pagination is `page/pageSize` (default 20, max 100); response envelope stays `{success,data}` / `{success:false,error:{code,message}}`; added `POST …/archive|unarchive` (the spec's `ARCHIVED` had no transition endpoint).
+
+### 29.2 Files
+
+| File | What |
+|---|---|
+| `src/modules/dse/dse.validation.ts` | Zod: create/update/category/admin-query/public-query schemas (all `.strict()`; `status` absent from PATCH by design) |
+| `src/modules/dse/slug.ts` | `slugifyTitle` + `-2/-3` collision suffixing (categories share the same algorithm in the seed script) |
+| `src/modules/dse/html.ts` | `sanitizeDseHtml` via `sanitize-html@2.17.7` (default-deny tags, no script/iframe/handlers, http/https/mailto only); bodies sanitizing to nothing → 400 |
+| `src/modules/dse/dse.service.ts` | Admin CRUD + lifecycle + audit writes; public feed with the critical `PUBLISHED + deletedAt NULL + live-category` gate; card/detail/category projections; `assertDsePublicRateLimit` (120 req/min/IP → 429 `RATE_LIMITED`) |
+| `src/app/admin/dse/…` (12 files) | 18 endpoints: content CRUD + publish/unpublish/archive/unarchive/feature/unfeature/pin/unpin + category CRUD, all `requireAdminAuth(["content:manage"])`, all with `@swagger` JSDoc |
+| `src/app/api/dse/…` (5 files) | `content` (list), `content/[slug]`, `categories`, `featured`, `pinned` — GET-only, rate-limited, `@swagger` JSDoc |
+| `src/lib/adminPermissions.ts` | New `content:manage` capability → SUPER_ADMIN, ADMIN, CONTENT_ADMIN |
+| `src/lib/rateLimit.ts` | `DSE_PUBLIC_RATE_LIMIT` (120/min) |
+| `scripts/seed-dse-categories.mjs` | Idempotent 7-category seed (`npm run seed:dse-categories`), wired into `render.yaml` buildCommand |
+| `scripts/openapi.definition.cjs` | `DSE` tag + spec version 0.6.0 → 0.7.0 |
+
+### 29.3 Security notes
+
+- Public bySlug returns identical `404 DSE_CONTENT_NOT_FOUND` for missing/DRAFT/UNPUBLISHED/ARCHIVED/deleted/inactive-category (no existence leak; mirrors the business-detail pattern).
+- Admin detail/list never expose other tenants — DSE has no owner; all writes are capability-gated + audit-logged.
+- ORM-only queries (no raw SQL); `sanitize-html` on every description write (create + update); image `mimeType` must start with `image/`; category delete blocked while live content references it (`DSE_CATEGORY_IN_USE`).
+- Guards extended in `authorization.test.ts`: all 5 `/api/dse/*` routes in the PUBLIC 200-inventory, 12 new admin routes in the inventory, new fs-guard (public DSE tree is GET-only + rate-limited; no lifecycle segment may ever appear under `/api`).
+
+### 29.4 Verification (2026-09-08)
+
+- `tsc` clean; suite **155/155 across 12 files** (was 132 — new `dse.test.ts` ~30: slug/sanitize/validation/lifecycle/audit/soft-delete/public-gate/category-guard; 2 real bugs caught pre-merge: underscore handling in `slugifyTitle`, over-broad guard regex matching `featured/pinned`).
+- Live E2E on local MySQL: seed categories → admin create (DRAFT, slug auto) → public list empty → publish → public card + slug detail → unpublish → 404 → archive → admin-list filter → category-delete blocked (IN_USE) → docs/Postman regen. Test rows cleaned afterwards.
 

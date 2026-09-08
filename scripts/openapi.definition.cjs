@@ -8,9 +8,9 @@ module.exports = {
   openapi: "3.0.0",
   info: {
     title: "OwnMyPin API",
-    version: "0.6.0",
+    version: "0.7.0",
     description:
-      "OwnMyPin backend — Phase 1 (auth/OTP, users, properties, DigiPin, QR, location, media) + Phase 2 (search, businesses, trust score, notifications, subscriptions, badges, admin).\n\n" +
+      "OwnMyPin backend — Phase 1 (auth/OTP, users, properties, DigiPin, QR, location, media) + Phase 2 (search, businesses, trust score, notifications, subscriptions, badges, admin) + DSE public-information CMS.\n\n" +
       "1. POST /api/auth/send-otp, then POST /api/auth/verify-otp to get tokens.\n" +
       "2. Click the green **Authorize** button, paste `Bearer <accessToken>`, and every protected route is unlocked.\n" +
       "3. Admin routes use a SEPARATE token (POST /api/admin/auth/login → `AdminBearerAuth`) — user tokens are never accepted there.",
@@ -31,6 +31,7 @@ module.exports = {
     { name: "Subscriptions", description: "Plans, purchase, verify, cancel, entitlements" },
     { name: "Payments", description: "Payment provider (mock/razorpay), webhook" },
     { name: "Admin", description: "Admin auth (separate JWT), dashboard, user/property/business/category/plan/notification management" },
+    { name: "DSE", description: "Public-information CMS — admin content/category management + public mobile feed (published only)" },
   ],
   components: {
     securitySchemes: {

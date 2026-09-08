@@ -13,6 +13,7 @@ export type AdminCapability =
   | "business:read"
   | "business:verify"
   | "category:manage"
+  | "content:manage"
   | "plan:manage"
   | "finance:view"
   | "notify:broadcast";
@@ -31,6 +32,7 @@ const roleCapabilities: Record<AdminRole, AdminCapability[]> = {
     "business:read",
     "business:verify",
     "category:manage",
+    "content:manage",
     "plan:manage",
     "finance:view",
     "notify:broadcast",
@@ -44,6 +46,8 @@ const roleCapabilities: Record<AdminRole, AdminCapability[]> = {
     "digipin:read",
     "digipin:status",
     "business:read",
+    "category:manage",
+    "content:manage",
     "notify:broadcast",
   ],
   VERIFICATION_ADMIN: [
@@ -60,6 +64,7 @@ const roleCapabilities: Record<AdminRole, AdminCapability[]> = {
     "auth",
     "dashboard",
     "category:manage",
+    "content:manage",
     "notify:broadcast",
   ],
   FINANCE_ADMIN: [
