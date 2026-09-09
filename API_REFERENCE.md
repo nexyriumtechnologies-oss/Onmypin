@@ -770,6 +770,9 @@ Body: `fcmToken` (1-512), `platform` = `ANDROID | IOS | WEB`. Upserts by (user, 
 | `VALIDATION_ERROR` | 400 | Bad payload, wrong type, or **unknown field** (strict schemas) |
 | `INVALID_JSON` | 400 | Body is not valid JSON |
 | `RATE_LIMITED` | 429 | OTP / general rate limit hit; message includes `retryAfterSeconds` |
+| `TRANSACTION_TIMEOUT` | 503 | DB transaction expired under load — **safe to retry** (submit retries once server-side already) |
+| `DATABASE_UNAVAILABLE` | 503 | DB unreachable / pool exhausted — **safe to retry** |
+| `OTP_SEND_FAILED` | 503 | SMS gateway unreachable — **safe to retry** |
 | `CORS_DENIED` | 403 | Request came from a browser Origin not in `CORS_ALLOWED_ORIGINS` |
 | `INTERNAL_SERVER_ERROR` | 500 | Server bug — report it |
 

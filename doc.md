@@ -753,3 +753,22 @@ Client complaint: scanning a QR with a generic camera showed a "weird link" (`ht
 - New `src/tests/qr.test.ts` (7: payload identity, normalize variants, create-stores-number, legacy-row token strip, 403/404 gating, dual-match lookup, 410 inactive) → suite **162/162**, `tsc` clean (also fixed latent `noUncheckedIndexedAccess` errors in `dse.test.ts` mock indexing that vitest never surfaced).
 - Live re-test on `onmypin.onrender.com` (2026-09-08): **14/14 green** — submit stored `qrData = "WB3150P9VB5Y44XQP9"` (raw number); QR 403 + verify-number 404 while SUBMITTED; after approve, QR 200 with `qrData === digipinNumber` (no URL) and verify-with-number 200. All test rows hard-deleted, trustScore restored 25 → 0.
 
+---
+
+## 31. Transient-failure hardening (2026-09-09, client "Something went wrong" on submit)
+
+Render logs showed `Transaction already closed … timeout 5000ms, 5089ms elapsed` on `POST /api/properties/:id/submit` surfacing as generic 500. Two findings: (a) no code in this repo's history ever ran `property.create` inside a transaction — the failing bundle was **not** current source (verify live commit SHA vs HEAD on any recurrence); (b) even current code holds ~6 sequential cold-DB round-trips inside Prisma's 5s default, expirable on free tiers.
+
+### 31.1 Changes (no migration, service + middleware only)
+
+- `property.service.ts` submit: tx options `{ timeout: 15000, maxWait: 10000 }` + retry-once on `P2028` (expired = rolled back; `persistUniqueDigiPin` absorbs `P2002`, so the retry is side-effect free; non-expiry errors never retried).
+- `errorHandler.ts`: `P2028` → `503 TRANSACTION_TIMEOUT`, `P1001/P1017/P2024` → `503 DATABASE_UNAVAILABLE` (both "safe to retry"; previously generic 500).
+- `location.service.ts` `geocodeAddress`: every throw (GeocodeError *and* raw `TimeoutError`/DNS/reset) → `502 GEOCODE_FAILED` (previously raw throws → 500).
+- `otp.service.ts` `sendOtp`: provider throw → `503 OTP_SEND_FAILED` (previously 500).
+- Geocode already runs *before* the submit transaction (no external I/O inside) — ChatGPT's "move it out" was already the case; the remaining risk was pure DB-side latency, now covered by timeout + retry + mapping.
+
+### 31.2 Verification
+
+- New `src/tests/transient-errors.test.ts` (9: P2028/P1001/P1017/P2024 mappings, plain-error still 500, TimeoutError + raw Error → 502, submit retry-once succeeds, tx budget raised, no-retry on P2003, provider throw → 503) → suite **171/171**, `tsc` clean.
+- Client guidance: retry once on `502/503` only (never 400/401/404). Still recommended: Render paid tier (no sleep) + Prisma pool caps + confirming the live deploy SHA.
+

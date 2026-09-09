@@ -144,6 +144,13 @@ export async function updateProperty(
   });
 }
 
+/** Prisma interactive-transaction expiry (P2028) — safe to retry once. */
+function isTxExpiredError(err: unknown): boolean {
+  return (
+    typeof err === "object" && err !== null && (err as { code?: unknown }).code === "P2028"
+  );
+}
+
 /**
  * Encode a v1 DigiPin and persist it, retrying with fresh randomness on a
  * P2002 number collision (max 5). Only the rand part changes between
@@ -242,7 +249,12 @@ export async function submitProperty(
     longitude,
   };
 
-  const result = await prisma.$transaction(async (tx) => {
+  // Interactive-tx budget: several sequential writes on a cold hosted DB can
+  // approach Prisma's 5s default — 15s ceiling. Retry once on expiry (P2028):
+  // an expired transaction rolls back, and persistUniqueDigiPin already
+  // absorbs P2002 collisions, so the retry is side-effect free.
+  const runTx = () =>
+    prisma.$transaction(async (tx) => {
     // propertyImages/selfieImage are submit-gate media references only — they
     // are not Property columns; strip them before the DB update.
     const { propertyImages: _propertyImages, selfieImage: _selfieImage, ...updateData } = data;
@@ -285,7 +297,15 @@ export async function submitProperty(
     }
 
     return { updated };
-  });
+    }, { timeout: 15000, maxWait: 10000 });
+
+  let result;
+  try {
+    result = await runTx();
+  } catch (err) {
+    if (!isTxExpiredError(err)) throw err;
+    result = await runTx();
+  }
 
   // DigiPin deliberately omitted — hidden until admin approval.
   return {

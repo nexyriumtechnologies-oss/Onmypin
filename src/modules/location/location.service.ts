@@ -1,5 +1,5 @@
 import { ApiError } from "@/middleware/errorHandler";
-import { getGeocoder, GeocodeError } from "./location.provider";
+import { getGeocoder } from "./location.provider";
 
 export interface LocationVerifyInput {
   /** Device GPS from the client — optional; when absent only geocoding happens. */
@@ -54,14 +54,14 @@ export async function geocodeAddress(address: string) {
     const geo = await getGeocoder().geocode(address);
     return { ...geo, latitude: roundCoord(geo.latitude), longitude: roundCoord(geo.longitude) };
   } catch (err) {
-    if (err instanceof GeocodeError) {
-      throw new ApiError(
-        502,
-        "GEOCODE_FAILED",
-        "Could not resolve the address to a location — refine it and retry",
-      );
-    }
-    throw err;
+    if (err instanceof ApiError) throw err;
+    // GeocodeError (no match) AND raw network throws (DNS, 8s abort
+    // TimeoutError, reset) all become retryable 502 — never the generic 500.
+    throw new ApiError(
+      502,
+      "GEOCODE_FAILED",
+      "Could not resolve the address to a location — refine it and retry",
+    );
   }
 }
 

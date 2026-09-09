@@ -82,7 +82,14 @@ export async function sendOtp(mobile: string, purpose = "AUTH"): Promise<string>
     logger.info(`OTP generated for ${mobile} (${purpose})`);
     return OTP_BYPASS_CODE;
   } else {
-    await getOtpProvider().sendOtp(mobile, code);
+    // Gateway blips (timeout/DNS/reject) become retryable 503 — never the
+    // generic 500 "Something went wrong".
+    try {
+      await getOtpProvider().sendOtp(mobile, code);
+    } catch (err) {
+      if (err instanceof ApiError) throw err;
+      throw new ApiError(503, "OTP_SEND_FAILED", "Could not reach the SMS gateway — retry shortly");
+    }
   }
   logger.info(`OTP generated for ${mobile} (${purpose})`);
   return code;
