@@ -772,3 +772,17 @@ Render logs showed `Transaction already closed … timeout 5000ms, 5089ms elapse
 - New `src/tests/transient-errors.test.ts` (9: P2028/P1001/P1017/P2024 mappings, plain-error still 500, TimeoutError + raw Error → 502, submit retry-once succeeds, tx budget raised, no-retry on P2003, provider throw → 503) → suite **171/171**, `tsc` clean.
 - Client guidance: retry once on `502/503` only (never 400/401/404). Still recommended: Render paid tier (no sleep) + Prisma pool caps + confirming the live deploy SHA.
 
+---
+
+## 32. QR legacy self-heal (2026-09-10, client still scanning a link)
+
+Report: a client scanned `https://digipin.app/q/...` even for fresh accounts on a fresh deploy. Backend proven innocent for new rows (same `GET /api/digipins/{id}/qr`, `qrData` = number; Sep 8 live 14/14) — the link is composed app-side (most likely the app rendering `https://digipin.app/q/` + `token` instead of `qrData` verbatim) or the app talks to an old backend. Separately, rows minted pre-fix keep the legacy URL in DB forever (`getOrCreate` returned them verbatim; `regenerateDigiPin` never touched QR).
+
+### 32.1 Changes (no migration)
+
+- `qr.service.ts` `getOrCreateQrForDigiPin`: existing row starting with the legacy prefix is **rewritten to the parent `digipinNumber` on first read** (lazy self-heal) and the number is returned — every refreshed code scans as the number from now on.
+- `admin.service.ts` `regenerateDigiPin`: `qR.upsert` refreshes the payload to the fresh number after renumbering.
+- Already-printed legacy images keep verifying via dual-match — old prints don't break.
+- Tests: new `src/tests/qr-self-heal.test.ts` (4) + updated `qr.test.ts` legacy case + `admin.test.ts` upsert assertion → suite **175/175**, `tsc` clean.
+- Live E2E on `8090780908` (register → property → submit → approve → QR fetch → verify-by-number) re-run to reconfirm `qrData` = bare number; all rows hard-deleted after.
+

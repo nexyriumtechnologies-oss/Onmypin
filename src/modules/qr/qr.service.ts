@@ -29,6 +29,18 @@ export async function getOrCreateQrForDigiPin(digipinId: string, userId: string)
 
   const existing = await prisma.qR.findUnique({ where: { digipinId } });
   if (existing) {
+    // Lazy self-heal: rows minted before the raw-number payload (opaque
+    // `https://digipin.app/q/<token>` URLs) are rewritten to the DigiPin
+    // number on first read after the fix — no migration, no downtime. The
+    // new payload is returned, so every refreshed code scans as the number.
+    // Already-printed legacy images keep verifying via dual-match.
+    if (existing.qrData.startsWith(LEGACY_QR_URL_PREFIX)) {
+      const healed = await prisma.qR.update({
+        where: { digipinId },
+        data: { qrData: buildQrData(digiPin.digipinNumber) },
+      });
+      return { qrData: healed.qrData, qrStatus: healed.qrStatus, token: normalizeQrInput(healed.qrData) };
+    }
     return { qrData: existing.qrData, qrStatus: existing.qrStatus, token: normalizeQrInput(existing.qrData) };
   }
 

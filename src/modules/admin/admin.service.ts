@@ -6,6 +6,7 @@ import { revokeAllUserSessions } from "@/modules/auth/session.service";
 import { persistUniqueDigiPin } from "@/modules/properties/property.service";
 import { getDistrict, assertDistrictInState } from "@/modules/districts/districts";
 import { getStateCode } from "@/modules/digipin/stateCodes";
+import { buildQrData } from "@/modules/qr/qr.payload";
 import { decodeDigiPin, isLegacyDigiPin, type DecodedDigiPin } from "@/modules/digipin/digipin.codec";
 import { Prisma } from "@prisma/client";
 import type { AccountStatus, VerificationStatus, BusinessVerificationStatus, SubscriptionStatus, TransactionStatus } from "@prisma/client";
@@ -347,7 +348,7 @@ export async function regenerateDigiPin(digipinId: string) {
   }
   const stateShort = getStateCode(property.state);
   const district = assertDistrictInState(property.districtCode, stateShort);
-  return persistUniqueDigiPin(
+  const updated = await persistUniqueDigiPin(
     (n) => prisma.digiPin.update({ where: { id: digiPin.id }, data: { digipinNumber: n } }),
     {
       stateShort,
@@ -356,6 +357,14 @@ export async function regenerateDigiPin(digipinId: string) {
       longitude: property.longitude.toNumber(),
     },
   );
+  // Refresh the QR payload so a renumbered DigiPin never keeps serving a
+  // stale payload (legacy URL or previous number) on next fetch.
+  await prisma.qR.upsert({
+    where: { digipinId: digiPin.id },
+    update: { qrData: buildQrData(updated.digipinNumber) },
+    create: { digipinId: digiPin.id, qrData: buildQrData(updated.digipinNumber) },
+  });
+  return updated;
 }
 
 export async function verifyAdminProperty(
