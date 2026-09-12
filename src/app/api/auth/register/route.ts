@@ -9,10 +9,12 @@ import { ok } from "@/lib/response";
  * /api/auth/register:
  *   post:
  *     summary: Initiate registration — sends OTP to mobile
- *     description: >-
- *       Validates name/email/mobile/password, stores a pending registration,
- *       and fires a real SMS OTP to the supplied mobile number. Follow up with
- *       POST /api/auth/register/verify to complete account creation.
+  *     description: >-
+  *       Validates name/mobile/password (email is OPTIONAL — omit it, send
+  *       null, or send "" and it defaults to NULL; the user can add it later
+  *       via PATCH /api/users/me), stores a pending registration,
+  *       and fires a real SMS OTP to the supplied mobile number. Follow up with
+  *       POST /api/auth/register/verify to complete account creation.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -20,15 +22,16 @@ import { ok } from "@/lib/response";
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, email, mobile, password]
- *             properties:
- *               name:
- *                 type: string
- *                 example: "Anuraj Kumar"
- *               email:
- *                 type: string
- *                 format: email
- *                 example: "anuraj@example.com"
+  *             required: [name, mobile, password]
+  *             properties:
+  *               name:
+  *                 type: string
+  *                 example: "Anuraj Kumar"
+  *               email:
+  *                 type: string
+  *                 format: email
+  *                 example: "anuraj@example.com"
+  *                 description: "Optional — omit for NULL"
  *               mobile:
  *                 type: string
  *                 pattern: '^[6-9]\d{9}$'

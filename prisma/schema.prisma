@@ -201,7 +201,7 @@ model PendingRegistration {
   id           String   @id @default(cuid())
   mobile       String   @unique
   name         String
-  email        String   // not unique — same email allowed across accounts
+  email        String?  // optional — the app may not collect it; null defaults in
   passwordHash String   @db.VarChar(512)
   expiresAt    DateTime // matches OTP TTL (5 min)
   createdAt    DateTime @default(now())

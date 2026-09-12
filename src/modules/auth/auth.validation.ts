@@ -37,7 +37,12 @@ export const refreshTokenSchema = z
 export const registerInitSchema = z
   .object({
     name: z.string().min(1, "Name is required").max(100),
-    email: z.string().email("Must be a valid email address"),
+    // Optional — the app may not collect it. Absent, null, or blank
+    // default to undefined so the service stores NULL.
+    email: z.preprocess(
+      (v) => (v == null || (typeof v === "string" && v.trim() === "") ? undefined : v),
+      z.string().email("Must be a valid email address").optional(),
+    ),
     mobile: mobileSchema,
     password: passwordSchema,
   })

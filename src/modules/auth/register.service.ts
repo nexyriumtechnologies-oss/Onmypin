@@ -40,7 +40,7 @@ export async function verifyPassword(
 
 export async function initiateRegister(
   name: string,
-  email: string,
+  email: string | undefined,
   mobile: string,
   password: string,
 ): Promise<string> {
@@ -53,13 +53,14 @@ export async function initiateRegister(
   const passwordHash = await hashPassword(password);
 
   // Delete any previous pending attempt for this mobile, then create fresh.
-  // Avoids upsert complications when email is also @unique on the model.
+  // Email is optional — absent means NULL (the user may add it later via
+  // PATCH /api/users/me, which already accepts nullable email).
   await prisma.pendingRegistration.deleteMany({ where: { mobile } });
   await prisma.pendingRegistration.create({
     data: {
       mobile,
       name,
-      email,
+      email: email ?? null,
       passwordHash,
       expiresAt: new Date(Date.now() + OTP_TTL_MS),
     },

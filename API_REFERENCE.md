@@ -29,7 +29,7 @@ Special statuses with **no body**: `204 No Content` (logout, delete), `201 Creat
 
 ```
 [New users]
-POST /api/auth/register  (name + email + mobile + password  →  OTP sent to mobile)
+POST /api/auth/register  (name + mobile + password [+ optional email]  →  OTP sent to mobile)
 POST /api/auth/register/verify  (mobile + OTP  →  account created + tokens)
 
 [Returning users]
@@ -74,13 +74,13 @@ Public. Sends a 6-digit OTP to the mobile. Rate limited: 3 sends/mobile/10 min +
 > **Real SMS active:** `OTP_BYPASS_ENABLED=false`. OTPs are sent to the entered mobile via the approved DLT template (verified live 2026-08-20: register → SMS arrives → verify → account + tokens). Flip `OTP_BYPASS_ENABLED=true` only for offline/dev testing with mobile `8090780908` / code `123456`.
 
 ### POST /api/auth/register — initiate registration
-Public. Validates name/email/mobile/password, stores a pending registration, and sends a 6-digit OTP to the mobile. Rate limited same as send-otp.
+Public. Validates name/mobile/password, stores a pending registration, and sends a 6-digit OTP to the mobile. Rate limited same as send-otp. **Email is optional** — omit it (or send `null`/`""`) and it defaults to `NULL`; the user can add it later via `PATCH /api/users/me`.
 
 ```jsonc
 // Request
 {
   "name": "Anuraj Kumar",
-  "email": "anuraj@example.com",
+  "email": "anuraj@example.com",   // optional — omit for NULL
   "mobile": "9876543210",           // 10 digits, must start 6-9
   "password": "SecurePass1"          // min 8 chars, ≥1 uppercase, ≥1 digit
 }
