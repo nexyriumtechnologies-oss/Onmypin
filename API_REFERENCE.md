@@ -351,7 +351,7 @@ final res = await req.send();
 ## 5. Properties
 
 ### POST /api/properties — create a draft
-Requires Bearer. Only the first 3 fields are required; everything else comes later via PATCH. `districtCode` (LGD code, e.g. `315` = Kolkata) is optional here but **required at submit** — it is validated against the built-in LGD dataset (`400 INVALID_DISTRICT` if unknown).
+Requires Bearer. Only the first 3 fields are required; everything else comes later via PATCH. District is optional — send `districtCode` (LGD code, e.g. `315` = Kolkata), or `districtName` (e.g. `"Kolkata"` — auto-resolved to the code server-side, scoped by `state`), or neither. When both are sent they must agree (`400 DISTRICT_NAME_MISMATCH`). Use `GET /api/districts` for autocomplete. Unknown codes → `400 INVALID_DISTRICT`.
 
 ```jsonc
 // Request
@@ -359,7 +359,7 @@ Requires Bearer. Only the first 3 fields are required; everything else comes lat
   "ownerName": "Anuraj",
   "propertyType": "HOUSE",        // HOUSE | FLAT | OTHER
   "ownershipType": "OWN",         // OWN | RENT | OTHER
-  "districtCode": 315             // optional now, required at submit
+  "districtName": "Kolkata"       // optional — resolved to districtCode 315 automatically
 }
 
 // Response 201
@@ -394,7 +394,7 @@ Requires Bearer. Foreign/missing id → identical `404 PROPERTY_NOT_FOUND` (no e
 **DigiPin visibility:** the embedded `digiPin` is `null` until an admin approves the property — the response instead carries `"digipinStatus": "PENDING_APPROVAL"` + a plain-language `digipinMessage` ("Your property is not approved yet…"). After approval it returns `"digipinStatus": "AVAILABLE"` with the `digiPin` object.
 
 ### PATCH /api/properties/:id — fill steps progressively
-Requires Bearer. At least one field. **Do NOT send `verificationStatus`** (400 `INVALID_STATUS_TRANSITION`).
+Requires Bearer. At least one field. **Do NOT send `verificationStatus`** (400 `INVALID_STATUS_TRANSITION`). `districtName` works here too (resolved against the PATCH `state` when sent, else the stored state).
 
 ```jsonc
 // Request — e.g. after the user types their address
@@ -412,9 +412,9 @@ Requires Bearer. At least one field. **Do NOT send `verificationStatus`** (400 `
 > **State names:** the submit gate maps **full state/UT names** (e.g. `"Uttar Pradesh"`, `"West Bengal"`, `"Delhi"`) to DigiPin codes. Short forms like `"UP"` fail submit with `400 INVALID_STATE`. Use a state dropdown in the UI.
 
 ### POST /api/properties/:id/submit — submit for verification
-Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE` (this includes `districtCode`). On success: property becomes SUBMITTED, a **v1 DigiPin** and its **QR** are generated — but the DigiPin is **NOT returned**. It stays hidden on every non-admin surface until an admin approves the property (`PATCH /admin/properties/:id/verification` → `VERIFIED`). A resubmit after REJECTED issues a **fresh** number on the same row.
+Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE` (district is NOT part of the gate). On success: property becomes SUBMITTED, a **DigiPin** and its **QR** are generated — but the DigiPin is **NOT returned**. It stays hidden on every non-admin surface until an admin approves the property (`PATCH /admin/properties/:id/verification` → `VERIFIED`). A resubmit after REJECTED issues a **fresh** number on the same row (and the QR payload is refreshed to match).
 
-**v1 DigiPin format (18 chars, open encoding + checksum):** `SS` (state shortform, e.g. `WB`) + `DDD` (zero-padded LGD district code, e.g. `315`) + 12 base32 chars (version + latitude + longitude at 1e-5° ≈ 1.1 m + 10-bit rand) + 1 checksum char. Example: `WB315K7Q29XMD49C2F9P` (displayed grouped `WB-315-K7Q29XMD49C2F-9-P`). Decoding yields state + district + grid-exact coords — server-side only; exact lat/lng are never exposed publicly. The district must belong to the submitted state (`400 DISTRICT_STATE_MISMATCH` otherwise).
+**DigiPin format (8 chars):** `SS` (state shortform, e.g. `WB`) + 4-digit crypto-random + last 2 digits of the pincode. Example: `WB472801` (for pincode `700001`). Uniqueness is enforced by a DB unique constraint with server-side collision retry — duplicates are un-storable. Only 3 district names repeat across states nationally, so name-based district resolution is effectively deterministic when `state` is sent.
 
 ```jsonc
 // Request
@@ -425,11 +425,12 @@ Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE
   "address": "14 Park Street, Ballygunge",
   "city": "Kolkata",
   "state": "West Bengal",
-  "districtCode": 315,                   // LGD code — required, must belong to state
+  "districtName": "Kolkata",                // optional — auto-resolved to districtCode 315
   "pincode": "700016",
   "propertyImages": ["638713e0fa164069adba18a0e2d1fdab", "b1df20e6488a391041a9bddce91e0055"],  // ≥1 fileId, max 3
   "selfieImage": "59f25cfd0eae09bba0b376db476566b1"                                            // exactly one
   // "latitude" / "longitude": optional device GPS — see Location section
+  // ...or "districtCode": 315 instead of districtName (both → must agree)
 }
 
 // Response 200
@@ -447,8 +448,26 @@ Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE
 | Missing/invalid required field | 400 | `PROPERTY_INCOMPLETE` |
 | Media not owned / wrong purpose / deleted | 400 | `INVALID_MEDIA_FILE` |
 | Short state name (e.g. "UP") | 400 | `INVALID_STATE` |
+| Unknown district code/name | 400 | `INVALID_DISTRICT` |
+| districtName matches several states, no state sent | 400 | `DISTRICT_AMBIGUOUS` |
+| districtCode and districtName disagree | 400 | `DISTRICT_NAME_MISMATCH` |
 | Not a DRAFT | 400 | `INVALID_STATUS_TRANSITION` |
 | No GPS and address unresolvable | 502 | `GEOCODE_FAILED` |
+
+### GET /api/districts — LGD district lookup (public, no auth)
+Autocomplete pool for the frontend district field. Send `state` to scope (e.g. `?state=West Bengal`), `search` to filter by name substring (e.g. `?search=kolk`), or both. Returns `{ code, name, stateShort, stateName }[]` sorted by LGD code. Rate-limited per IP (`429 RATE_LIMITED`).
+
+```jsonc
+// GET /api/districts?state=West%20Bengal&search=kolk
+{
+  "success": true,
+  "data": [
+    { "code": 315, "name": "Kolkata", "stateShort": "WB", "stateName": "West Bengal" }
+  ]
+}
+```
+
+**Frontend autofill flow:** as the user types the district name, query this endpoint and fill the hidden `districtCode` from the selected row. Alternatively send only `districtName` on create/PATCH/submit — the server resolves it the same way (exact, case-insensitive, state-scoped).
 
 ---
 
@@ -519,9 +538,9 @@ Requires Bearer. `:id` is the **DigiPin row id** (visible on the approved proper
 {
   "success": true,
   "data": {
-    "qrData": "WB3150P9VB5Y44XFP6",  // the DigiPin number itself — render this as the QR image
+    "qrData": "WB472801",  // the DigiPin number itself — render this as the QR image
     "qrStatus": "ACTIVE",             // ACTIVE | DISABLED
-    "token": "WB3150P9VB5Y44XFP6"    // lookup key: the number for new QRs, the bare token for legacy URL QRs
+    "token": "WB472801"    // lookup key: the number for new QRs, the bare token for legacy URL QRs
   }
 }
 // Any generic camera scan of the QR shows the DigiPin number directly.
@@ -536,13 +555,13 @@ Anyone can call this — it returns **no address, no personal data** (privacy-sa
 ```jsonc
 // Request — the scanned payload: raw DigiPin number (new QRs),
 // legacy bare token, or full legacy URL (all accepted)
-{ "token": "WB3150P9VB5Y44XFP6" }
+{ "token": "WB472801" }
 
 // Response 200
 {
   "success": true,
   "data": {
-    "digipinNumber": "WB315K7Q29XMD49C2F9P",
+    "digipinNumber": "WB472801",
     "status": "ACTIVE",                  // ACTIVE | INACTIVE
     "verificationStatus": "VERIFIED",    // always VERIFIED or later — unapproved codes 404
     "city": "Kolkata",
@@ -779,7 +798,7 @@ Body: `fcmToken` (1-512), `platform` = `ANDROID | IOS | WEB`. Upserts by (user, 
 Media-only: `EMPTY_BODY` 400, `INVALID_CONTENT_TYPE` 400, `FILE_REQUIRED` 400, `EMPTY_FILE` 400, `INVALID_FILE_TYPE` 400, `INVALID_FILE_KEY` 400, `FILE_TOO_LARGE` 413, `MALFORMED_UPLOAD` 400.
 Ownership: `MEDIA_NOT_FOUND` 404, `PROPERTY_NOT_FOUND` 404, `DIGIPIN_NOT_FOUND` 404, `QR_NOT_FOUND` 404, `USER_NOT_FOUND` 404, `BUSINESS_NOT_FOUND` 404, `BUSINESS_IMAGE_NOT_FOUND` 404, `NOTIFICATION_NOT_FOUND` 404, `DEVICE_TOKEN_NOT_FOUND` 404.
 Approval: `PROPERTY_NOT_APPROVED` 403 (QR fetch on an unapproved property — owner only; strangers get the identical 404).
-DigiPin v1: `INVALID_DISTRICT` 400 (unknown LGD code), `DISTRICT_STATE_MISMATCH` 400 (district belongs to another state), `INVALID_DIGIPIN_FORMAT` 400, `DIGIPIN_CHECKSUM_MISMATCH` 400 (typo/tamper), `UNSUPPORTED_DIGIPIN_VERSION` 400, `DIGIPIN_OUT_OF_RANGE` 400 (coords outside India grid), `DIGIPIN_GENERATION_FAILED` 500, `DISTRICT_REQUIRED` / `STATE_REQUIRED` / `COORDINATES_REQUIRED` 400 (regenerate preconditions).
+DigiPin: `INVALID_DISTRICT` 400 (unknown LGD code or name), `DISTRICT_AMBIGUOUS` 400 (name repeats across states, no state sent), `DISTRICT_NAME_MISMATCH` 400 (code and name disagree), `DISTRICT_STATE_MISMATCH` 400 (district belongs to another state — admin assign only), `INVALID_DIGIPIN_FORMAT` 400, `DIGIPIN_CHECKSUM_MISMATCH` 400 (typo/tamper — v1 codes), `UNSUPPORTED_DIGIPIN_VERSION` 400, `DIGIPIN_OUT_OF_RANGE` 400 (coords outside India grid — v1 codes), `DIGIPIN_GENERATION_FAILED` 500.
 Account: `ACCOUNT_DISABLED` 403 (deactivated/deleted), `ACCOUNT_DELETED` 403.
 Business: `BUSINESS_INCOMPLETE` 400 (verification-request gate, lists missing fields), `INVALID_STATUS_TRANSITION` 400, `BUSINESS_IMAGE_LIMIT` 400 (max 5), `CATEGORY_INVALID` 400.
 DSE: `DSE_CONTENT_NOT_FOUND` 404, `DSE_CATEGORY_NOT_FOUND` 404, `DSE_CATEGORY_INACTIVE` 400, `DSE_CATEGORY_IN_USE` 400, `DSE_ALREADY_PUBLISHED` / `DSE_NOT_PUBLISHED` / `DSE_ALREADY_ARCHIVED` / `DSE_NOT_ARCHIVED` 400.
@@ -795,7 +814,7 @@ DSE: `DSE_CONTENT_NOT_FOUND` 404, `DSE_CATEGORY_NOT_FOUND` 404, `DSE_CATEGORY_IN
    - step 1–3 (name/type/ownership): already at create
    - address step: `PATCH /api/properties/:id` (address/city/state/pincode) + `location/verify` for a map pin
    - photos step: upload to `property-images` (max 3, show replace-toast on 4th) and `selfie`
-    - review & submit: send `districtCode` (LGD, must match `state`) + `submit` → show a **"pending admin approval"** state (the DigiPin is NOT in the response). After approval, read the 18-char code from `GET /api/properties/:id` (`digiPin` appears, `digipinStatus: "AVAILABLE"`) and fetch the QR via `GET /api/digipins/:id/qr` (needs the `digipinId` from the approved property detail).
+    - review & submit: send address/city/state/pincode (+ optional `districtCode` or `districtName`) + `submit` → show a **"pending admin approval"** state (the DigiPin is NOT in the response). After approval, read the 8-char code from `GET /api/properties/:id` (`digiPin` appears, `digipinStatus: "AVAILABLE"`) and fetch the QR via `GET /api/digipins/:id/qr` (needs the `digipinId` from the approved property detail).
 4. **Token upkeep** → on any 401, call `refresh`, update stored tokens, retry once; if refresh 401s, force re-login.
 
 ---
@@ -980,9 +999,8 @@ Query: `page`, `pageSize`, `search`, `sortBy`, `sortOrder`
 { "status": "INACTIVE" }   // or "ACTIVE"
 ```
 
-**Legacy v1 migration (old `WB999901`-style codes have no district stored):**
-1. **`PATCH /admin/properties/:id/district`** — requires `property:verify`. Body `{ "districtCode": 315 }` (LGD code; must belong to the property's state unless the stored state text is unparseable). Snapshots `districtName`.
-2. **`POST /admin/digipins/:id/regenerate`** — requires `digipin:status`. Recomputes the v1 number **in place** (same `digipinId`, so printed QRs keep working). Needs district + state + coordinates on the property (`400 DISTRICT_REQUIRED` / `STATE_REQUIRED` / `COORDINATES_REQUIRED` otherwise).
+**District data completion (rows missing district data):**
+**`PATCH /admin/properties/:id/district`** — requires `property:verify`. Body `{ "districtCode": 315 }` (LGD code; must belong to the property's state unless the stored state text is unparseable). Snapshots `districtName`.
 
 ### 12.8 Business Management
 

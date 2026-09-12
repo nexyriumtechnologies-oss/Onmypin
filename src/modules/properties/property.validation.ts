@@ -10,6 +10,10 @@ const longitudeSchema = z.number().min(-180).max(180);
 // LGD district code — existence/state-match validated against the dataset in
 // the service layer (codes are sparse: 1–796 with gaps, so range ≠ valid).
 const districtCodeSchema = z.number().int().min(1);
+// District name alternative — resolved to a code server-side (exact,
+// case-insensitive, scoped by `state` when it parses). The resolved code is
+// what gets stored; the canonical dataset name is snapshotted alongside.
+const districtNameSchema = z.string().trim().min(1).max(100);
 
 /**
  * Registration-flow schemas (steps 1–10).
@@ -25,6 +29,7 @@ export const createPropertySchema = z
     city: z.string().min(2).max(100).optional(),
     state: z.string().min(2).max(100).optional(),
     districtCode: districtCodeSchema.optional(),
+    districtName: districtNameSchema.optional(),
     pincode: pincodeSchema.optional(),
     latitude: latitudeSchema.optional(),
     longitude: longitudeSchema.optional(),
@@ -40,6 +45,7 @@ export const patchPropertySchema = z
     city: z.string().min(2).max(100).optional(),
     state: z.string().min(2).max(100).optional(),
     districtCode: districtCodeSchema.optional(),
+    districtName: districtNameSchema.optional(),
     pincode: pincodeSchema.optional(),
     latitude: latitudeSchema.optional(),
     longitude: longitudeSchema.optional(),
@@ -56,7 +62,10 @@ export interface PropertySubmissionData {
   address: string;
   city: string;
   state: string;
-  districtCode: number;
+  /** Optional since the v1 codec revert — the old formula needs only state + pincode. */
+  districtCode?: number;
+  /** Alternative to districtCode — resolved server-side, must agree if both sent. */
+  districtName?: string;
   pincode: string;
   /** Optional device GPS — when absent the server geocodes the address. */
   latitude?: number;
@@ -75,7 +84,8 @@ export function assertCompleteProperty(input: Record<string, unknown>): Property
       address: z.string().min(5).max(500),
       city: z.string().min(2).max(100),
       state: z.string().min(2).max(100),
-      districtCode: districtCodeSchema,
+      districtCode: districtCodeSchema.optional(),
+      districtName: districtNameSchema.optional(),
       pincode: pincodeSchema,
       latitude: latitudeSchema.optional(),
       longitude: longitudeSchema.optional(),

@@ -10,12 +10,12 @@ import { ok } from "@/lib/response";
  * @swagger
  * /admin/properties/{id}/district:
  *   patch:
- *     summary: Assign an LGD district to a property (legacy migration)
- *     description: >-
- *       Sets districtCode/districtName for properties whose DigiPin predates
- *       the v1 format. The code must exist in the LGD dataset; when the stored
- *       state parses, the district must belong to it. Follow with
- *       POST /admin/digipins/{id}/regenerate to recompute the v1 number.
+  *     summary: Assign an LGD district to a property (data completion)
+  *     description: >-
+  *       Sets districtCode/districtName for properties missing district data
+  *       (legacy rows or user submissions without one). The code must exist in
+  *       the LGD dataset; when the stored state parses, the district must
+  *       belong to it.
  *     tags: [Admin]
  *     security: [{ adminBearerAuth: [] }]
  *     parameters:

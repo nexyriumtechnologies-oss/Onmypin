@@ -2,11 +2,10 @@ import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/middleware/errorHandler";
 import { requireOwnedMedia, requireOwnedMediaMany } from "@/modules/media/media.service";
 import { geocodeAddress } from "@/modules/location/location.service";
-import { encodeDigiPin } from "@/modules/digipin/digipin.codec";
-import { getDistrict, assertDistrictInState } from "@/modules/districts/districts";
-import { getStateCode } from "@/modules/digipin/stateCodes";
+import { generateDigiPin } from "@/modules/digipin/digipin.service";
+import { getDistrict, findDistrictByName } from "@/modules/districts/districts";
 import { buildQrData } from "@/modules/qr/qr.payload";
-import type { PropertyType, OwnershipType, VerificationStatus, DigiPin } from "@prisma/client";
+import type { PropertyType, OwnershipType, VerificationStatus } from "@prisma/client";
 
 /**
  * DigiPin visibility rule: the code is hidden from every non-admin surface
@@ -27,12 +26,46 @@ export interface CreatePropertyInput {
   city?: string;
   state?: string;
   districtCode?: number;
+  /** Alternative to districtCode — resolved to a code server-side. */
+  districtName?: string;
   pincode?: string;
   latitude?: number;
   longitude?: number;
 }
 
 export type UpdatePropertyInput = Partial<CreatePropertyInput>;
+
+/**
+ * District resolution shared by create/PATCH/submit: an explicit code wins
+ * (existence validated, canonical name snapshotted); otherwise a sent name
+ * is resolved via the LGD dataset, scoped by state when it parses. When
+ * both are sent they must agree — a silent pick would hide frontend bugs.
+ */
+function resolveDistrictInput(input: {
+  districtCode?: number;
+  districtName?: string;
+  state?: string;
+}): { districtCode?: number; districtName?: string } {
+  if (input.districtCode !== undefined) {
+    const district = getDistrict(input.districtCode);
+    if (
+      input.districtName !== undefined &&
+      input.districtName.trim().toLowerCase() !== district.name.toLowerCase()
+    ) {
+      throw new ApiError(
+        400,
+        "DISTRICT_NAME_MISMATCH",
+        `districtName "${input.districtName.trim()}" does not match districtCode ${district.code} (${district.name}).`,
+      );
+    }
+    return { districtCode: district.code, districtName: district.name };
+  }
+  if (input.districtName !== undefined) {
+    const district = findDistrictByName(input.districtName, input.state);
+    return { districtCode: district.code, districtName: district.name };
+  }
+  return {};
+}
 
 const PROPERTY_SELECT = {
   id: true,
@@ -54,13 +87,12 @@ const PROPERTY_SELECT = {
 
 /** A new property always starts as a DRAFT owned by the caller. */
 export async function createProperty(userId: string, input: CreatePropertyInput) {
-  // District is optional at create (required at submit). Validate existence
-  // now and snapshot the name; the strict state cross-check happens at submit
-  // where state is mandatory.
-  const districtName =
-    input.districtCode !== undefined ? getDistrict(input.districtCode).name : undefined;
+  // District is optional at create (and at submit since the codec revert).
+  // A sent name is auto-resolved to its code; the canonical dataset name is
+  // snapshotted either way. Strict state cross-check happens at submit.
+  const resolved = resolveDistrictInput(input);
   return prisma.property.create({
-    data: { userId, ...input, ...(districtName ? { districtName } : {}) },
+    data: { userId, ...input, ...resolved },
     select: PROPERTY_SELECT,
   });
 }
@@ -132,14 +164,14 @@ export async function updateProperty(
     );
   }
 
-  // Snapshot the district name when the code changes (existence validated;
-  // strict state cross-check happens at submit).
-  const districtName =
-    data.districtCode !== undefined ? getDistrict(data.districtCode).name : undefined;
+  // Resolve district input (code wins, else name auto-resolved — scoped by
+  // the PATCH state when sent, else the stored state). The canonical name is
+  // snapshotted; strict state cross-check happens at submit.
+  const resolved = resolveDistrictInput({ ...data, state: data.state ?? property.state ?? undefined });
 
   return prisma.property.update({
     where: { id: property.id },
-    data: { ...data, ...(districtName ? { districtName } : {}) },
+    data: { ...data, ...resolved },
     select: PROPERTY_SELECT,
   });
 }
@@ -152,34 +184,8 @@ function isTxExpiredError(err: unknown): boolean {
 }
 
 /**
- * Encode a v1 DigiPin and persist it, retrying with fresh randomness on a
- * P2002 number collision (max 5). Only the rand part changes between
- * attempts, so district/coords stay identical.
- */
-export async function persistUniqueDigiPin(
-  persist: (digipinNumber: string) => Promise<DigiPin>,
-  fields: { stateShort: string; districtCode: number; latitude: number; longitude: number },
-): Promise<DigiPin> {
-  for (let attempt = 1; attempt <= 5; attempt++) {
-    const candidate = encodeDigiPin(fields);
-    try {
-      return await persist(candidate);
-    } catch (err) {
-      const isUniqueCollision =
-        typeof err === "object" && err !== null && (err as { code?: string }).code === "P2002";
-      if (!isUniqueCollision) throw err;
-    }
-  }
-  throw new ApiError(
-    500,
-    "DIGIPIN_GENERATION_FAILED",
-    "Could not generate a unique DigiPin after 5 attempts",
-  );
-}
-
-/**
  * Submit: validates completeness, enforces DRAFT|REJECTED→SUBMITTED, then
- * generates the v1 DigiPin (state + district + coords, checksum + rand) and
+ * generates the DigiPin (SS + 4-digit random + pincode suffix) and
  * associates a QR — inside a transaction.
  *
  * The DigiPin is NEVER returned here: it stays invisible on every non-admin
@@ -187,7 +193,9 @@ export async function persistUniqueDigiPin(
  * PATCH /admin/properties/{id}/verification.
  *
  * Resubmit after REJECTED issues a FRESH number on the existing DigiPin row
- * (fresh rand) and resets it to SUBMITTED, keeping the existing QR token.
+ * and resets it to SUBMITTED, keeping the existing QR token.
+ *
+ * District is optional (stored + displayed when sent, by code or by name).
  *
  * Coordinates: latitude/longitude are OPTIONAL. When the client sends device
  * GPS those are stored; otherwise the server geocodes the full address
@@ -204,7 +212,8 @@ export async function submitProperty(
     address: string;
     city: string;
     state: string;
-    districtCode: number;
+    districtCode?: number;
+    districtName?: string;
     pincode: string;
     latitude?: number;
     longitude?: number;
@@ -238,31 +247,26 @@ export async function submitProperty(
     longitude = geo.longitude;
   }
 
-  // v1 code inputs: district must belong to the submitted state (strict);
-  // coords are final here (device GPS or geocoded above).
-  const stateShort = getStateCode(data.state);
-  const district = assertDistrictInState(data.districtCode, stateShort);
-  const codeFields = {
-    stateShort,
-    districtCode: district.code,
-    latitude,
-    longitude,
-  };
+  // District is optional: an explicit code wins, else a sent name is
+  // auto-resolved (scoped by the submitted state); the canonical dataset
+  // name is snapshotted. The old-formula number needs only state + pincode.
+  const resolved = resolveDistrictInput(data);
 
   // Interactive-tx budget: several sequential writes on a cold hosted DB can
   // approach Prisma's 5s default — 15s ceiling. Retry once on expiry (P2028):
-  // an expired transaction rolls back, and persistUniqueDigiPin already
-  // absorbs P2002 collisions, so the retry is side-effect free.
+  // an expired transaction rolls back, and generateDigiPin already absorbs
+  // P2002 collisions, so the retry is side-effect free.
   const runTx = () =>
     prisma.$transaction(async (tx) => {
-    // propertyImages/selfieImage are submit-gate media references only — they
-    // are not Property columns; strip them before the DB update.
-    const { propertyImages: _propertyImages, selfieImage: _selfieImage, ...updateData } = data;
+    // propertyImages/selfieImage/districtName are submit-gate fields only —
+    // districtName is resolved into districtCode above, so strip the helpers
+    // before the DB update (districtCode/districtName columns set explicitly).
+    const { propertyImages: _propertyImages, selfieImage: _selfieImage, districtName: _districtName, ...updateData } = data;
     const updated = await tx.property.update({
       where: { id: propertyId },
       data: {
         ...updateData,
-        districtName: district.name,
+        ...resolved,
         latitude,
         longitude,
         verificationStatus: "SUBMITTED",
@@ -271,30 +275,38 @@ export async function submitProperty(
 
     // First submit creates the DigiPin row; a resubmit after REJECTED issues
     // a fresh number on the existing row and resets it to SUBMITTED. A blind
-    // create here would P2002 on propertyId @unique.
+    // create here would P2002 on propertyId @unique. generateDigiPin returns
+    // the number (not the row), so the row id is captured alongside.
     const existing = await tx.digiPin.findUnique({ where: { propertyId } });
-    const digiPin = existing
-      ? await persistUniqueDigiPin(
-          (n) =>
-            tx.digiPin.update({
-              where: { id: existing.id },
-              data: { digipinNumber: n, verificationStatus: "SUBMITTED" },
-            }),
-          codeFields,
-        )
-      : await persistUniqueDigiPin(
-          (n) => tx.digiPin.create({ data: { propertyId, digipinNumber: n } }),
-          codeFields,
-        );
-
-    // Keep the existing QR on resubmit — only create one if missing. The
-    // payload is the DigiPin number itself (plain text, see qr.payload.ts).
-    const existingQr = await tx.qR.findUnique({ where: { digipinId: digiPin.id } });
-    if (!existingQr) {
-      await tx.qR.create({
-        data: { digipinId: digiPin.id, qrData: buildQrData(digiPin.digipinNumber) },
+    let digipinId: string;
+    let digipinNumber: string;
+    if (existing) {
+      digipinId = existing.id;
+      digipinNumber = await generateDigiPin(data.state, data.pincode, {
+        persist: (n) =>
+          tx.digiPin.update({
+            where: { id: existing.id },
+            data: { digipinNumber: n, verificationStatus: "SUBMITTED" },
+          }),
+      });
+    } else {
+      digipinId = "";
+      digipinNumber = await generateDigiPin(data.state, data.pincode, {
+        persist: async (n) => {
+          const created = await tx.digiPin.create({ data: { propertyId, digipinNumber: n } });
+          digipinId = created.id;
+        },
       });
     }
+
+    // The QR payload is always the CURRENT number — upsert so a resubmit
+    // (fresh number) never leaves a stale payload behind. The payload is the
+    // DigiPin number itself (plain text, see qr.payload.ts).
+    await tx.qR.upsert({
+      where: { digipinId },
+      update: { qrData: buildQrData(digipinNumber) },
+      create: { digipinId, qrData: buildQrData(digipinNumber) },
+    });
 
     return { updated };
     }, { timeout: 15000, maxWait: 10000 });

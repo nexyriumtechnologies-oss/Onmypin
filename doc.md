@@ -786,3 +786,24 @@ Report: a client scanned `https://digipin.app/q/...` even for fresh accounts on 
 - Tests: new `src/tests/qr-self-heal.test.ts` (4) + updated `qr.test.ts` legacy case + `admin.test.ts` upsert assertion → suite **175/175**, `tsc` clean.
 - Live E2E on `8090780908` (register → property → submit → approve → QR fetch → verify-by-number) re-run to reconfirm `qrData` = bare number; all rows hard-deleted after.
 
+---
+
+## 33. Codec revert + districtName autofill (2026-09-12, client request)
+
+Client asked to revert DigiPin generation to the old formula and to send district *names* from the frontend with automatic code fill.
+
+### 33.1 Revert: SS + 4-digit random + pincode suffix (e.g. `WB472801`)
+
+- Restored `generateDigiPin` in `src/modules/digipin/digipin.service.ts` (verbatim logic from pre-v1 history: state short + `randomInt(1000,10000)` + pincode last-2, DB `@@unique` + 5× P2002 retry). The file had survived as tested dead code — including its 6 passing unit tests.
+- `submitProperty` uses it inside the existing tx (15s budget + P2028 retry unchanged); `districtCode` optional at submit again (validated + snapshotted when present). QR upsert now always writes the **current** number, so resubmits can't leave a stale payload.
+- Removed: `POST /admin/digipins/{id}/regenerate` (route + service — nothing to recompute under a random formula), `persistUniqueDigiPin` (dead after the revert). Kept: `PATCH /admin/.../district` (data completion), `digipin.codec.ts` + its tests (grandfathered v1 rows still decode/verify; new codes surface as `digipinDecoded: null`).
+- **No Prisma migration**: `digipinNumber` is a String, `districtName` column already existed — code-only change, `prisma:deploy` no-ops on Render.
+
+### 33.2 districtName → districtCode autofill
+
+- New `findDistrictByName(name, state?)` (`districts.ts`): exact, case-insensitive, state-scoped when the state parses. Global fallback: 0 hits → `400 INVALID_DISTRICT`, cross-state repeats → `400 DISTRICT_AMBIGUOUS` (only 3 exist nationally: Bilaspur HP/CG, Hamirpur HP/UP, Pratapgarh RJ/UP).
+- `districtName` accepted on create/PATCH/submit; explicit code wins, both-sent disagreement → `400 DISTRICT_NAME_MISMATCH`. Responses already carried both fields, so the frontend can also fill the code from any response.
+- New public `GET /api/districts?state=&search=` (same 120/min IP cap pattern as DSE) for live autocomplete as the user types.
+- One limit, stated honestly: the LGD dataset has no city→district table, so `city` stays free text — state + district is what pins the code.
+- Tests: new `districts-autofill.test.ts` (11: resolution, mismatch, PATCH-vs-stored-state, submit without district minting `/^WB\d{4}16$/`, name-only submit snapshot) → suite **183/183**, `tsc` clean.
+

@@ -9,10 +9,14 @@ import { created, ok } from "@/lib/response";
  * @swagger
  * /api/properties:
  *   post:
- *     summary: Create a property (DRAFT)
- *     description: Creates a draft owned by the caller; later steps are filled
- *       via PATCH /api/properties/{id}.
- *     tags: [Properties]
+  *     summary: Create a property (DRAFT)
+  *     description: Creates a draft owned by the caller; later steps are filled
+  *       via PATCH /api/properties/{id}. District is optional: send
+  *       `districtCode`, or `districtName` (auto-resolved to the code
+  *       server-side, scoped by `state`), or neither — when both are sent
+  *       they must agree (400 DISTRICT_NAME_MISMATCH otherwise). Use
+  *       GET /api/districts for autocomplete.
+  *     tags: [Properties]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -29,7 +33,8 @@ import { created, ok } from "@/lib/response";
  *               address: { type: string, minLength: 5, maxLength: 500 }
  *               city: { type: string, minLength: 2, maxLength: 100 }
   *               state: { type: string, minLength: 2, maxLength: 100 }
-  *               districtCode: { type: integer, minimum: 1, description: LGD district code (optional at create, required at submit) }
+  *               districtCode: { type: integer, minimum: 1, description: LGD district code (optional at create, optional at submit) }
+  *               districtName: { type: string, minLength: 1, maxLength: 100, example: "Kolkata", description: District name alternative — auto-resolved to districtCode server-side }
   *               pincode: { type: string, pattern: '^\d{6}$' }
   *               latitude: { type: number, minimum: -90, maximum: 90 }
   *               longitude: { type: number, minimum: -180, maximum: 180 }

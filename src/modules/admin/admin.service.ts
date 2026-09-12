@@ -3,10 +3,8 @@ import { ApiError } from "@/middleware/errorHandler";
 import { recalculateTrustScore } from "@/modules/trust-score/trust-score.service";
 import { notifyUser, type NotificationType } from "@/modules/notifications/notifications.service";
 import { revokeAllUserSessions } from "@/modules/auth/session.service";
-import { persistUniqueDigiPin } from "@/modules/properties/property.service";
 import { getDistrict, assertDistrictInState } from "@/modules/districts/districts";
 import { getStateCode } from "@/modules/digipin/stateCodes";
-import { buildQrData } from "@/modules/qr/qr.payload";
 import { decodeDigiPin, isLegacyDigiPin, type DecodedDigiPin } from "@/modules/digipin/digipin.codec";
 import { Prisma } from "@prisma/client";
 import type { AccountStatus, VerificationStatus, BusinessVerificationStatus, SubscriptionStatus, TransactionStatus } from "@prisma/client";
@@ -313,58 +311,6 @@ export async function assignPropertyDistrict(propertyId: string, districtCode: n
     where: { id: propertyId },
     data: { districtCode: district.code, districtName: district.name },
   });
-}
-
-/**
- * Legacy migration: recompute the v1 DigiPin number IN PLACE (same digipinId,
- * so existing printed QRs keep scanning). Requires a district (assign first)
- * and stored coordinates. Status is untouched.
- */
-export async function regenerateDigiPin(digipinId: string) {
-  const digiPin = await prisma.digiPin.findUnique({
-    where: { id: digipinId },
-    include: { property: true },
-  });
-  if (!digiPin) {
-    throw new ApiError(404, "DIGIPIN_NOT_FOUND", "DigiPin not found");
-  }
-  const { property } = digiPin;
-  if (property.districtCode == null) {
-    throw new ApiError(
-      400,
-      "DISTRICT_REQUIRED",
-      "Assign a district to the property first (PATCH /admin/properties/{id}/district).",
-    );
-  }
-  if (!property.state) {
-    throw new ApiError(400, "STATE_REQUIRED", "Property has no state — cannot encode a DigiPin.");
-  }
-  if (property.latitude == null || property.longitude == null) {
-    throw new ApiError(
-      400,
-      "COORDINATES_REQUIRED",
-      "Property has no coordinates — cannot encode a DigiPin.",
-    );
-  }
-  const stateShort = getStateCode(property.state);
-  const district = assertDistrictInState(property.districtCode, stateShort);
-  const updated = await persistUniqueDigiPin(
-    (n) => prisma.digiPin.update({ where: { id: digiPin.id }, data: { digipinNumber: n } }),
-    {
-      stateShort,
-      districtCode: district.code,
-      latitude: property.latitude.toNumber(),
-      longitude: property.longitude.toNumber(),
-    },
-  );
-  // Refresh the QR payload so a renumbered DigiPin never keeps serving a
-  // stale payload (legacy URL or previous number) on next fetch.
-  await prisma.qR.upsert({
-    where: { digipinId: digiPin.id },
-    update: { qrData: buildQrData(updated.digipinNumber) },
-    create: { digipinId: digiPin.id, qrData: buildQrData(updated.digipinNumber) },
-  });
-  return updated;
 }
 
 export async function verifyAdminProperty(

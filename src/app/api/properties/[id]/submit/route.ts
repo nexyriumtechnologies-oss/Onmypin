@@ -12,20 +12,22 @@ type Params = { params: Promise<{ id: string }> };
  * /api/properties/{id}/submit:
  *   post:
  *     summary: Submit a property for verification
- *     description: >-
- *       Full completeness gate (400 PROPERTY_INCOMPLETE otherwise). All steps
- *       plus `propertyImages` (at least one fileId from
- *       POST /api/media/property-images — pool holds up to 3) and `selfieImage`
- *       (one fileId from POST /api/media/selfie) are required. Media files
- *       must belong to the caller. `latitude`/`longitude` are OPTIONAL device
- *       GPS — when absent the server geocodes the full address automatically
+  *     description: >-
+  *       Full completeness gate (400 PROPERTY_INCOMPLETE otherwise). All steps
+  *       plus `propertyImages` (at least one fileId from
+  *       POST /api/media/property-images — pool holds up to 3) and `selfieImage`
+  *       (one fileId from POST /api/media/selfie) are required. Media files
+  *       must belong to the caller. `latitude`/`longitude` are OPTIONAL device
+  *       GPS — when absent the server geocodes the full address automatically
   *       (LOCATION_PROVIDER=osm/mock); users never type coordinates. On success
-  *       the v1 DigiPin (state + LGD district + coordinates, checksum + rand)
+  *       the DigiPin (SS + 4-digit random + pincode suffix, e.g. WB472801)
   *       is generated and a QR is created inside a transaction — but the DigiPin
   *       number is NOT returned here. It stays hidden on every
-  *       non-admin surface until an admin approves the property. `districtCode`
-  *       is required and must belong to `state` (400 DISTRICT_STATE_MISMATCH
-  *       otherwise). Resubmit after REJECTED issues a fresh number.
+  *       non-admin surface until an admin approves the property. District is
+  *       OPTIONAL: send `districtCode`, or `districtName` (auto-resolved
+  *       against the LGD dataset, scoped by `state`), or neither — when both
+  *       are sent they must agree (400 DISTRICT_NAME_MISMATCH otherwise).
+  *       Resubmit after REJECTED issues a fresh number.
  *     tags: [Properties]
  *     security:
  *       - bearerAuth: []
@@ -40,25 +42,25 @@ type Params = { params: Promise<{ id: string }> };
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - ownerName
- *               - propertyType
- *               - ownershipType
- *               - address
- *               - city
+  *             required:
+  *               - ownerName
+  *               - propertyType
+  *               - ownershipType
+  *               - address
+  *               - city
   *               - state
-  *               - districtCode
   *               - pincode
   *               - propertyImages
   *               - selfieImage
- *             properties:
- *               ownerName: { type: string, minLength: 1, maxLength: 120 }
- *               propertyType: { type: string, enum: [HOUSE, FLAT, OTHER] }
- *               ownershipType: { type: string, enum: [OWN, RENT, OTHER] }
- *               address: { type: string, minLength: 5, maxLength: 500 }
- *               city: { type: string, minLength: 2, maxLength: 100 }
+  *             properties:
+  *               ownerName: { type: string, minLength: 1, maxLength: 120 }
+  *               propertyType: { type: string, enum: [HOUSE, FLAT, OTHER] }
+  *               ownershipType: { type: string, enum: [OWN, RENT, OTHER] }
+  *               address: { type: string, minLength: 5, maxLength: 500 }
+  *               city: { type: string, minLength: 2, maxLength: 100 }
   *               state: { type: string, minLength: 2, maxLength: 100 }
-  *               districtCode: { type: integer, minimum: 1, description: LGD district code — must belong to state }
+  *               districtCode: { type: integer, minimum: 1, description: LGD district code (optional; validated against the dataset) }
+  *               districtName: { type: string, minLength: 1, maxLength: 100, example: "Kolkata", description: District name alternative — auto-resolved to districtCode server-side (scoped by state); must agree with districtCode when both are sent }
   *               pincode: { type: string, pattern: '^\d{6}$' }
  *               latitude: { type: number, minimum: -90, maximum: 90, description: Optional device GPS latitude; server geocodes the address when absent }
  *               longitude: { type: number, minimum: -180, maximum: 180, description: Optional device GPS longitude; server geocodes the address when absent }

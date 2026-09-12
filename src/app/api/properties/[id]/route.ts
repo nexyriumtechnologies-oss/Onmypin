@@ -31,11 +31,12 @@ type Params = { params: Promise<{ id: string }> };
  *         description: Missing or invalid access token
  *       '404':
  *         description: Not found (or owned by someone else)
- *   patch:
- *     summary: Fill in property steps (progressive draft completion)
- *     description: At least one field required; unknown fields rejected.
- *       verificationStatus can never be changed here.
- *     tags: [Properties]
+  *   patch:
+  *     summary: Fill in property steps (progressive draft completion)
+  *     description: At least one field required; unknown fields rejected.
+  *       verificationStatus can never be changed here. `districtName` is
+  *       auto-resolved to `districtCode` server-side (scoped by `state`).
+  *     tags: [Properties]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -57,6 +58,7 @@ type Params = { params: Promise<{ id: string }> };
  *               city: { type: string, minLength: 2, maxLength: 100 }
   *               state: { type: string, minLength: 2, maxLength: 100 }
   *               districtCode: { type: integer, minimum: 1, description: LGD district code }
+  *               districtName: { type: string, minLength: 1, maxLength: 100, description: District name alternative — auto-resolved to districtCode server-side }
   *               pincode: { type: string, pattern: '^\d{6}$' }
  *               latitude: { type: number, minimum: -90, maximum: 90 }
  *               longitude: { type: number, minimum: -180, maximum: 180 }

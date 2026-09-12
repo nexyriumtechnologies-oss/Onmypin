@@ -8,7 +8,7 @@ module.exports = {
   openapi: "3.0.0",
   info: {
     title: "OwnMyPin API",
-    version: "0.7.0",
+    version: "0.8.0",
     description:
       "OwnMyPin backend — Phase 1 (auth/OTP, users, properties, DigiPin, QR, location, media) + Phase 2 (search, businesses, trust score, notifications, subscriptions, badges, admin) + DSE public-information CMS.\n\n" +
       "1. POST /api/auth/send-otp, then POST /api/auth/verify-otp to get tokens.\n" +
@@ -20,6 +20,7 @@ module.exports = {
     { name: "Auth", description: "OTP login, token refresh, logout, current user" },
     { name: "Users", description: "Own-profile management (name, email, profile image, language)" },
     { name: "Properties", description: "Property draft → step-fill → submit" },
+    { name: "Districts", description: "LGD district lookup for name → code autofill" },
     { name: "DigiPin", description: "Generated on property submit" },
     { name: "QR", description: "QR tokens for DigiPins and public verification" },
     { name: "Location", description: "Address geocoding + GPS cross-check (Nominatim osm / mock provider)" },
