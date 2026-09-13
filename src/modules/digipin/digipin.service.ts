@@ -3,11 +3,12 @@ import { random4Digit } from "@/lib/crypto";
 import { ApiError } from "@/middleware/errorHandler";
 import { logger } from "@/lib/logger";
 
-export const DIGIPIN_FORMAT = /^[A-Z]{2}\d{6}$/;
+export const DIGIPIN_FORMAT = /^[A-Z]{2}\d{7}$/;
 
 /**
- * DigiPin format: [2-letter state code][4-digit random][last 2 digits of pincode]
- * Example: WB + 4728 + 01 = WB472801
+ * DigiPin format: [2-letter state code][3-digit district code][4-digit random]
+ * Example: WB + 315 + 4728 = WB3154728  (stateCode + LGD district + random)
+ *          state = "West Bengal" (→ WB), districtCode = 315 (Kolkata)
  *
  * Uniqueness is enforced by the DB `@@unique([digipinNumber])` constraint.
  * On a Prisma P2002 (unique) collision we retry — no pre-check-then-insert.
@@ -16,17 +17,20 @@ export const DIGIPIN_FORMAT = /^[A-Z]{2}\d{6}$/;
  */
 export async function generateDigiPin(
   state: string,
-  pincode: string,
+  districtCode: number,
   opts: { maxRetries?: number; persist: (digipinNumber: string) => Promise<unknown> },
 ): Promise<string> {
   const maxRetries = opts.maxRetries ?? 5;
   const { persist } = opts;
 
   const stateCode = getStateCode(state);
-  const pincodeSuffix = pincode.slice(-2);
+  if (!Number.isInteger(districtCode) || districtCode < 1 || districtCode > 999) {
+    throw new ApiError(400, "INVALID_DISTRICT", `Invalid district code for DigiPin: ${districtCode}`);
+  }
+  const districtPart = String(districtCode).padStart(3, "0");
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    const digipinNumber = `${stateCode}${random4Digit()}${pincodeSuffix}`;
+    const digipinNumber = `${stateCode}${districtPart}${random4Digit()}`;
     try {
       await persist(digipinNumber);
       return digipinNumber;

@@ -412,9 +412,9 @@ Requires Bearer. At least one field. **Do NOT send `verificationStatus`** (400 `
 > **State names:** the submit gate maps **full state/UT names** (e.g. `"Uttar Pradesh"`, `"West Bengal"`, `"Delhi"`) to DigiPin codes. Short forms like `"UP"` fail submit with `400 INVALID_STATE`. Use a state dropdown in the UI.
 
 ### POST /api/properties/:id/submit — submit for verification
-Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE` (district is NOT part of the gate). On success: property becomes SUBMITTED, a **DigiPin** and its **QR** are generated — but the DigiPin is **NOT returned**. It stays hidden on every non-admin surface until an admin approves the property (`PATCH /admin/properties/:id/verification` → `VERIFIED`). A resubmit after REJECTED issues a **fresh** number on the same row (and the QR payload is refreshed to match).
+Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE`. On success: property becomes SUBMITTED, a **DigiPin** and its **QR** are generated — but the DigiPin is **NOT returned**. It stays hidden on every non-admin surface until an admin approves the property (`PATCH /admin/properties/:id/verification` → `VERIFIED`). A resubmit after REJECTED issues a **fresh** number on the same row (and the QR payload is refreshed to match).
 
-**DigiPin format (8 chars):** `SS` (state shortform, e.g. `WB`) + 4-digit crypto-random + last 2 digits of the pincode. Example: `WB472801` (for pincode `700001`). Uniqueness is enforced by a DB unique constraint with server-side collision retry — duplicates are un-storable. Only 3 district names repeat across states nationally, so name-based district resolution is effectively deterministic when `state` is sent.
+**DigiPin format (9 chars):** `SS` (state shortform, e.g. `WB`) + `DDD` (zero-padded LGD district code, e.g. `315` for Kolkata) + 4-digit crypto-random. Example: `WB3154728`. Uniqueness is enforced by a DB unique constraint with server-side collision retry — duplicates are un-storable. Only 3 district names repeat across states nationally, so name-based district resolution is effectively deterministic when `state` is sent. District is **required** at submit (send `districtCode` or `districtName`).
 
 ```jsonc
 // Request
@@ -425,7 +425,7 @@ Requires Bearer. Complete gate — missing anything → `400 PROPERTY_INCOMPLETE
   "address": "14 Park Street, Ballygunge",
   "city": "Kolkata",
   "state": "West Bengal",
-  "districtName": "Kolkata",                // optional — auto-resolved to districtCode 315
+  "districtName": "Kolkata",                // required — auto-resolved to districtCode 315 (or send districtCode directly)
   "pincode": "700016",
   "propertyImages": ["638713e0fa164069adba18a0e2d1fdab", "b1df20e6488a391041a9bddce91e0055"],  // ≥1 fileId, max 3
   "selfieImage": "59f25cfd0eae09bba0b376db476566b1"                                            // exactly one
@@ -531,16 +531,18 @@ Public. Use to auto-fill the address field from the device GPS chip (no user typ
 ## 7. DigiPin & QR
 
 ### GET /api/digipins/:id/qr — get the QR for a DigiPin
-Requires Bearer. `:id` is the **DigiPin row id** (visible on the approved property detail — it is no longer returned by submit), not the 8-char number. Only available **after admin approval** — the owner gets `403 PROPERTY_NOT_APPROVED` ("Your property is not approved yet…") while pending.
+Requires Bearer. `:id` is the **DigiPin row id** (visible on the approved property detail — it is no longer returned by submit), not the 9-char number. Only available **after admin approval** — the owner gets `403 PROPERTY_NOT_APPROVED` ("Your property is not approved yet…") while pending.
+
+> **QR / DigiPin lazy-heal:** the QR always encodes the *current* DigiPin number as plain text (e.g. `WB3154728`). Legacy URL QRs (`https://digipin.app/q/...`) are healed to the number on first read. **Old 8-char DigiPins are also lazily migrated** to the new 9-char `SS+DDD+4-random` format on first *approved* fetch (`GET /api/properties/:id` or `GET /api/digipins/:id/qr`) when `state` + `districtCode` exist — the DB row and QR are rewritten, so the next scan shows the new code. Old prints need reprinting after migration; pins without a district stay grandfathered.
 
 ```jsonc
 // Response 200
 {
   "success": true,
   "data": {
-    "qrData": "WB472801",  // the DigiPin number itself — render this as the QR image
+    "qrData": "WB3154728",  // the DigiPin number itself — render this as the QR image
     "qrStatus": "ACTIVE",             // ACTIVE | DISABLED
-    "token": "WB472801"    // lookup key: the number for new QRs, the bare token for legacy URL QRs
+    "token": "WB3154728"    // lookup key: the number for new QRs, the bare token for legacy URL QRs
   }
 }
 // Any generic camera scan of the QR shows the DigiPin number directly.
@@ -555,13 +557,13 @@ Anyone can call this — it returns **no address, no personal data** (privacy-sa
 ```jsonc
 // Request — the scanned payload: raw DigiPin number (new QRs),
 // legacy bare token, or full legacy URL (all accepted)
-{ "token": "WB472801" }
+{ "token": "WB3154728" }
 
 // Response 200
 {
   "success": true,
   "data": {
-    "digipinNumber": "WB472801",
+    "digipinNumber": "WB3154728",
     "status": "ACTIVE",                  // ACTIVE | INACTIVE
     "verificationStatus": "VERIFIED",    // always VERIFIED or later — unapproved codes 404
     "city": "Kolkata",

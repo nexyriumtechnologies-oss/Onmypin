@@ -20,12 +20,12 @@ type Params = { params: Promise<{ id: string }> };
   *       must belong to the caller. `latitude`/`longitude` are OPTIONAL device
   *       GPS — when absent the server geocodes the full address automatically
   *       (LOCATION_PROVIDER=osm/mock); users never type coordinates. On success
-  *       the DigiPin (SS + 4-digit random + pincode suffix, e.g. WB472801)
+  *       the DigiPin (SS + DDD + 4-digit random, e.g. WB3154728)
   *       is generated and a QR is created inside a transaction — but the DigiPin
   *       number is NOT returned here. It stays hidden on every
   *       non-admin surface until an admin approves the property. District is
-  *       OPTIONAL: send `districtCode`, or `districtName` (auto-resolved
-  *       against the LGD dataset, scoped by `state`), or neither — when both
+  *       REQUIRED for the new formula: send `districtCode`, or `districtName`
+  *       (auto-resolved against the LGD dataset, scoped by `state`) — when both
   *       are sent they must agree (400 DISTRICT_NAME_MISMATCH otherwise).
   *       Resubmit after REJECTED issues a fresh number.
  *     tags: [Properties]
@@ -59,7 +59,7 @@ type Params = { params: Promise<{ id: string }> };
   *               address: { type: string, minLength: 5, maxLength: 500 }
   *               city: { type: string, minLength: 2, maxLength: 100 }
   *               state: { type: string, minLength: 2, maxLength: 100 }
-  *               districtCode: { type: integer, minimum: 1, description: LGD district code (optional; validated against the dataset) }
+  *               districtCode: { type: integer, minimum: 1, description: LGD district code (REQUIRED for new formula; validated against the dataset) }
   *               districtName: { type: string, minLength: 1, maxLength: 100, example: "Kolkata", description: District name alternative — auto-resolved to districtCode server-side (scoped by state); must agree with districtCode when both are sent }
   *               pincode: { type: string, pattern: '^\d{6}$' }
  *               latitude: { type: number, minimum: -90, maximum: 90, description: Optional device GPS latitude; server geocodes the address when absent }

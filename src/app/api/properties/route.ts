@@ -33,7 +33,7 @@ import { created, ok } from "@/lib/response";
  *               address: { type: string, minLength: 5, maxLength: 500 }
  *               city: { type: string, minLength: 2, maxLength: 100 }
   *               state: { type: string, minLength: 2, maxLength: 100 }
-  *               districtCode: { type: integer, minimum: 1, description: LGD district code (optional at create, optional at submit) }
+  *               districtCode: { type: integer, minimum: 1, description: LGD district code (optional at create, REQUIRED at submit for new formula) }
   *               districtName: { type: string, minLength: 1, maxLength: 100, example: "Kolkata", description: District name alternative — auto-resolved to districtCode server-side }
   *               pincode: { type: string, pattern: '^\d{6}$' }
   *               latitude: { type: number, minimum: -90, maximum: 90 }

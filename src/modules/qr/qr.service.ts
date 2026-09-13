@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/middleware/errorHandler";
 import { APPROVED_VERIFICATION_STATUSES } from "@/modules/properties/property.service";
+import { DIGIPIN_FORMAT, generateDigiPin } from "@/modules/digipin/digipin.service";
 import { LEGACY_QR_URL_PREFIX, buildQrData, normalizeQrInput } from "@/modules/qr/qr.payload";
 
 /**
@@ -10,9 +11,13 @@ import { LEGACY_QR_URL_PREFIX, buildQrData, normalizeQrInput } from "@/modules/q
  * is unapproved.
  */
 export async function getOrCreateQrForDigiPin(digipinId: string, userId: string) {
-  const digiPin = await prisma.digiPin.findUnique({
+  let digiPin = await prisma.digiPin.findUnique({
     where: { id: digipinId },
-    include: { property: { select: { userId: true, verificationStatus: true } } },
+    include: {
+      property: {
+        select: { userId: true, verificationStatus: true, state: true, districtCode: true },
+      },
+    },
   });
   if (!digiPin || digiPin.property.userId !== userId) {
     throw new ApiError(404, "DIGIPIN_NOT_FOUND", "DigiPin not found");
@@ -25,6 +30,30 @@ export async function getOrCreateQrForDigiPin(digipinId: string, userId: string)
       "PROPERTY_NOT_APPROVED",
       "Your property is not approved yet. The QR code will be available after admin approval.",
     );
+  }
+  // Lazy DigiPin migration — same as getProperty: old codes become SS+DDD+4-random
+  // on first QR fetch after the formula change when state+district exist.
+  if (
+    !DIGIPIN_FORMAT.test(digiPin.digipinNumber) &&
+    digiPin.property.state &&
+    digiPin.property.districtCode != null
+  ) {
+    try {
+      const digiPinId = digiPin.id;
+      const newNumber = await generateDigiPin(digiPin.property.state, digiPin.property.districtCode, {
+        persist: (n) =>
+          prisma.digiPin.update({ where: { id: digiPinId }, data: { digipinNumber: n } }),
+      });
+      await prisma.qR.upsert({
+        where: { digipinId: digiPinId },
+        update: { qrData: buildQrData(newNumber) },
+        create: { digipinId: digiPinId, qrData: buildQrData(newNumber) },
+      });
+      // Keep in-memory copy in sync so subsequent QR logic works on the fresh number.
+      digiPin = { ...digiPin, digipinNumber: newNumber };
+    } catch {
+      // Best-effort — return whatever we have; next fetch retries.
+    }
   }
 
   const existing = await prisma.qR.findUnique({ where: { digipinId } });

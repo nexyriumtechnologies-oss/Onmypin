@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/middleware/errorHandler";
 import { requireOwnedMedia, requireOwnedMediaMany } from "@/modules/media/media.service";
 import { geocodeAddress } from "@/modules/location/location.service";
-import { generateDigiPin } from "@/modules/digipin/digipin.service";
+import { DIGIPIN_FORMAT, generateDigiPin } from "@/modules/digipin/digipin.service";
 import { getDistrict, findDistrictByName } from "@/modules/districts/districts";
 import { buildQrData } from "@/modules/qr/qr.payload";
 import type { PropertyType, OwnershipType, VerificationStatus } from "@prisma/client";
@@ -130,6 +130,40 @@ export async function getProperty(userId: string, propertyId: string) {
       digipinMessage: "Your property is not approved yet. The DigiPin will appear here after admin approval.",
     };
   }
+  // Lazy DigiPin migration: old 8-char (or legacy 18-char v1) codes are
+  // rewritten to the new 9-char SS+DDD+4-random format on first approved read
+  // after the formula change — same idea as the QR URL → number heal.
+  // Requires state + district on the property; otherwise the old code is
+  // returned grandfathered. Old printed QRs will need reprinting after migration.
+  if (
+    rest.digiPin &&
+    !DIGIPIN_FORMAT.test(rest.digiPin.digipinNumber) &&
+    rest.state &&
+    rest.districtCode != null
+  ) {
+    try {
+      const newNumber = await generateDigiPin(rest.state, rest.districtCode, {
+        persist: (n) =>
+          prisma.digiPin.update({
+            where: { id: rest.digiPin!.id },
+            data: { digipinNumber: n },
+          }),
+      });
+      await prisma.qR.upsert({
+        where: { digipinId: rest.digiPin.id },
+        update: { qrData: buildQrData(newNumber) },
+        create: { digipinId: rest.digiPin.id, qrData: buildQrData(newNumber) },
+      });
+      return {
+        ...rest,
+        digiPin: { ...rest.digiPin, digipinNumber: newNumber },
+        digipinStatus: "AVAILABLE" as const,
+      };
+    } catch {
+      // If migration fails (e.g. transient DB error) return the old code — next
+      // fetch will retry. Don't block the read.
+    }
+  }
   return { ...rest, digipinStatus: "AVAILABLE" };
 }
 
@@ -185,7 +219,7 @@ function isTxExpiredError(err: unknown): boolean {
 
 /**
  * Submit: validates completeness, enforces DRAFT|REJECTED→SUBMITTED, then
- * generates the DigiPin (SS + 4-digit random + pincode suffix) and
+ * generates the DigiPin (SS + DDD + 4-digit random, e.g. WB3154728) and
  * associates a QR — inside a transaction.
  *
  * The DigiPin is NEVER returned here: it stays invisible on every non-admin
@@ -195,7 +229,7 @@ function isTxExpiredError(err: unknown): boolean {
  * Resubmit after REJECTED issues a FRESH number on the existing DigiPin row
  * and resets it to SUBMITTED, keeping the existing QR token.
  *
- * District is optional (stored + displayed when sent, by code or by name).
+ * District is REQUIRED for the new formula (send districtCode or districtName).
  *
  * Coordinates: latitude/longitude are OPTIONAL. When the client sends device
  * GPS those are stored; otherwise the server geocodes the full address
@@ -247,10 +281,16 @@ export async function submitProperty(
     longitude = geo.longitude;
   }
 
-  // District is optional: an explicit code wins, else a sent name is
-  // auto-resolved (scoped by the submitted state); the canonical dataset
-  // name is snapshotted. The old-formula number needs only state + pincode.
+  // District is required for the new formula SS+DDD+4-random.
+  // An explicit code wins, else a sent name is auto-resolved (scoped by state).
   const resolved = resolveDistrictInput(data);
+  if (resolved.districtCode == null) {
+    throw new ApiError(
+      400,
+      "DISTRICT_REQUIRED",
+      "District is required — send districtCode or districtName (e.g. \"Kolkata\") scoped by state.",
+    );
+  }
 
   // Interactive-tx budget: several sequential writes on a cold hosted DB can
   // approach Prisma's 5s default — 15s ceiling. Retry once on expiry (P2028):
@@ -282,7 +322,7 @@ export async function submitProperty(
     let digipinNumber: string;
     if (existing) {
       digipinId = existing.id;
-      digipinNumber = await generateDigiPin(data.state, data.pincode, {
+      digipinNumber = await generateDigiPin(data.state, resolved.districtCode!, {
         persist: (n) =>
           tx.digiPin.update({
             where: { id: existing.id },
@@ -291,7 +331,7 @@ export async function submitProperty(
       });
     } else {
       digipinId = "";
-      digipinNumber = await generateDigiPin(data.state, data.pincode, {
+      digipinNumber = await generateDigiPin(data.state, resolved.districtCode!, {
         persist: async (n) => {
           const created = await tx.digiPin.create({ data: { propertyId, digipinNumber: n } });
           digipinId = created.id;
