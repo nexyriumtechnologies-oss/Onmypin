@@ -1,9 +1,9 @@
 import { getStateCode } from "./stateCodes";
-import { random4Digit } from "@/lib/crypto";
+import { random6Digit } from "@/lib/crypto";
 import { ApiError } from "@/middleware/errorHandler";
 import { logger } from "@/lib/logger";
 
-export const DIGIPIN_FORMAT = /^[A-Z]{2}\d{7}$/;
+export const DIGIPIN_FORMAT = /^[A-Z]{2}\d{9}$/;
 
 /**
  * DigiPin format: [2-letter state code][3-digit district code][4-digit random]
@@ -30,7 +30,7 @@ export async function generateDigiPin(
   const districtPart = String(districtCode).padStart(3, "0");
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    const digipinNumber = `${stateCode}${districtPart}${random4Digit()}`;
+    const digipinNumber = `${stateCode}${districtPart}${random6Digit()}`;
     try {
       await persist(digipinNumber);
       return digipinNumber;

@@ -36,6 +36,6 @@ export function generateOpaqueToken(bytes = 16): string {
   return randomBytes(bytes).toString("hex");
 }
 
-export function random4Digit(): string {
-  return randomInt(1000, 10000).toString();
+export function random6Digit(): string {
+  return randomInt(100000, 1000000).toString();
 }
