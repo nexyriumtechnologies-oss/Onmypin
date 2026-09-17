@@ -42,5 +42,6 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: "/api/:path*",
+  // /api/* = mobile app API; /admin/* = browser admin panel (needs CORS headers too).
+  matcher: ["/api/:path*", "/admin/:path*"],
 };

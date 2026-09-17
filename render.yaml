@@ -54,7 +54,11 @@ services:
       - key: OTP_BYPASS_CODE
         value: "123456"
       # ---- other config ----
+      # Browser origins allowed to call /api/* and /admin/*. Add the deployed
+      # admin-panel URL here (and in the Render dashboard env var of the same
+      # name) once the panel ships solo, e.g.
+      # "http://localhost:3000,http://localhost:5173,https://ownmypin-admin.onrender.com"
       - key: CORS_ALLOWED_ORIGINS
-        value: "http://localhost:3000"
+        value: "http://localhost:3000,http://localhost:5173"
       - key: STORAGE_LOCAL_DIR
         value: "./public/uploads"
